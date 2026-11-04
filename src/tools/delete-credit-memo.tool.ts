@@ -3,7 +3,7 @@ import { ToolDefinition } from "../types/tool-definition.js";
 import { z } from "zod";
 
 const toolName = "delete_credit_memo";
-const toolDescription = "Delete (void) a credit memo in QuickBooks Online.";
+const toolDescription = "Delete a credit memo in QuickBooks Online.";
 const toolSchema = z.object({ idOrEntity: z.any() });
 
 const toolHandler = async (args: any) => {

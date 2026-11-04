@@ -18,7 +18,7 @@ export async function updateQuickbooksTransfer(data: UpdateTransferInput): Promi
     if (data.from_account_ref) payload.FromAccountRef = { value: data.from_account_ref };
     if (data.to_account_ref) payload.ToAccountRef = { value: data.to_account_ref };
     if (data.amount !== undefined) payload.Amount = data.amount;
-    if (data.private_note) payload.PrivateNote = data.private_note;
+    if (data.private_note !== undefined) payload.PrivateNote = data.private_note;
 
     return new Promise((resolve) => {
       (quickbooks as any).updateTransfer(payload, (err: any, updated: any) => {

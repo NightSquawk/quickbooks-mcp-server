@@ -51,7 +51,7 @@ export async function updateQuickbooksVendorCredit(data: UpdateVendorCreditInput
     }
 
     if (data.vendor_ref) payload.VendorRef = { value: data.vendor_ref };
-    if (data.private_note) payload.PrivateNote = data.private_note;
+    if (data.private_note !== undefined) payload.PrivateNote = data.private_note;
     if (data.global_tax_calculation) payload.GlobalTaxCalculation = data.global_tax_calculation;
 
     return new Promise((resolve) => {

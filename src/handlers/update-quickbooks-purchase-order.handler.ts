@@ -21,8 +21,8 @@ export async function updateQuickbooksPurchaseOrder(data: UpdatePurchaseOrderInp
     };
 
     if (data.vendor_ref) payload.VendorRef = { value: data.vendor_ref };
-    if (data.private_note) payload.PrivateNote = data.private_note;
-    if (data.doc_number) payload.DocNumber = data.doc_number;
+    if (data.private_note !== undefined) payload.PrivateNote = data.private_note;
+    if (data.doc_number !== undefined) payload.DocNumber = data.doc_number;
 
     return new Promise((resolve) => {
       (quickbooks as any).updatePurchaseOrder(payload, (err: any, updated: any) => {

@@ -3,7 +3,7 @@ import { ToolResponse } from "../types/tool-response.js";
 import { formatError } from "../helpers/format-error.js";
 
 /**
- * Delete an estimate (void) in QuickBooks Online
+ * Delete an estimate in QuickBooks Online
  */
 export async function deleteQuickbooksEstimate(idOrEntity: any): Promise<ToolResponse<any>> {
   try {

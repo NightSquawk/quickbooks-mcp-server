@@ -22,7 +22,7 @@ export async function updateQuickbooksDeposit(data: UpdateDepositInput): Promise
     });
 
     const payload: any = { ...current, SyncToken: data.sync_token };
-    if (data.private_note) payload.PrivateNote = data.private_note;
+    if (data.private_note !== undefined) payload.PrivateNote = data.private_note;
 
     return new Promise((resolve) => {
       (quickbooks as any).updateDeposit(payload, (err: any, updated: any) => {

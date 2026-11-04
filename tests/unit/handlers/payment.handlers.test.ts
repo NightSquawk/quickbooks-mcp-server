@@ -218,10 +218,10 @@ describe('Payment Handlers', () => {
   });
 
   describe('deleteQuickbooksPayment', () => {
-    it('should void a payment', async () => {
-      const mockVoided = { Id: '123', status: 'Voided' };
+    it('should delete a payment', async () => {
+      const mockDeleted = { Id: '123', status: 'Deleted' };
       (mockQuickBooksInstance.deletePayment as jest.Mock).mockImplementation(
-        (_payload: any, cb: any) => cb(null, mockVoided)
+        (_payload: any, cb: any) => cb(null, mockDeleted)
       );
 
       const result = await deleteQuickbooksPayment({ id: '123', sync_token: '0' });

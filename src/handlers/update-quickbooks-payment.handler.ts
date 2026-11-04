@@ -30,7 +30,7 @@ export async function updateQuickbooksPayment(data: UpdatePaymentInput): Promise
     if (data.payment_method_ref) {
       paymentPayload.PaymentMethodRef = { value: data.payment_method_ref };
     }
-    if (data.private_note) {
+    if (data.private_note !== undefined) {
       paymentPayload.PrivateNote = data.private_note;
     }
 

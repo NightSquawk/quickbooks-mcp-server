@@ -18,7 +18,7 @@ export async function updateQuickbooksTimeActivity(data: UpdateTimeActivityInput
     const payload: any = { Id: data.id, SyncToken: data.sync_token, sparse: true };
     if (data.hours !== undefined) payload.Hours = data.hours;
     if (data.minutes !== undefined) payload.Minutes = data.minutes;
-    if (data.description) payload.Description = data.description;
+    if (data.description !== undefined) payload.Description = data.description;
     if (data.billable_status) payload.BillableStatus = data.billable_status;
     if (data.item_ref) payload.ItemRef = { value: data.item_ref };
 

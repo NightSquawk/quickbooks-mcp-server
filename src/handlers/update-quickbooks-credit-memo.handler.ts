@@ -23,10 +23,10 @@ export async function updateQuickbooksCreditMemo(data: UpdateCreditMemoInput): P
     if (data.customer_ref) {
       payload.CustomerRef = { value: data.customer_ref };
     }
-    if (data.private_note) {
+    if (data.private_note !== undefined) {
       payload.PrivateNote = data.private_note;
     }
-    if (data.doc_number) {
+    if (data.doc_number !== undefined) {
       payload.DocNumber = data.doc_number;
     }
 

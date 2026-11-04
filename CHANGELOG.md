@@ -16,7 +16,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replace PDF output atomically to prevent writes through file links; exclude custom token-store files and aliases from attachment sources.
 - Enforce the configured PDF response limit during HTTP download, including chunked and compressed responses, before accumulating the complete body.
 - Make the existing `delete_invoice` tool perform its documented void operation, preserving the transaction record instead of attempting deletion first.
+- Remove ambiguous void wording from transaction tools that perform deletion.
 - Preserve successful bill updates when the subsequent tax-preference verification fails, returning the updated bill with a sanitized warning against retrying the completed mutation.
+- Forward explicitly empty note, description, and document-number fields in transaction updates instead of silently treating them as omitted.
 - Update compatible dependencies and migrate record schemas to patched Zod 4; verify the complete tool surface through a real MCP client/server test.
 - Add Linux/Windows CI and regression coverage. Coverage gates reflect the full startup-loaded tool surface, with stricter thresholds for critical paths.
 - Remove the vulnerable OAuth decoder dependency with a NightSquawk-maintained native parser patch, with real-SDK encoding, callback, and error regressions.
