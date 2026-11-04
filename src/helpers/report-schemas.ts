@@ -51,6 +51,14 @@ export const agingSchema = z.object({
     .number()
     .optional()
     .describe("Number of days in each aging period (default 30)."),
+  aging_method: z
+    .enum(["Current", "Report_Date"])
+    .optional()
+    .describe("Whether to age balances as of today or the report date."),
+  days_per_aging_period: z
+    .number()
+    .optional()
+    .describe("Number of days per aging period, using the upstream report parameter."),
   num_periods: z
     .number()
     .optional()

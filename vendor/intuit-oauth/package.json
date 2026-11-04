@@ -1,0 +1,31 @@
+{
+  "name": "intuit-oauth",
+  "version": "4.2.5-nst.1",
+  "private": true,
+  "description": "Intuit OAuth2.0 client with NightSquawk's native query parser security patch",
+  "type": "commonjs",
+  "main": "./src/OAuthClient.js",
+  "types": "./types/index.d.ts",
+  "files": ["src/", "types/", "LICENSE", "README.md"],
+  "engines": {
+    "node": ">=10"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NightSquawk/quickbooks-mcp-server.git",
+    "directory": "vendor/intuit-oauth"
+  },
+  "author": {
+    "name": "Anil Kumar",
+    "email": "anil_kumar3@intuit.com"
+  },
+  "license": "Apache-2.0",
+  "dependencies": {
+    "atob": "2.1.2",
+    "axios": "^1.18.1",
+    "csrf": "^3.0.4",
+    "jsonwebtoken": "^9.0.2",
+    "rsa-pem-from-mod-exp": "^0.8.4",
+    "winston": "^3.1.0"
+  }
+}

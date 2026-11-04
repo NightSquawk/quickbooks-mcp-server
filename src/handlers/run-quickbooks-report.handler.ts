@@ -1,4 +1,4 @@
-import { quickbooksClient } from "../clients/quickbooks-client.js";
+import { QuickbooksClient } from "../clients/quickbooks-client.js";
 import { ToolResponse } from "../types/tool-response.js";
 import { formatError } from "../helpers/format-error.js";
 
@@ -15,8 +15,7 @@ export async function runQuickbooksReport(
   options: Record<string, any>
 ): Promise<ToolResponse<any>> {
   try {
-    await quickbooksClient.authenticate();
-    const qb = quickbooksClient.getQuickbooks();
+    const qb = await QuickbooksClient.getInstance();
 
     // Strip undefined/null/empty values — QBO API rejects empty params
     const cleanOptions: Record<string, any> = {};
@@ -24,6 +23,18 @@ export async function runQuickbooksReport(
       if (v !== undefined && v !== null && v !== "") {
         cleanOptions[k] = v;
       }
+    }
+
+    // QBO can ignore a Balance Sheet end_date without a start_date. Preserve
+    // explicit ranges and date macros; supply the upstream year-start fallback
+    // only for an otherwise standalone end_date.
+    if (
+      methodName === "reportBalanceSheet" &&
+      typeof cleanOptions.end_date === "string" &&
+      !cleanOptions.start_date &&
+      !cleanOptions.date_macro
+    ) {
+      cleanOptions.start_date = `${cleanOptions.end_date.substring(0, 4)}-01-01`;
     }
 
     return new Promise((resolve) => {

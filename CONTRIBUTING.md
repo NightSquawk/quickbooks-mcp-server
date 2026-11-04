@@ -7,6 +7,10 @@ Great to have you here. Whether it's improving documentation, adding a new compo
 - [After Contribution is Merged](#After-Contribution-is-Merged)
 - [Contact Information](#Contact-Information)
 
+## Repository ownership
+
+This is the NightSquawk Tech fork. Branches, pushes, issues, and pull requests for this project belong only to `NightSquawk/quickbooks-mcp-server`. Treat Intuit as a read-only upstream source.
+
 ## Contribution Expectations
 
 #### Adding Functionality or Reporting Bugs
@@ -16,7 +20,7 @@ Great to have you here. Whether it's improving documentation, adding a new compo
 
 #### Code Quality Expectations
 - Tests: All new methods should have unit tests
-- Coverage: Ensure that code coverage does not fall below 80%
+- Coverage: Preserve the measured thresholds in `jest.config.js`, including stricter gates for security-sensitive code
 - Documentation: Code should be well-documented. What code is doing should be self-explanatory based on coding conventions. Why code is doing something should be explained:
     * `pom.xml` should have comments
     * Unit tests should have comments and failure messages
@@ -26,7 +30,7 @@ Great to have you here. Whether it's improving documentation, adding a new compo
 #### SLAs
 The team that owns this repo is expected to practice the following:
 
->The pull request review SLA is 7 days
+>The pull request review SLA is 20 days
 - Address any incoming PRs for contributions
 - Prioritize feature requests if handled by the team itself
 - Support the contributor through code guidance and contribution recognition
@@ -43,10 +47,10 @@ The team that owns this repo is expected to practice the following:
    A commit log should describe what changed and why. 
    Make sure that the commit message contains the Issue number. 
    ```
-4. **Test**. Bug fixes and features **should come with tests** and coverage should meet or exceed 80%. Make sure all tests pass. Please do not submit patches that fail this check.
+4. **Test**. Bug fixes and features **should come with tests** and coverage should satisfy `jest.config.js`. Make sure all tests pass. Please do not submit patches that fail this check.
 
 5. Push your changes to your fork's branch. Use `git rebase` (not `git merge`) to sync your work from time to time.
-6. In GitHub, create a Pull Request to the upstream repository. On your forked repo, click the 'Pull Request' button and fill out the form.
+6. Create a pull request targeting `NightSquawk/quickbooks-mcp-server:main`. Never target the Intuit repository for NightSquawk changes.
 7. Making a PR will automatically trigger a series of checks against your changes.
 8. The team will reach out if they need more information or to make suggestions.
 

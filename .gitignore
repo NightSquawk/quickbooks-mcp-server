@@ -1,11 +1,20 @@
-.qodo
+# Build and dependency output
+.DS_Store
+node_modules/
+dist/
+coverage/
+release/
 
-node_modules
-dist
-
-# Secrets — never commit. Holds live QuickBooks client secret + OAuth tokens.
+# Local configuration and credentials
 .env
 .env.local
 .env.*.local
-# OAuth token store (rotating refresh/access tokens persisted at runtime)
 .qbo-tokens.json
+.qbo-tokens.*.tmp
+.qbo-tokens*.tmp.*
+tokens.json.tmp.*
+tokens.json
+start.cmd
+
+# Local capture output (may contain real account balances)
+capture-*.txt

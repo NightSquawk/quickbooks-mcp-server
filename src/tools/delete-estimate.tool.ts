@@ -3,7 +3,7 @@ import { ToolDefinition } from "../types/tool-definition.js";
 import { z } from "zod";
 
 const toolName = "delete_estimate";
-const toolDescription = "Delete (void) an estimate in QuickBooks Online.";
+const toolDescription = "Delete an estimate in QuickBooks Online.";
 const toolSchema = z.object({ idOrEntity: z.any() });
 
 const toolHandler = async (args: any) => {

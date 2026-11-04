@@ -1,0 +1,41 @@
+{
+  "name": "node-quickbooks",
+  "version": "2.0.50-nst.1",
+  "description": "node.js client for Intuit's IPP QuickBooks V3 API.",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "keywords": [
+    "Intuit",
+    "QuickBooks",
+    "IPP"
+  ],
+  "author": "Michael Cohen",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.13.2",
+    "bluebird": "3.3.4",
+    "date-fns": "^2.9.0",
+    "fast-xml-parser": "^5.10.1",
+    "form-data": "^4.0.5",
+    "oauth-1.0a": "^2.2.6",
+    "querystring": "0.2.0",
+    "underscore": "^1.13.8",
+    "util": "0.10.3",
+    "uuid": "11.1.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mcohen01/node-quickbooks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mcohen01/node-quickbooks/issues"
+  },
+  "homepage": "https://github.com/mcohen01/node-quickbooks",
+  "private": true,
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "LICENSE",
+    "README.md"
+  ]
+}
