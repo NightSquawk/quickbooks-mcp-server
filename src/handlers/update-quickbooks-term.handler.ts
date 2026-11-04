@@ -16,7 +16,7 @@ export async function updateQuickbooksTerm(data: UpdateTermInput): Promise<ToolR
   try {
     const quickbooks = await QuickbooksClient.getInstance();
     const payload: any = { Id: data.id, SyncToken: data.sync_token, sparse: true };
-    if (data.name) payload.Name = data.name;
+    if (data.name !== undefined) payload.Name = data.name;
     if (data.active !== undefined) payload.Active = data.active;
     if (data.due_days !== undefined) payload.DueDays = data.due_days;
     if (data.discount_days !== undefined) payload.DiscountDays = data.discount_days;

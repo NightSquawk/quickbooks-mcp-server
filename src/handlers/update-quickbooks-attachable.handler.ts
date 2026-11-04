@@ -24,16 +24,16 @@ export async function updateQuickbooksAttachable(data: UpdateAttachableInput): P
     let fileName = data.file_name;
     let contentType = data.content_type;
     if (data.file_path) {
-      if (!fileName) fileName = path.basename(data.file_path);
-      if (!contentType) contentType = inferContentType(data.file_path) ?? undefined;
+      if (fileName === undefined) fileName = path.basename(data.file_path);
+      if (contentType === undefined) contentType = inferContentType(data.file_path) ?? undefined;
     }
 
     const quickbooks = await QuickbooksClient.getInstance();
     const payload: any = { Id: data.id, SyncToken: data.sync_token, sparse: true };
-    if (fileName) payload.FileName = fileName;
-    if (contentType) payload.ContentType = contentType;
-    if (data.note) payload.Note = data.note;
-    if (data.category) payload.Category = data.category;
+    if (fileName !== undefined) payload.FileName = fileName;
+    if (contentType !== undefined) payload.ContentType = contentType;
+    if (data.note !== undefined) payload.Note = data.note;
+    if (data.category !== undefined) payload.Category = data.category;
 
     return new Promise((resolve) => {
       (quickbooks as any).updateAttachable(payload, (err: any, updated: any) => {
