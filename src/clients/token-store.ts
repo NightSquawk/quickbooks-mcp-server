@@ -1,45 +1,70 @@
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 export interface QboTokens {
   refresh_token?: string;
   realm_id?: string;
 }
 
-/**
- * Persists QuickBooks OAuth tokens to a gitignored JSON file.
- *
- * The rotating refresh/access tokens live here instead of in `.env` so that
- * persisting a rotated token is an atomic, structured write rather than a
- * read-modify-write of a tracked config file (which clobbers comments, races
- * across processes, and leaks secrets into git).
- */
+/** Rotating tokens only: static app credentials remain in environment/.env. */
 export class TokenStore {
-  private readonly filePath: string;
+  constructor(private readonly filePath: string) {}
 
-  constructor(filePath: string) {
-    this.filePath = filePath;
-  }
-
-  /** Read the persisted tokens. Returns `{}` if the file is absent or unreadable. */
+  /** Missing or unreadable stores allow migration from the legacy environment. */
   load(): QboTokens {
     try {
-      return JSON.parse(fs.readFileSync(this.filePath, 'utf-8')) as QboTokens;
+      const parsed: unknown = JSON.parse(fs.readFileSync(this.filePath, 'utf-8'));
+      if (!parsed || typeof parsed !== 'object') return {};
+      const values = parsed as Record<string, unknown>;
+      return {
+        refresh_token: typeof values.refresh_token === 'string' && values.refresh_token.trim()
+          ? values.refresh_token.trim() : undefined,
+        realm_id: typeof values.realm_id === 'string' && values.realm_id.trim()
+          ? values.realm_id.trim() : undefined,
+      };
     } catch {
       return {};
     }
   }
 
-  /**
-   * Merge `partial` into the stored tokens and persist atomically: write a temp
-   * file in the same directory, then rename it over the target. A reader never
-   * observes a half-written file, and a crash mid-write can't corrupt the store.
-   */
+  // Resolve symlinks before renaming so a configured symlink remains intact.
+  // readlink also works when a link's target does not exist yet.
+  private writePath(): string {
+    let target = this.filePath;
+    for (let depth = 0; depth < 40; depth++) {
+      try {
+        if (!fs.lstatSync(target).isSymbolicLink()) return target;
+      } catch (error) {
+        if ((error as NodeJS.ErrnoException).code === 'ENOENT') return target;
+        throw new Error('Cannot inspect the QuickBooks JSON token store. Check its permissions.');
+      }
+      const link = fs.readlinkSync(target);
+      target = path.resolve(path.dirname(target), link);
+    }
+    throw new Error('Too many symbolic links in the QuickBooks JSON token-store path.');
+  }
+
+  /** Persist atomically, with private permissions, beside the resolved target. */
   save(partial: QboTokens): QboTokens {
     const merged: QboTokens = { ...this.load(), ...partial };
-    const tmp = path.join(path.dirname(this.filePath), `.qbo-tokens.${process.pid}.tmp`);
-    fs.writeFileSync(tmp, JSON.stringify(merged, null, 2), { encoding: 'utf-8', mode: 0o600 });
-    fs.renameSync(tmp, this.filePath);
-    return merged;
+    let tmp: string | undefined;
+    try {
+      const target = this.writePath();
+      fs.mkdirSync(path.dirname(target), { recursive: true, mode: 0o700 });
+      tmp = `${target}.tmp.${process.pid}.${crypto.randomUUID()}`;
+      fs.writeFileSync(tmp, JSON.stringify(merged, null, 2), {
+        encoding: 'utf-8', mode: 0o600, flag: 'wx',
+      });
+      fs.renameSync(tmp, target);
+      return merged;
+    } catch {
+      if (tmp) {
+        try { fs.unlinkSync(tmp); } catch { /* best effort cleanup */ }
+      }
+      // Filesystem errors can include paths and written data. Keep the public
+      // error safe for a host application to display or log.
+      throw new Error('Could not persist the QuickBooks JSON token store. Check its path and permissions.');
+    }
   }
 }

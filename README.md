@@ -1,78 +1,90 @@
-# QuickBooks Online MCP Server
+# NightSquawk Tech QuickBooks MCP Server
 
-This is a Model Context Protocol (MCP) server implementation for QuickBooks Online integration.
+`@nightsquawktech/quickbooks-mcp-server` is NightSquawk Tech's fork of [Intuit's QuickBooks Online MCP server](https://github.com/intuit/quickbooks-online-mcp-server). It runs locally over stdio for Claude, Cursor, and other MCP clients.
+
+The server exposes **160 tools**: 131 entity/utility tools and our existing **29 `report_*` tools**. This fork keeps its JSON token store, report interface, catalog work, npm package identity, and publishing workflow while incorporating upstream's expanded tools and fixes.
 
 ## Setup
 
-1. Install dependencies:
 ```bash
-npm install
+git clone https://github.com/NightSquawk/quickbooks-mcp-server.git
+cd quickbooks-mcp-server
+npm ci
+cp .env.example .env
 ```
 
-2. Create a `.env` file in the root directory with the following variables:
-```env
+Create an app in the [Intuit Developer Portal](https://developer.intuit.com/), then fill in the static app credentials in `.env`:
+
+```dotenv
 QUICKBOOKS_CLIENT_ID=your_client_id
 QUICKBOOKS_CLIENT_SECRET=your_client_secret
 QUICKBOOKS_ENVIRONMENT=sandbox
+QUICKBOOKS_REDIRECT_URI=http://localhost:8000/callback
 ```
 
-3. Get your Client ID and Client Secret:
-   - Go to the [Intuit Developer Portal](https://developer.intuit.com/)
-   - Create a new app or select an existing one
-   - Get the Client ID and Client Secret from the app's keys section
-   - Add `http://localhost:8000/callback` to the app's Redirect URIs
+Register the matching redirect URI in your Intuit app. Use credentials for the selected sandbox or production environment.
 
 ## Authentication
-
-`.env` holds only the **static** app credentials (`QUICKBOOKS_CLIENT_ID`, `QUICKBOOKS_CLIENT_SECRET`, `QUICKBOOKS_ENVIRONMENT`) and is gitignored — copy `.env.example` to `.env` to get started. The **rotating** refresh token and realm ID are persisted separately to `.qbo-tokens.json` (also gitignored) and managed automatically. The short-lived access token is kept in memory only and re-minted on each launch.
-
-### One-time authorization (recommended)
-
-Run the OAuth flow once to connect your QuickBooks company:
 
 ```bash
 npm run auth
 ```
 
-This will:
-- Start a temporary local server on `http://localhost:8000/callback`
-- Open your default browser automatically
-- Redirect you to QuickBooks for authentication
-- Save the tokens to `.qbo-tokens.json` once authenticated
-- Close automatically when complete
+This explicitly starts browser authorization, even if an existing token can still be refreshed. If no browser is available, the authorization URL is printed to stderr. The OAuth callback validates a random state value and exchanges each authorization code only once.
 
-After that, the server keeps itself authenticated automatically: it refreshes the access token ahead of expiry and persists the rotating refresh token on every refresh. You only need to re-run `npm run auth` if the refresh token is left unused long enough to expire (100 days idle).
+Static credentials remain in `.env` or the process environment; explicitly provided process variables take precedence. The server resolves `.env` relative to the installed package, independent of its working directory. It never writes rotating tokens into `.env`.
 
-### Automatic re-authorization
+The refresh token and realm ID are stored atomically in the gitignored `.qbo-tokens.json`. Access tokens stay in memory and are refreshed ahead of expiry. Concurrent calls share the refresh operation; a rejected refresh can retry a newer token saved by another process.
 
-If the refresh token is ever rejected during a tool call, the server launches the browser flow again automatically. Set `QBO_AUTO_REAUTH=false` in `.env` to disable this and instead fail fast with a message telling you to run `npm run auth` (useful for headless/unattended setups).
+For an unattended installation, set `QBO_AUTO_REAUTH=false`. Sandbox tool calls otherwise start browser authorization when needed. Production tool calls fail with reauthorization guidance instead of unexpectedly starting a local browser flow. To authorize production explicitly, configure the registered HTTPS callback and forward it to the local callback server, then run `npm run auth`.
 
-### Migrating from an older setup
+### Existing tokens and custom storage
 
-If you already have `QUICKBOOKS_REFRESH_TOKEN` / `QUICKBOOKS_REALM_ID` in your `.env`, they are picked up once on first run and migrated into `.qbo-tokens.json`. You can delete them from `.env` afterward.
+Existing `QUICKBOOKS_REFRESH_TOKEN` and `QUICKBOOKS_REALM_ID` values are used to initialize the JSON store when it has no saved tokens. Remove the old values from your environment after migration.
 
-## Usage
+For a read-only package installation or separate company connections, set `QUICKBOOKS_TOKEN_STORE_PATH` to an absolute path to a writable **JSON token file**. Give each company connection its own file and keep it outside source control. Unlike upstream, this setting selects only token storage: it does not replace `.env` or change where static app credentials are loaded. Existing upstream env-format token files must be migrated through the environment variables above, not passed as JSON files.
 
-After authentication is set up, you can use the MCP server to interact with QuickBooks Online. The server provides various tools for managing customers, estimates, bills, and more.
+## MCP client configuration
 
-## Available Tools
+After configuring credentials and authorizing, point your MCP client at the built server:
 
-Added tools for Create, Delete, Get, Search, Update for the following entities:
+```json
+{
+  "mcpServers": {
+    "quickbooks": {
+      "command": "node",
+      "args": ["/absolute/path/to/quickbooks-mcp-server/dist/index.js"],
+      "env": {
+        "QBO_AUTO_REAUTH": "false"
+      }
+    }
+  }
+}
+```
 
+## Available tools
 
-- Account
-- Bill Payment
-- Bill
-- Customer
-- Employee
-- Estimate
-- Invoice
-- Item
-- Journal Entry
-- Purchase
-- Vendor
+Entity tools cover customers, invoices, estimates, bills, vendors, employees, accounts, items, journal entries, bill payments, purchases, payments, sales receipts, credit memos, refund receipts, purchase orders, vendor credits, deposits, transfers, time activities, classes, departments, terms, payment methods, tax entities, company information, preferences, budgets, and attachments. Available operations depend on the entity; tax entities and budgets are read-only.
 
-### Report Tools (29 reports)
+Notable additions include estimate-to-invoice links, invoice memos/service dates/payment terms, payment reference and multicurrency fields, subaccounts, and bill updates that preserve existing line-level class/tax references. Unsupported top-level parameters produce a warning instead of disappearing silently.
+
+### Restriction switches
+
+All tools are enabled by default. Set any of these environment variables to the exact string `true` to suppress that category:
+
+- `QUICKBOOKS_DISABLE_WRITE`: create tools.
+- `QUICKBOOKS_DISABLE_UPDATE`: update tools.
+- `QUICKBOOKS_DISABLE_DELETE`: delete tools.
+
+Set all three for read-only QuickBooks access. Read/search/report tools remain available. These switches restrict QuickBooks operations; PDF output has a separate filesystem setting.
+
+### Attachments and invoice PDFs
+
+`create_attachable` accepts base64 content, an absolute local `file_path`, or an HTTPS `file_url`. Local sources default to home/temp directories; use a semicolon-separated `QUICKBOOKS_ATTACHABLE_BASE_DIR` to select other roots. Credential files, the configured JSON token store (including symlink/hard-link aliases), dot-directories, and the server installation tree are excluded. URL sources validate destinations and redirects.
+
+`get_invoice_pdf` returns base64 by default. Disk output requires `QBO_PDF_OUTPUT_DIR` to name an existing allowed directory. Files are not overwritten unless `overwrite=true`; overwrites replace the output entry atomically without following a final-file symlink or hard link to another file.
+
+### Report tools (29 reports)
 
 Run QuickBooks financial reports via `report_*` tools. All accept optional date range/filter parameters.
 
@@ -117,11 +129,24 @@ Run QuickBooks financial reports via `report_*` tools. All accept optional date 
 - `report_trial_balance_fr` - Trial Balance (France only)
 - `report_tax_summary` - Tax Summary (France only)
 
+The upstream `get_*` report aliases are not registered. Existing clients should continue using `report_*`. Balance sheets with only an `end_date` also send January 1 of that year as `start_date`, following upstream's date-handling correction.
 
-## Error Handling
+## Development and validation
 
-If you see an error message like "QuickBooks not connected", make sure to:
+```bash
+npm run build
+npm run lint
+npm test -- --runInBand
+npm run test:coverage -- --runInBand
+npm audit --omit=dev --audit-level=high
+```
 
-1. Check that your `.env` file contains all required variables
-2. Verify that your tokens are valid and not expired
+CI runs build, lint, and tests on Linux and Windows with Node.js 22. Unit tests mock QuickBooks and do not contact a live company. The catalog JSON and `CATALOG_REFACTOR_PLAN.md` remain development resources; they do not register additional tools.
 
+Changes and releases belong to [NightSquawk/quickbooks-mcp-server](https://github.com/NightSquawk/quickbooks-mcp-server). Intuit's repository is an upstream source only.
+
+## Known dependency finding
+
+The production audit currently reports the `intuit-oauth → query-string → decode-uri-component` high-severity advisory [GHSA-qr28-fpjm-wq7f](https://github.com/advisories/GHSA-qr28-fpjm-wq7f). The patched decoder is ESM-only and cannot be substituted directly into the OAuth library's CommonJS dependency chain. Callback inputs are state-checked and re-encoded from parsed OAuth fields before reaching the SDK; this mitigation does not clear the dependency advisory. The audit CI gate remains blocking. No release should be described as audit-clean until the dependency chain is fixed.
+
+Coverage now includes the full tool surface loaded by startup/MCP contract tests. `jest.config.js` records the broader measured baseline and stricter gates for authentication, token storage, PDF handling, and the report runner. Upstream's historical 100% claim covered a smaller set of imported modules.

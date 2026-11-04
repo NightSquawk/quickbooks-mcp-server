@@ -1,4 +1,5 @@
 import { ReportConfig } from "../types/report-config.js";
+import { z } from "zod";
 import {
   dateRangeSchema,
   agingSchema,
@@ -175,7 +176,9 @@ export const REPORT_CONFIGS: ReportConfig[] = [
     methodName: "reportCustomerBalance",
     schema: dateRangeSchema
       .merge(accountingMethodSchema)
-      .merge(filtersSchema),
+      .merge(filtersSchema)
+      .merge(summarizeSchema)
+      .extend({ report_date: z.string().optional().describe("As-of report date (YYYY-MM-DD).") }),
   },
   {
     toolName: "report_customer_balance_detail",
@@ -221,7 +224,9 @@ export const REPORT_CONFIGS: ReportConfig[] = [
     methodName: "reportVendorBalance",
     schema: dateRangeSchema
       .merge(accountingMethodSchema)
-      .merge(filtersSchema),
+      .merge(filtersSchema)
+      .merge(summarizeSchema)
+      .extend({ report_date: z.string().optional().describe("As-of report date (YYYY-MM-DD).") }),
   },
   {
     toolName: "report_vendor_balance_detail",
@@ -334,7 +339,8 @@ export const REPORT_CONFIGS: ReportConfig[] = [
     schema: dateRangeSchema
       .merge(accountingMethodSchema)
       .merge(filtersSchema)
-      .merge(detailExtrasSchema),
+      .merge(detailExtrasSchema)
+      .extend({ source_account: z.string().optional().describe("Filter by source account.") }),
   },
 
   // ── Account List ───────────────────────────────────────────────────────────

@@ -1,4 +1,4 @@
-import { quickbooksClient } from "../clients/quickbooks-client.js";
+import { QuickbooksClient } from "../clients/quickbooks-client.js";
 import { ToolResponse } from "../types/tool-response.js";
 import { formatError } from "../helpers/format-error.js";
 
@@ -9,9 +9,19 @@ export interface CreateInvoiceInput {
     qty: number;
     unit_price: number;
     description?: string;
+    tax_code_ref?: string; // TaxCode id (non-US) or TAX/NON (US)
+    service_date?: string; // YYYY-MM-DD, per-line ServiceDate
   }>;
   doc_number?: string;
   txn_date?: string; // YYYY-MM-DD
+  linked_txn?: Array<{
+    txn_id: string;
+    txn_type: string;
+  }>;
+  global_tax_calculation?: "TaxExcluded" | "TaxInclusive" | "NotApplicable";
+  customer_memo?: string; // CustomerMemo (customer-facing message)
+  sales_term_ref?: string; // SalesTerm id; falls back to customer default
+  bill_email?: string; // BillEmail address; falls back to customer default
 }
 
 // Primitive field type map (based on Quickbooks Invoice entity reference docs)
@@ -38,9 +48,12 @@ function normalizeInvoiceFields(obj: Record<string, any>): Record<string, any> {
       case "string":
         normalized[key] = String(value);
         break;
+      /* istanbul ignore next — defensive: the payload built by
+         createQuickbooksInvoice only contains string-typed mapped fields */
       case "number":
         normalized[key] = typeof value === "number" ? value : Number(value);
         break;
+      /* istanbul ignore next — defensive: same as above */
       case "boolean":
         normalized[key] = typeof value === "boolean" ? value : value === "true";
         break;
@@ -51,8 +64,7 @@ function normalizeInvoiceFields(obj: Record<string, any>): Record<string, any> {
 
 export async function createQuickbooksInvoice(data: CreateInvoiceInput): Promise<ToolResponse<any>> {
   try {
-    await quickbooksClient.authenticate();
-    const quickbooks = quickbooksClient.getQuickbooks();
+    const quickbooks = await QuickbooksClient.getInstance();
 
     const invoicePayload: any = {
       CustomerRef: { value: data.customer_ref },
@@ -66,11 +78,26 @@ export async function createQuickbooksInvoice(data: CreateInvoiceInput): Promise
           ItemRef: { value: l.item_ref },
           Qty: l.qty,
           UnitPrice: l.unit_price,
+          TaxCodeRef: l.tax_code_ref ? { value: l.tax_code_ref } : undefined,
+          ServiceDate: l.service_date || undefined,
         },
       })),
       DocNumber: data.doc_number,
       TxnDate: data.txn_date,
+      ...(data.linked_txn && {
+        LinkedTxn: data.linked_txn.map((lt) => ({
+          TxnId: lt.txn_id,
+          TxnType: lt.txn_type,
+        })),
+      }),
+      ...(data.customer_memo && { CustomerMemo: { value: data.customer_memo } }),
+      ...(data.sales_term_ref && { SalesTermRef: { value: data.sales_term_ref } }),
+      ...(data.bill_email && { BillEmail: { Address: data.bill_email } }),
     };
+
+    if (data.global_tax_calculation) {
+      invoicePayload.GlobalTaxCalculation = data.global_tax_calculation;
+    }
 
     const normalizedPayload = normalizeInvoiceFields(invoicePayload);
 
