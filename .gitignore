@@ -2,3 +2,10 @@
 
 node_modules
 dist
+
+# Secrets — never commit. Holds live QuickBooks client secret + OAuth tokens.
+.env
+.env.local
+.env.*.local
+# OAuth token store (rotating refresh/access tokens persisted at runtime)
+.qbo-tokens.json

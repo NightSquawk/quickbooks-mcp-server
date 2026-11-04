@@ -1,0 +1,527 @@
+{
+  "entity": "vendor",
+  "name": "Vendor",
+  "category": "Expenses",
+  "description": "A vendor — a person or business from whom the company purchases products or services.",
+  "operations": {
+    "create": {
+      "methodName": "createVendor",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getVendor",
+      "idRequired": true
+    },
+    "update": {
+      "methodName": "updateVendor",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "delete": {
+      "methodName": "deleteVendor",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findVendors"
+    }
+  },
+  "searchableFields": [
+    "Id",
+    "DisplayName",
+    "CompanyName",
+    "GivenName",
+    "FamilyName",
+    "Active",
+    "Balance",
+    "PrimaryEmailAddr",
+    "PrimaryPhone",
+    "Vendor1099",
+    "AcctNum",
+    "MetaData.LastUpdatedTime"
+  ],
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Sort order is ASC by default. System-assigned; read-only and required for update/delete (passed via the path, not the body)."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required in the body for update to guard against concurrent modification; system-maintained and read-only on create."
+    },
+    {
+      "name": "DisplayName",
+      "type": "string",
+      "required": false,
+      "description": "The name of the vendor as displayed. Must be unique across all Customer, Vendor, and Employee objects. At least one of DisplayName, Title, GivenName, MiddleName, FamilyName, or Suffix is required on create. Max 500 characters."
+    },
+    {
+      "name": "Title",
+      "type": "string",
+      "required": false,
+      "description": "Title of the person. Used in conjunction with the name fields. Max 16 characters. One of Title/GivenName/MiddleName/FamilyName/Suffix/DisplayName is required on create."
+    },
+    {
+      "name": "GivenName",
+      "type": "string",
+      "required": false,
+      "description": "Given (first) name of the vendor contact person. Max 100 characters. One of Title/GivenName/MiddleName/FamilyName/Suffix/DisplayName is required on create."
+    },
+    {
+      "name": "MiddleName",
+      "type": "string",
+      "required": false,
+      "description": "Middle name of the vendor contact person. Max 100 characters."
+    },
+    {
+      "name": "FamilyName",
+      "type": "string",
+      "required": false,
+      "description": "Family (last) name of the vendor contact person. Max 100 characters. One of Title/GivenName/MiddleName/FamilyName/Suffix/DisplayName is required on create."
+    },
+    {
+      "name": "Suffix",
+      "type": "string",
+      "required": false,
+      "description": "Suffix of the name of the vendor contact person. Max 16 characters."
+    },
+    {
+      "name": "CompanyName",
+      "type": "string",
+      "required": false,
+      "description": "The name of the company associated with the vendor. Max 100 characters."
+    },
+    {
+      "name": "PrintOnCheckName",
+      "type": "string",
+      "required": false,
+      "description": "Name of the vendor as printed on a check. If not provided, defaults to DisplayName. Max 110 characters."
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this entity is currently enabled for use by QuickBooks. Defaults to true. Setting to false soft-deletes the vendor."
+    },
+    {
+      "name": "PrimaryEmailAddr",
+      "type": "object",
+      "required": false,
+      "description": "Primary email address of the vendor.",
+      "attributes": [
+        {
+          "name": "Address",
+          "type": "string",
+          "required": false,
+          "description": "An email address. Must be a valid email format. Max 100 characters."
+        }
+      ]
+    },
+    {
+      "name": "PrimaryPhone",
+      "type": "object",
+      "required": false,
+      "description": "Primary phone number of the vendor.",
+      "attributes": [
+        {
+          "name": "FreeFormNumber",
+          "type": "string",
+          "required": false,
+          "description": "Specifies the telephone number in free-form. Max 30 characters (21 for some locales)."
+        }
+      ]
+    },
+    {
+      "name": "Mobile",
+      "type": "object",
+      "required": false,
+      "description": "Mobile phone number of the vendor.",
+      "attributes": [
+        {
+          "name": "FreeFormNumber",
+          "type": "string",
+          "required": false,
+          "description": "Specifies the telephone number in free-form. Max 30 characters."
+        }
+      ]
+    },
+    {
+      "name": "Fax",
+      "type": "object",
+      "required": false,
+      "description": "Fax number of the vendor.",
+      "attributes": [
+        {
+          "name": "FreeFormNumber",
+          "type": "string",
+          "required": false,
+          "description": "Specifies the telephone number in free-form. Max 30 characters."
+        }
+      ]
+    },
+    {
+      "name": "WebAddr",
+      "type": "object",
+      "required": false,
+      "description": "Website address of the vendor.",
+      "attributes": [
+        {
+          "name": "URI",
+          "type": "string",
+          "required": false,
+          "description": "Uniform Resource Identifier for the website. Must be a valid URI. Max 1000 characters."
+        }
+      ]
+    },
+    {
+      "name": "BillAddr",
+      "type": "object",
+      "required": false,
+      "description": "Default billing (mailing) address of the vendor (PhysicalAddress).",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Unique identifier of the address object, system-assigned."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line5",
+          "type": "string",
+          "required": false,
+          "description": "Fifth line of the address. Max 500 characters."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name. Max 255 characters."
+        },
+        {
+          "name": "Country",
+          "type": "string",
+          "required": false,
+          "description": "Country name. Max 255 characters."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region within a country, e.g. state in the USA or province in Canada. Max 255 characters."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal/ZIP code. Max 30 characters."
+        },
+        {
+          "name": "Lat",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Latitude coordinate of the geocoded address. System-computed."
+        },
+        {
+          "name": "Long",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Longitude coordinate of the geocoded address. System-computed."
+        }
+      ]
+    },
+    {
+      "name": "TaxIdentifier",
+      "type": "string",
+      "required": false,
+      "description": "The tax ID of the vendor (e.g. EIN or SSN for 1099 reporting in the US). Returned masked on read for some configurations."
+    },
+    {
+      "name": "AcctNum",
+      "type": "string",
+      "required": false,
+      "description": "Name or number of the account associated with this vendor (your company's account number with the vendor). Max 100 characters. Supported in minor versions."
+    },
+    {
+      "name": "Vendor1099",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this vendor is an independent contractor eligible for 1099 reporting (US only). Indicates an eligible vendor for whom 1099 tracking should occur."
+    },
+    {
+      "name": "Balance",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Specifies the open balance amount or the amount unpaid to the vendor (accounts payable balance). System-computed and read-only."
+    },
+    {
+      "name": "TermRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to a Term (payment terms) associated with this vendor.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the referenced Term object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced Term object."
+        }
+      ]
+    },
+    {
+      "name": "APAccountRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Accounts Payable account associated with this vendor. Available in minor versions; applicable to multi-AP-account configurations.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the referenced AP Account object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced Account object."
+        }
+      ]
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the currency in which all amounts on associated transactions are expressed. Settable on create only when multicurrency is enabled; cannot be changed after creation.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Three-letter ISO 4217 currency code, e.g. USD, GBP."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Full name of the currency."
+        }
+      ]
+    },
+    {
+      "name": "GSTRegistrationType",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "GST_REG_REG",
+        "GST_REG_COMP",
+        "GST_UNREG",
+        "CONSUMER",
+        "OVERSEAS",
+        "SEZ",
+        "DEEMED"
+      ],
+      "description": "GST registration type of the vendor. India locale specific. Indicates the vendor's GST registration status."
+    },
+    {
+      "name": "GSTIN",
+      "type": "string",
+      "required": false,
+      "description": "GST identification number of the vendor. India locale specific. Max 15 characters."
+    },
+    {
+      "name": "BusinessNumber",
+      "type": "string",
+      "required": false,
+      "description": "Business number / company registration identifier of the vendor. Locale specific (e.g. ABN for AU, BN for CA). Max 20 characters."
+    },
+    {
+      "name": "T4AEligible",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, the vendor is eligible for T4A reporting. Canada locale specific."
+    },
+    {
+      "name": "T5018Eligible",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, the vendor is eligible for T5018 (Statement of Contract Payments) reporting. Canada locale specific."
+    },
+    {
+      "name": "HasTPAR",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, the vendor is included in the Taxable Payments Annual Report (TPAR). Australia locale specific."
+    },
+    {
+      "name": "OtherContactInfo",
+      "type": "object",
+      "required": false,
+      "description": "Additional contact information for the vendor, expressed as a typed name/value pair (ContactInfo).",
+      "attributes": [
+        {
+          "name": "Type",
+          "type": "string",
+          "required": false,
+          "description": "The type of contact information, e.g. TelephoneNumber."
+        },
+        {
+          "name": "Telephone",
+          "type": "object",
+          "required": false,
+          "description": "Telephone number container for the contact info.",
+          "attributes": [
+            {
+              "name": "FreeFormNumber",
+              "type": "string",
+              "required": false,
+              "description": "The telephone number in free-form."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "VendorPaymentBankDetail",
+      "type": "object",
+      "required": false,
+      "description": "Bank account details used for electronic vendor payments. Locale specific.",
+      "attributes": [
+        {
+          "name": "BankAccountName",
+          "type": "string",
+          "required": false,
+          "description": "Name on the vendor's bank account."
+        },
+        {
+          "name": "BankBranchIdentifier",
+          "type": "string",
+          "required": false,
+          "description": "Bank branch identifier (e.g. BSB, sort code, routing number)."
+        },
+        {
+          "name": "BankAccountNumber",
+          "type": "string",
+          "required": false,
+          "description": "The vendor's bank account number. May be returned masked."
+        },
+        {
+          "name": "StatementText",
+          "type": "string",
+          "required": false,
+          "description": "Text to appear on the vendor's bank statement for payments."
+        }
+      ]
+    },
+    {
+      "name": "domain",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "enum": [
+        "QBO"
+      ],
+      "description": "The domain identifier; constant value 'QBO'. System-assigned, read-only."
+    },
+    {
+      "name": "sparse",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "Denotes whether the response object represents a sparse (partial) representation. System-set, read-only in responses."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive metadata about the object, system-maintained and read-only.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created, in ISO 8601 format.",
+          "format": "YYYY-MM-DDTHH:MM:SS-HH:MM"
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated, in ISO 8601 format.",
+          "format": "YYYY-MM-DDTHH:MM:SS-HH:MM"
+        }
+      ]
+    }
+  ],
+  "requestSample": {
+    "create": {
+      "DisplayName": "Acme Office Supplies",
+      "CompanyName": "Acme Office Supplies Inc.",
+      "PrimaryEmailAddr": {
+        "Address": "ap@acme-supplies.com"
+      },
+      "PrimaryPhone": {
+        "FreeFormNumber": "(555) 123-4567"
+      },
+      "BillAddr": {
+        "Line1": "123 Market Street",
+        "City": "San Francisco",
+        "CountrySubDivisionCode": "CA",
+        "PostalCode": "94103",
+        "Country": "USA"
+      },
+      "Vendor1099": false,
+      "Active": true
+    },
+    "update": {
+      "Id": "56",
+      "SyncToken": "1",
+      "sparse": true,
+      "CompanyName": "Acme Office Supplies LLC"
+    }
+  }
+}

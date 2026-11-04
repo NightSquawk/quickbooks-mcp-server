@@ -1,0 +1,424 @@
+{
+  "entity": "vendor_credit",
+  "name": "VendorCredit",
+  "category": "Expenses",
+  "description": "An accounts payable transaction representing a refund or credit of payment for goods or services that a vendor owes you for reasons such as an overpaid bill or returned merchandise.",
+  "operations": {
+    "create": {
+      "methodName": "createVendorCredit",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getVendorCredit",
+      "idRequired": true
+    },
+    "update": {
+      "methodName": "updateVendorCredit",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "delete": {
+      "methodName": "deleteVendorCredit",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findVendorCredits"
+    }
+  },
+  "searchableFields": [
+    "Id",
+    "VendorRef",
+    "TxnDate",
+    "DocNumber",
+    "TotalAmt",
+    "Balance",
+    "MetaData.LastUpdatedTime",
+    "MetaData.CreateTime"
+  ],
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object, assigned by QuickBooks Online. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "VendorRef",
+      "type": "reference",
+      "required": true,
+      "description": "Reference to the vendor for this transaction. Query the Vendor name list resource to determine the appropriate Vendor object. Use Vendor.Id and Vendor.Name for VendorRef.value and VendorRef.name respectively.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced Vendor object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced Vendor object."
+        }
+      ]
+    },
+    {
+      "name": "Line",
+      "type": "array",
+      "required": true,
+      "description": "Individual line items of a transaction. Valid Line types include ItemBasedExpenseLine and AccountBasedExpenseLine. At least one line with Line.Amount must be specified.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "description": "Identifier of the line within the transaction. Required when updating an existing line."
+        },
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": true,
+          "description": "The amount of the line item."
+        },
+        {
+          "name": "DetailType",
+          "type": "string",
+          "required": true,
+          "description": "Discriminator indicating the type of line and which detail object is populated.",
+          "enum": [
+            "AccountBasedExpenseLineDetail",
+            "ItemBasedExpenseLineDetail"
+          ]
+        },
+        {
+          "name": "ProjectRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the project associated with the line.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": true,
+              "description": "The Id of the referenced project."
+            }
+          ]
+        },
+        {
+          "name": "AccountBasedExpenseLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Detail for an account-based expense line. Populated when DetailType is AccountBasedExpenseLineDetail.",
+          "attributes": [
+            {
+              "name": "AccountRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the expense account for this line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "The Id of the referenced Account object."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced Account object."
+                }
+              ]
+            },
+            {
+              "name": "TaxCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the TaxCode for this line item.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "The Id of the referenced TaxCode object."
+                }
+              ]
+            },
+            {
+              "name": "BillableStatus",
+              "type": "string",
+              "required": false,
+              "description": "Billable status of the expense line.",
+              "enum": [
+                "Billable",
+                "NotBillable",
+                "HasBeenBilled"
+              ]
+            },
+            {
+              "name": "CustomerRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the customer/job associated with this expense line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "The Id of the referenced Customer object."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced Customer object."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object, used for optimistic concurrency control. Required for update. Incremented each time the object is modified; modifying with an older SyncToken fails."
+    },
+    {
+      "name": "GlobalTaxCalculation",
+      "type": "string",
+      "required": false,
+      "description": "Method in which tax is applied. Not applicable to US companies; required for non-US companies.",
+      "enum": [
+        "TaxExcluded",
+        "TaxInclusive",
+        "NotApplicable"
+      ]
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the currency in which all amounts on the associated transaction are expressed. Required if multicurrency is enabled for the company.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The three-letter ISO 4217 currency code."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Full name of the currency."
+        }
+      ]
+    },
+    {
+      "name": "DocNumber",
+      "type": "string",
+      "required": false,
+      "description": "Reference number for the transaction. If not explicitly provided at create time, it may be populated based on the VendorAndPurchasesPrefs.UseCustomTxnNumbers preference. Throws an error on duplicate unless include=allowduplicatedocnum is set. Sort order is ASC by default."
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "User-entered, organization-private note about the transaction. Does not appear to the vendor; maps to the Memo field on the transaction form."
+    },
+    {
+      "name": "LinkedTxn",
+      "type": "array",
+      "required": false,
+      "description": "Zero or more transactions linked to this object. LinkedTxn.TxnType can be set to ReimburseCharge.",
+      "attributes": [
+        {
+          "name": "TxnId",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the linked transaction."
+        },
+        {
+          "name": "TxnType",
+          "type": "string",
+          "required": false,
+          "description": "The type of the linked transaction, e.g. ReimburseCharge."
+        }
+      ]
+    },
+    {
+      "name": "ExchangeRate",
+      "type": "decimal",
+      "required": false,
+      "description": "The number of home-currency units it takes to equal one unit of the currency specified by CurrencyRef. Applicable if multicurrency is enabled for the company."
+    },
+    {
+      "name": "APAccountRef",
+      "type": "reference",
+      "required": false,
+      "description": "Specifies to which AP account the bill is credited. The specified account must have Classification set to Liability and AccountSubType set to AccountsPayable.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced Account object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced Account object."
+        }
+      ]
+    },
+    {
+      "name": "DepartmentRef",
+      "type": "reference",
+      "required": false,
+      "description": "A reference to a Department object specifying the location of the transaction. Available if the TrackDepartments preference is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced Department object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced Department object."
+        }
+      ]
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The date entered by the user when this transaction occurred. For posting transactions, this is the posting date. Defaults to the current server date if not supplied. Sort order is ASC by default."
+    },
+    {
+      "name": "IncludeInAnnualTPAR",
+      "type": "boolean",
+      "required": false,
+      "description": "Include the supplier in the annual TPAR (Taxable Payments Annual Report), mandated by the ATO for payments made to contractors. Applicable to Australia (AU) locales."
+    },
+    {
+      "name": "Balance",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "The current amount of the vendor credit reflecting any adjustments to the original credit amount. Initially set to the value of TotalAmt. Calculated by QuickBooks; any value you supply is over-written."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. Set by Data Services and read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was last updated."
+        }
+      ]
+    },
+    {
+      "name": "RecurDataRef",
+      "type": "reference",
+      "required": false,
+      "readOnly": true,
+      "description": "A reference to the Recurring Transaction template the VendorCredit was created from.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The Id of the referenced recurring transaction."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced recurring transaction."
+        }
+      ]
+    },
+    {
+      "name": "TotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Indicates the total credit amount, determined by taking the total of all lines of the transaction, including all charges, allowances, discounts, and taxes. Calculated by QuickBooks; any value you supply is over-written."
+    }
+  ],
+  "requestSample": {
+    "create": {
+      "VendorRef": {
+        "value": "30",
+        "name": "Books by Bessie"
+      },
+      "APAccountRef": {
+        "value": "33",
+        "name": "Accounts Payable (A/P)"
+      },
+      "Line": [
+        {
+          "DetailType": "AccountBasedExpenseLineDetail",
+          "Amount": 90.0,
+          "AccountBasedExpenseLineDetail": {
+            "AccountRef": {
+              "value": "8",
+              "name": "Bank Charges"
+            }
+          }
+        }
+      ]
+    },
+    "update": {
+      "Id": "255",
+      "SyncToken": "1",
+      "VendorRef": {
+        "value": "30",
+        "name": "Books by Bessie"
+      },
+      "Line": [
+        {
+          "Id": "1",
+          "DetailType": "AccountBasedExpenseLineDetail",
+          "Amount": 140.0,
+          "AccountBasedExpenseLineDetail": {
+            "AccountRef": {
+              "value": "8",
+              "name": "Bank Charges"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

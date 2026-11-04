@@ -1,0 +1,127 @@
+{
+  "entity": "class",
+  "name": "Class",
+  "category": "Lists",
+  "description": "A Class is a lists entity used to track different segments of a business (income and expenses) independent of any particular client or project, applicable to an entire transaction or to individual detail lines.",
+  "operations": {
+    "create": {
+      "methodName": "createClass",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getClass",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findClasss"
+    },
+    "update": {
+      "methodName": "updateClass",
+      "bodyRequired": true,
+      "note": "Full update; the request body must include all writable fields as well as Id and SyncToken. Writable fields omitted from the body are set to null."
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "required": true,
+      "description": "User recognizable name for the Class."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object, used to lock an object for use by one app at a time. Required for update; attempts to modify an object specifying an older SyncToken fail."
+    },
+    {
+      "name": "ParentRef",
+      "type": "reference",
+      "required": false,
+      "description": "The immediate parent of the SubClass. Conditionally required if this object is a subclass.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the referenced parent Class object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The display name of the referenced parent Class object."
+        }
+      ]
+    },
+    {
+      "name": "SubClass",
+      "type": "boolean",
+      "required": false,
+      "description": "Specifies whether this object is a subclass. true: this object represents a subclass; false or null: this object represents a top-level class."
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this entity is currently enabled for use by QuickBooks."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    },
+    {
+      "name": "FullyQualifiedName",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Fully qualified name of the entity. Prepends the topmost parent, followed by each sub class separated by colons (e.g. Parent:Class1:SubClass1:SubClass2). Limited to 5 levels."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "Name",
+    "FullyQualifiedName",
+    "Active",
+    "SubClass",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {
+      "Name": "France"
+    },
+    "update": {
+      "Id": "5000000000000007280",
+      "SyncToken": "1",
+      "Name": "France"
+    }
+  }
+}

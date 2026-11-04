@@ -1,0 +1,395 @@
+{
+  "entity": "company_info",
+  "name": "CompanyInfo",
+  "category": "Lists",
+  "description": "The CompanyInfo object contains basic company information. In QuickBooks, company info and preferences are displayed in the same place under preferences. In general, properties such as company addresses or name are considered company information. Some attributes may exist in both CompanyInfo and Preferences objects.",
+  "operations": {
+    "get": {
+      "methodName": "getCompanyInfo",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findCompanyInfos"
+    },
+    "update": {
+      "methodName": "updateCompanyInfo",
+      "bodyRequired": true,
+      "note": "Sparse or full update; body must include Id and SyncToken."
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Sort order is ASC by default."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "description": "Version number of the object. It is used to lock an object for use by one app at a time. Required for update. As soon as an application modifies an object, its SyncToken is incremented. Attempts to modify an object specifying an older SyncToken fails. Only the latest version of the object is maintained by QuickBooks Online."
+    },
+    {
+      "name": "CompanyName",
+      "type": "string",
+      "required": false,
+      "description": "The name of the company. Required for update."
+    },
+    {
+      "name": "CompanyAddr",
+      "type": "object",
+      "required": false,
+      "description": "Company Address as described in preference. Required for update.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Unique identifier of the address object."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address."
+        },
+        {
+          "name": "Line5",
+          "type": "string",
+          "required": false,
+          "description": "Fifth line of the address."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name."
+        },
+        {
+          "name": "Country",
+          "type": "string",
+          "required": false,
+          "description": "Country name."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region within a country, such as state or province."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal code."
+        }
+      ]
+    },
+    {
+      "name": "LegalAddr",
+      "type": "object",
+      "required": false,
+      "description": "Legal Address given to the government for any government communication.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Unique identifier of the address object."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address."
+        },
+        {
+          "name": "Line5",
+          "type": "string",
+          "required": false,
+          "description": "Fifth line of the address."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name."
+        },
+        {
+          "name": "Country",
+          "type": "string",
+          "required": false,
+          "description": "Country name."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region within a country, such as state or province."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal code."
+        }
+      ]
+    },
+    {
+      "name": "SupportedLanguages",
+      "type": "string",
+      "required": false,
+      "description": "Comma separated list of languages."
+    },
+    {
+      "name": "Country",
+      "type": "string",
+      "required": false,
+      "description": "Country name to which the company belongs for financial calculations."
+    },
+    {
+      "name": "Email",
+      "type": "object",
+      "required": false,
+      "description": "Default email address.",
+      "attributes": [
+        {
+          "name": "Address",
+          "type": "string",
+          "required": false,
+          "description": "An email address."
+        }
+      ]
+    },
+    {
+      "name": "WebAddr",
+      "type": "object",
+      "required": false,
+      "description": "Website address.",
+      "attributes": [
+        {
+          "name": "URI",
+          "type": "string",
+          "required": false,
+          "description": "Uniform Resource Identifier for the website."
+        }
+      ]
+    },
+    {
+      "name": "NameValue",
+      "type": "array",
+      "required": false,
+      "description": "Any other preference not covered with the standard set of attributes. See Data Services Extensions for special reserved name/value pairs.",
+      "attributes": [
+        {
+          "name": "Name",
+          "type": "string",
+          "required": false,
+          "description": "Name of the element."
+        },
+        {
+          "name": "Value",
+          "type": "string",
+          "required": false,
+          "description": "Value of the element."
+        }
+      ]
+    },
+    {
+      "name": "FiscalYearStartMonth",
+      "type": "string",
+      "required": false,
+      "description": "The start month of fiscal year (MonthEnum)."
+    },
+    {
+      "name": "CustomerCommunicationAddr",
+      "type": "object",
+      "required": false,
+      "description": "Address of the company as given to their customer; sometimes the address given to the customer mail address is different from Company address.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Unique identifier of the address object."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address."
+        },
+        {
+          "name": "Line5",
+          "type": "string",
+          "required": false,
+          "description": "Fifth line of the address."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name."
+        },
+        {
+          "name": "Country",
+          "type": "string",
+          "required": false,
+          "description": "Country name."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region within a country, such as state or province."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal code."
+        }
+      ]
+    },
+    {
+      "name": "PrimaryPhone",
+      "type": "object",
+      "required": false,
+      "description": "Primary phone number.",
+      "attributes": [
+        {
+          "name": "FreeFormNumber",
+          "type": "string",
+          "required": false,
+          "description": "Specifies the telephone number in free form."
+        }
+      ]
+    },
+    {
+      "name": "LegalName",
+      "type": "string",
+      "required": false,
+      "description": "The legal name of the company."
+    },
+    {
+      "name": "EmployerId",
+      "type": "string",
+      "required": false,
+      "description": "If your QuickBooks company has defined an EIN in company settings, this value is returned."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    },
+    {
+      "name": "CompanyStartDate",
+      "type": "datetime",
+      "required": false,
+      "readOnly": true,
+      "description": "DateTime when company file was created. This field and Metadata.CreateTime contain the same value."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "CompanyName",
+    "LegalName",
+    "Country",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {},
+    "update": {
+      "SyncToken": "3",
+      "CompanyName": "Larry's Bakery",
+      "CompanyAddr": {
+        "City": "Mountain View",
+        "Country": "US",
+        "Line1": "2500 Garcia Ave",
+        "PostalCode": "94043",
+        "CountrySubDivisionCode": "CA",
+        "Id": "1"
+      },
+      "sparse": true,
+      "LegalName": "Larry Smith's Bakery",
+      "Id": "1"
+    }
+  }
+}

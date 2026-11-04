@@ -1,0 +1,312 @@
+{
+  "generatedFrom": "Intuit QBO Accounting API report reference (accounting.txt, source-grounded + adversarially verified)",
+  "reportCount": 29,
+  "categories": [
+    "Account List",
+    "Aging",
+    "Customer",
+    "Financial Statements",
+    "General Ledger",
+    "Inventory",
+    "Journal",
+    "Sales",
+    "Tax",
+    "Transaction List",
+    "Vendor"
+  ],
+  "universalParameters": [],
+  "reports": [
+    {
+      "slug": "account_list_detail",
+      "name": "Account List Detail",
+      "reportName": "AccountList",
+      "methodName": "reportAccountListDetail",
+      "category": "Account List",
+      "description": "The account list detail report lists all accounts in the chart of accounts with their attributes from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 11
+    },
+    {
+      "slug": "aged_payable_detail",
+      "name": "A/P Aging Detail",
+      "reportName": "AgedPayableDetail",
+      "methodName": "reportAgedPayableDetail",
+      "category": "Aging",
+      "description": "Provides a reference on how to access the AP Aging Detail report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 14
+    },
+    {
+      "slug": "aged_payables",
+      "name": "A/P Aging Summary",
+      "reportName": "AgedPayables",
+      "methodName": "reportAgedPayables",
+      "category": "Aging",
+      "description": "Returns the AP Aging summary report, showing outstanding vendor balances grouped into aging buckets, from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 8
+    },
+    {
+      "slug": "aged_receivable_detail",
+      "name": "Aged Receivable Detail",
+      "reportName": "AgedReceivableDetail",
+      "methodName": "reportAgedReceivableDetail",
+      "category": "Aging",
+      "description": "Provides detailed accounts receivable aging information showing outstanding customer balances grouped by how far past due they are, accessed from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 14
+    },
+    {
+      "slug": "aged_receivables",
+      "name": "AR Aging Summary",
+      "reportName": "AgedReceivables",
+      "methodName": "reportAgedReceivables",
+      "category": "Aging",
+      "description": "Provides a reference on how to access the AR Aging Summary report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 7
+    },
+    {
+      "slug": "balance_sheet",
+      "name": "Balance Sheet",
+      "reportName": "BalanceSheet",
+      "methodName": "reportBalanceSheet",
+      "category": "Financial Statements",
+      "description": "Returns the Balance Sheet report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 13
+    },
+    {
+      "slug": "cash_flow",
+      "name": "Cash Flow",
+      "reportName": "CashFlow",
+      "methodName": "reportCashFlow",
+      "category": "Financial Statements",
+      "description": "The cash flow report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 10
+    },
+    {
+      "slug": "class_sales",
+      "name": "Sales by Class Summary",
+      "reportName": "ClassSales",
+      "methodName": "reportClassSales",
+      "category": "Sales",
+      "description": "Returns the sales by class summary report from the QuickBooks Online Report Service, summarizing sales totals grouped by class. (Note: the source doc title is \"SalesByClassSummary\" but the report endpoint and ReportName are \"ClassSales\", which matches the requested reportName.)",
+      "requiredFilters": [],
+      "paramCount": 9
+    },
+    {
+      "slug": "customer_balance",
+      "name": "Customer Balance",
+      "reportName": "CustomerBalance",
+      "methodName": "reportCustomerBalance",
+      "category": "Customer",
+      "description": "Provides access to the Customer Balance report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 8
+    },
+    {
+      "slug": "customer_balance_detail",
+      "name": "Customer Balance Detail",
+      "reportName": "CustomerBalanceDetail",
+      "methodName": "reportCustomerBalanceDetail",
+      "category": "Customer",
+      "description": "Provides access to the Customer Balance Detail report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 13
+    },
+    {
+      "slug": "customer_income",
+      "name": "Customer Income",
+      "reportName": "CustomerIncome",
+      "methodName": "reportCustomerIncome",
+      "category": "Customer",
+      "description": "Provides income, expenses, and net income summarized by customer from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 11
+    },
+    {
+      "slug": "customer_sales",
+      "name": "Sales by Customer",
+      "reportName": "CustomerSales",
+      "methodName": "reportCustomerSales",
+      "category": "Sales",
+      "description": "Returns the Sales by Customer report from the QuickBooks Online Report Service. (Note: the source doc page is titled \"SalesByCustomer\", but the report endpoint and ReportName confirm the canonical report name is \"CustomerSales\" — these match.)",
+      "requiredFilters": [],
+      "paramCount": 11
+    },
+    {
+      "slug": "department_sales",
+      "name": "Sales by Department",
+      "reportName": "DepartmentSales",
+      "methodName": "reportDepartmentSales",
+      "category": "Sales",
+      "description": "Provides access to the Sales by Department report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 10
+    },
+    {
+      "slug": "general_ledger",
+      "name": "General Ledger",
+      "reportName": "GeneralLedger",
+      "methodName": "reportGeneralLedgerDetail",
+      "category": "General Ledger",
+      "description": "For each specified account, shows all the transactions that occurred in that account over a period of time, including the beginning balance and total for each account.",
+      "requiredFilters": [],
+      "paramCount": 15
+    },
+    {
+      "slug": "inventory_valuation_detail",
+      "name": "Inventory Valuation Detail",
+      "reportName": "InventoryValuationDetail",
+      "methodName": "",
+      "category": "Inventory",
+      "description": "Provides a reference on how to access the Inventory Valuation Detail report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 8
+    },
+    {
+      "slug": "inventory_valuation_summary",
+      "name": "Inventory Valuation Summary",
+      "reportName": "InventoryValuationSummary",
+      "methodName": "reportInventoryValuationSummary",
+      "category": "Inventory",
+      "description": "Provides a reference on how to access the Inventory Valuation summary report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 6
+    },
+    {
+      "slug": "item_sales",
+      "name": "Item Sales",
+      "reportName": "ItemSales",
+      "methodName": "reportItemSales",
+      "category": "Sales",
+      "description": "Provides sales of products and services (the Sales by Product report) from the QuickBooks Online Report Service; the documentation page is titled \"SalesByProduct\" but the report endpoint and ReportName are \"ItemSales\", which matches the requested reportName.",
+      "requiredFilters": [],
+      "paramCount": 12
+    },
+    {
+      "slug": "journal_report",
+      "name": "Journal Report",
+      "reportName": "JournalReport",
+      "methodName": "reportJournalReport",
+      "category": "Journal",
+      "description": "Presents a summary of the journal code ledgers from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 6
+    },
+    {
+      "slug": "profit_and_loss",
+      "name": "Profit and Loss",
+      "reportName": "ProfitAndLoss",
+      "methodName": "reportProfitAndLoss",
+      "category": "Financial Statements",
+      "description": "Accesses the Profit and Loss Summary report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 13
+    },
+    {
+      "slug": "profit_and_loss_detail",
+      "name": "Profit and Loss Detail",
+      "reportName": "ProfitAndLossDetail",
+      "methodName": "reportProfitAndLossDetail",
+      "category": "Financial Statements",
+      "description": "Provides access to the Profit and Loss Detail report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 16
+    },
+    {
+      "slug": "tax_summary",
+      "name": "Tax Summary",
+      "reportName": "TaxSummary",
+      "methodName": "reportTaxSummary",
+      "category": "Tax",
+      "description": "Provides a Tax Summary report for non-US locale companies, accessed from the QuickBooks Online Report Service.",
+      "requiredFilters": [
+        "agency_id"
+      ],
+      "paramCount": 6
+    },
+    {
+      "slug": "transaction_list",
+      "name": "Transaction List",
+      "reportName": "TransactionList",
+      "methodName": "reportTransactionList",
+      "category": "Transaction List",
+      "description": "Provides access to the Transaction List report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 32
+    },
+    {
+      "slug": "transaction_list_by_customer",
+      "name": "Transaction List by Customer",
+      "reportName": "TransactionListByCustomer",
+      "methodName": "reportTransactionListByCustomer",
+      "category": "Transaction List",
+      "description": "Provides a reference on how to access the Transaction List By Customer report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 31
+    },
+    {
+      "slug": "transaction_list_by_vendor",
+      "name": "Transaction List by Vendor",
+      "reportName": "TransactionListByVendor",
+      "methodName": "reportTransactionListByVendor",
+      "category": "Transaction List",
+      "description": "Provides access to the Transaction List By Vendor report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 31
+    },
+    {
+      "slug": "transaction_list_with_splits",
+      "name": "Transaction List with Splits",
+      "reportName": "TransactionListWithSplits",
+      "methodName": "reportTransactionListWithSplits",
+      "category": "Transaction List",
+      "description": "Returns a detailed list of transactions with their split line details from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 12
+    },
+    {
+      "slug": "trial_balance",
+      "name": "Trial Balance",
+      "reportName": "TrialBalance",
+      "methodName": "reportTrialBalance",
+      "category": "Financial Statements",
+      "description": "Provides access to the Trial Balance report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 6
+    },
+    {
+      "slug": "vendor_balance",
+      "name": "Vendor Balance",
+      "reportName": "VendorBalance",
+      "methodName": "reportVendorBalance",
+      "category": "Vendor",
+      "description": "Provides the balance owed to each vendor as of a given report date from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 9
+    },
+    {
+      "slug": "vendor_balance_detail",
+      "name": "Vendor Balance Detail",
+      "reportName": "VendorBalanceDetail",
+      "methodName": "reportVendorBalanceDetail",
+      "category": "Vendor",
+      "description": "Provides the Vendor Balance Detail report from the QuickBooks Online Report Service, listing vendor balances broken down by transaction.",
+      "requiredFilters": [],
+      "paramCount": 13
+    },
+    {
+      "slug": "vendor_expenses",
+      "name": "Expenses by Vendor",
+      "reportName": "VendorExpenses",
+      "methodName": "reportVendorExpenses",
+      "category": "Vendor",
+      "description": "Provides access to the Expenses by Vendor report from the QuickBooks Online Report Service.",
+      "requiredFilters": [],
+      "paramCount": 10
+    }
+  ]
+}

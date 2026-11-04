@@ -1,0 +1,448 @@
+{
+  "entity": "bill_payment",
+  "name": "BillPayment",
+  "category": "Expenses",
+  "description": "A bill payment — a payment applied against one or more vendor bills.",
+  "operations": {
+    "create": {
+      "methodName": "createBillPayment",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getBillPayment",
+      "idRequired": true
+    },
+    "update": {
+      "methodName": "updateBillPayment",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "delete": {
+      "methodName": "deleteBillPayment",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findBillPayments"
+    }
+  },
+  "searchableFields": [
+    "Id",
+    "VendorRef",
+    "TxnDate",
+    "DocNumber",
+    "PayType",
+    "TotalAmt",
+    "MetaData.CreateTime",
+    "MetaData.LastUpdatedTime"
+  ],
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "System-assigned unique identifier for the bill payment. Read-only; required (with SyncToken) for update and delete."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Read-only and system-assigned; required on update to ensure the latest version is being modified."
+    },
+    {
+      "name": "VendorRef",
+      "type": "reference",
+      "required": true,
+      "description": "Reference to the vendor receiving the payment. Required for create. Specify the Vendor.Id in value.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced Vendor object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced vendor."
+        }
+      ]
+    },
+    {
+      "name": "PayType",
+      "type": "string",
+      "required": true,
+      "enum": [
+        "Check",
+        "CreditCard"
+      ],
+      "description": "Type of payment. Required for create. Determines which payment detail object (CheckPayment or CreditCardPayment) must be supplied."
+    },
+    {
+      "name": "TotalAmt",
+      "type": "decimal",
+      "required": true,
+      "description": "Total amount of the transaction. Required for create; must equal the sum of the Line.Amount values applied to the bills. Returned in responses as the computed total."
+    },
+    {
+      "name": "Line",
+      "type": "array",
+      "required": true,
+      "description": "The line items of the bill payment. Each line links the payment to a vendor bill (or other payable transaction) via LinkedTxn. Required for create; at least one line must be present.",
+      "attributes": [
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": true,
+          "description": "The amount of the payment applied to the linked transaction(s) on this line."
+        },
+        {
+          "name": "LinkedTxn",
+          "type": "array",
+          "required": true,
+          "description": "Array of references to the transactions this payment line is applied against (typically Bills, or other payable transactions).",
+          "attributes": [
+            {
+              "name": "TxnId",
+              "type": "string",
+              "required": true,
+              "description": "The Id of the linked transaction (e.g., the Bill being paid)."
+            },
+            {
+              "name": "TxnType",
+              "type": "string",
+              "required": true,
+              "enum": [
+                "Bill",
+                "VendorCredit",
+                "Deposit",
+                "JournalEntry",
+                "Check",
+                "CreditCardCredit"
+              ],
+              "description": "The type of the linked transaction. For a standard bill payment this is 'Bill'."
+            },
+            {
+              "name": "TxnLineId",
+              "type": "string",
+              "required": false,
+              "description": "The Id of the specific line within the linked transaction, when applicable."
+            }
+          ]
+        },
+        {
+          "name": "LineEx",
+          "type": "object",
+          "required": false,
+          "readOnly": true,
+          "description": "Internal use; extension element carrying additional name/value metadata for the line.",
+          "attributes": [
+            {
+              "name": "any",
+              "type": "array",
+              "required": false,
+              "readOnly": true,
+              "description": "Collection of name/value pairs for internal use.",
+              "attributes": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name key of the extension element."
+                },
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Value of the extension element."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CheckPayment",
+      "type": "object",
+      "required": false,
+      "description": "Payment detail when PayType is Check. Conditionally required: must be present when PayType = Check. Mutually exclusive with CreditCardPayment.",
+      "attributes": [
+        {
+          "name": "BankAccountRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the bank account from which the check is drawn. Required within CheckPayment when PayType = Check. Specify the Account.Id in value.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": true,
+              "description": "The Id of the referenced bank Account object."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "description": "Display name of the referenced bank account."
+            }
+          ]
+        },
+        {
+          "name": "PrintStatus",
+          "type": "string",
+          "required": false,
+          "enum": [
+            "NotSet",
+            "NeedToPrint",
+            "PrintComplete"
+          ],
+          "description": "Printing status of the check."
+        }
+      ]
+    },
+    {
+      "name": "CreditCardPayment",
+      "type": "object",
+      "required": false,
+      "description": "Payment detail when PayType is CreditCard. Conditionally required: must be present when PayType = CreditCard. Mutually exclusive with CheckPayment.",
+      "attributes": [
+        {
+          "name": "CCAccountRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the credit card account used for the payment. Required within CreditCardPayment when PayType = CreditCard. Specify the Account.Id in value.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": true,
+              "description": "The Id of the referenced credit card Account object."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "description": "Display name of the referenced credit card account."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "APAccountRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Accounts Payable (A/P) account against which the bill payment is applied. For companies with multiple A/P accounts, this specifies which one; defaults to the company A/P account otherwise.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the referenced A/P Account object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced A/P account."
+        }
+      ]
+    },
+    {
+      "name": "DocNumber",
+      "type": "string",
+      "required": false,
+      "description": "Reference number for the transaction (e.g., check number). If not supplied and auto-numbering is enabled, QBO may assign one. Max 21 characters."
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The date of the bill payment transaction. Defaults to the current date if not supplied."
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "User-entered private memo/note for the transaction, visible only internally. Max 4000 characters."
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the currency of all amounts on the transaction. Applicable only when multicurrency is enabled. Specify a three-letter ISO 4217 code in value.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Three-letter ISO 4217 currency code (e.g., 'USD')."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Full name of the currency."
+        }
+      ]
+    },
+    {
+      "name": "ExchangeRate",
+      "type": "decimal",
+      "required": false,
+      "description": "The exchange rate between the transaction currency and the home currency as of TxnDate. Applicable only when multicurrency is enabled."
+    },
+    {
+      "name": "ProcessBillPayment",
+      "type": "boolean",
+      "required": false,
+      "description": "When true, the bill payment is processed electronically through QuickBooks (e.g., online bill pay) rather than being recorded only. Defaults to false."
+    },
+    {
+      "name": "TransactionLocationType",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "WithinFrance",
+        "FranceOverseas",
+        "OutsideFranceWithEU",
+        "OutsideEU"
+      ],
+      "description": "The account location, used for transactions subject to France-style tax localization. Valid values depend on the company locale."
+    },
+    {
+      "name": "DepartmentRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to a Department (location/class), used to track the transaction against a department when location tracking is enabled. Specify the Department.Id in value.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the referenced Department object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced department."
+        }
+      ]
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "System-maintained descriptive metadata about the object (creation and last-update timestamps). Read-only.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was created (read-only)."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was last updated (read-only)."
+        }
+      ]
+    },
+    {
+      "name": "domain",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "enum": [
+        "QBO"
+      ],
+      "description": "Internal use. Identifies the originating product/domain; always 'QBO'. Read-only."
+    },
+    {
+      "name": "sparse",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "Indicates whether the object is a full or sparse representation. When true on update, only the supplied fields are modified. Read-only in responses."
+    }
+  ],
+  "requestSample": {
+    "create": {
+      "VendorRef": {
+        "value": "56"
+      },
+      "PayType": "Check",
+      "CheckPayment": {
+        "BankAccountRef": {
+          "value": "35"
+        }
+      },
+      "TotalAmt": 200,
+      "Line": [
+        {
+          "Amount": 200,
+          "LinkedTxn": [
+            {
+              "TxnId": "890",
+              "TxnType": "Bill"
+            }
+          ]
+        }
+      ]
+    },
+    "update": {
+      "Id": "175",
+      "SyncToken": "0",
+      "sparse": true,
+      "PrivateNote": "Payment applied per vendor statement."
+    }
+  },
+  "specialOperations": [
+    {
+      "name": "Void a billpayment",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/billpayment?operation=update&include=void",
+      "description": "Voids an existing BillPayment object via a sparse update; the transaction remains active but all amounts and quantities are zeroed, all lines are cleared, and the string 'Voided' is prepended to BillPayment.PrivateNote (prepended to existing text if present).",
+      "queryParams": [
+        {
+          "name": "operation",
+          "type": "string",
+          "required": true,
+          "description": "Must be set to 'update' to perform the void via a sparse update operation."
+        },
+        {
+          "name": "include",
+          "type": "string",
+          "required": true,
+          "description": "Must be set to 'void' to void the BillPayment object."
+        }
+      ],
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm) for the QuickBooks Online company."
+        }
+      ],
+      "note": "Void is performed as a sparse update (POST to the base billpayment endpoint) with query params operation=update&include=void; request body must include sparse=true plus a minimum of BillPayment.Id and BillPayment.SyncToken."
+    }
+  ]
+}

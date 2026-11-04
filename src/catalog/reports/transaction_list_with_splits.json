@@ -1,0 +1,198 @@
+{
+  "slug": "transaction_list_with_splits",
+  "name": "Transaction List with Splits",
+  "reportName": "TransactionListWithSplits",
+  "methodName": "reportTransactionListWithSplits",
+  "category": "Transaction List",
+  "description": "Returns a detailed list of transactions with their split line details from the QuickBooks Online Report Service.",
+  "requiredFilters": [],
+  "parameters": [
+    {
+      "name": "docnum",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified transaction number, as found in the docnum parameter of the transaction object."
+    },
+    {
+      "name": "name",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents based on the specified comma separated list of ids for the name list customer, vendor, or employee objects. Specify values found in Customer.Id, Vendor.Id, and Employee.Id. For example, name=1,4,7 includes data in the report for namelist ids 1, 4, and 7."
+    },
+    {
+      "name": "end_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The end date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    },
+    {
+      "name": "date_macro",
+      "type": "string",
+      "required": false,
+      "description": "Predefined date range. Use if you want the report to cover a standard report date range; otherwise, use the start_date and end_date to cover an explicit report date range.",
+      "enum": [
+        "Today",
+        "Yesterday",
+        "This Week",
+        "Last Week",
+        "This Week-to-date",
+        "Last Week-to-date",
+        "Next Week",
+        "Next 4 Weeks",
+        "This Month",
+        "Last Month",
+        "This Month-to-date",
+        "Last Month-to-date",
+        "Next Month",
+        "This Fiscal Quarter",
+        "Last Fiscal Quarter",
+        "This Fiscal Quarter-to-date",
+        "Last Fiscal Quarter-to-date",
+        "Next Fiscal Quarter",
+        "This Fiscal Year",
+        "Last Fiscal Year",
+        "This Fiscal Year-to-date",
+        "Last Fiscal Year-to-date",
+        "Next Fiscal Year"
+      ]
+    },
+    {
+      "name": "payment_method",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents based on payment method.",
+      "enum": [
+        "Cash",
+        "Check",
+        "Dinners Club",
+        "American Express",
+        "Discover",
+        "MasterCard",
+        "Visa"
+      ]
+    },
+    {
+      "name": "source_account_type",
+      "type": "string",
+      "required": false,
+      "description": "Account type from which transactions are included in the report.",
+      "enum": [
+        "AccountsPayable",
+        "AccountsReceivable",
+        "Bank",
+        "CostOfGoodsSold",
+        "CreditCard",
+        "Equity",
+        "Expense",
+        "FixedAsset",
+        "Income",
+        "LongTermLiability",
+        "NonPosting",
+        "OtherAsset",
+        "OtherCurrentAsset",
+        "OtherCurrentLiability",
+        "OtherExpense",
+        "OtherIncome"
+      ]
+    },
+    {
+      "name": "transaction_type",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents based transaction type.",
+      "enum": [
+        "CreditCardCharge",
+        "Check",
+        "Invoice",
+        "ReceivePayment",
+        "JournalEntry",
+        "Bill",
+        "CreditCardCredit",
+        "VendorCredit",
+        "Credit",
+        "BillPaymentCheck",
+        "BillPaymentCreditCard",
+        "Charge",
+        "Transfer",
+        "Deposit",
+        "Statement",
+        "BillableCharge",
+        "TimeActivity",
+        "CashPurchase",
+        "SalesReceipt",
+        "CreditMemo",
+        "CreditRefund",
+        "Estimate",
+        "InventoryQuantityAdjustment",
+        "PurchaseOrder",
+        "GlobalTaxPayment",
+        "GlobalTaxAdjustment",
+        "Service Tax Refund",
+        "Service Tax Gross Adjustment",
+        "Service Tax Reversal",
+        "Service Tax Defer",
+        "Service Tax Partial Utilisation"
+      ]
+    },
+    {
+      "name": "group_by",
+      "type": "string",
+      "required": false,
+      "description": "The field in the transaction by which to group results.",
+      "enum": [
+        "Name",
+        "Account",
+        "Transaction Type"
+      ]
+    },
+    {
+      "name": "sort_by",
+      "type": "string",
+      "required": false,
+      "description": "The column type used in sorting report rows. Specify a column type as defined with the columns query parameter.",
+      "enum": [
+        "account_name",
+        "is_adj",
+        "create_by",
+        "create_date",
+        "tx_date",
+        "last_mod_date",
+        "last_mod_by",
+        "name",
+        "doc_num",
+        "pmt_mthd",
+        "is_no_post",
+        "txn_type"
+      ]
+    },
+    {
+      "name": "sort_order",
+      "type": "string",
+      "required": false,
+      "description": "The sort order.",
+      "enum": [
+        "ascend",
+        "descend"
+      ]
+    },
+    {
+      "name": "start_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The start date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    },
+    {
+      "name": "columns",
+      "type": "string",
+      "required": false,
+      "description": "Column types to be shown in the report. Supported Values: tx_date, txn_type, doc_num, is_no_post, account_name, memo, amount, is_adj, create_by, create_date, last_mod_date, last_mod_by, cust_name, vend_name, rate, quantity, item_name, emp_name, pmt_mthd, nat_open_bal, tax_type, is_billable, debt_amt, credit_amt, is_cleared, olb_status. Additional columns with location tracking enabled: dept_name. Multicurrency is enabled for the company if Preferences.MultiCurrencyEnabled is set to true."
+    }
+  ],
+  "requestSample": {
+    "start_date": "2020-12-01",
+    "end_date": "2021-01-28",
+    "group_by": "Account"
+  }
+}

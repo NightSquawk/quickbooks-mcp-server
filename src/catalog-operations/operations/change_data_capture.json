@@ -1,0 +1,42 @@
+{
+  "slug": "change_data_capture",
+  "name": "ChangeDataCapture",
+  "category": "Utility",
+  "description": "The change data capture (cdc) operation returns a list of objects that have changed since a specified date-time, enabling an app to periodically poll data services and refresh its local copy of object data with a look-back time of up to 30 days.",
+  "operations": [
+    {
+      "name": "Get a list of changed entities",
+      "method": "GET",
+      "path": "/v3/company/{realmID}/cdc?entities={entityList}&changedSince={dateTime}",
+      "description": "Returns all objects in the specified entityList that have changed since the given changedSince date-time. Objects are grouped by type, ordered by last updated time, with deleted objects returned after active ones. Supported for all objects except JournalCode, TimeActivity, TaxAgency, TaxCode, and TaxRate. A request returns a maximum of 1000 objects.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID) of the QuickBooks Online company. Example: 12341234."
+        }
+      ],
+      "queryParams": [
+        {
+          "name": "entities",
+          "type": "string",
+          "required": true,
+          "description": "A comma-separated list of entity (object type) names to check for changes. Example: Customer,Estimate."
+        },
+        {
+          "name": "changedSince",
+          "type": "string",
+          "required": true,
+          "description": "A date-time stamp for a date within 30 days of today; objects changed since this time are returned. Example: 2015-11-28."
+        }
+      ],
+      "note": "Look-back time (changedSince) can be up to 30 days, but a shorter look-back is suggested to ensure full data is returned since a single request returns at most 1000 objects. The full payload for each changed object is returned. Deleted objects within the look-back period appear after active objects and carry a status of 'Deleted'."
+    }
+  ],
+  "requestSample": {
+    "entities": "Customer,Estimate",
+    "changedSince": "2015-11-28",
+    "_rawQuery": "entities=Customer,Estimate&changedSince=2015-11-28"
+  }
+}

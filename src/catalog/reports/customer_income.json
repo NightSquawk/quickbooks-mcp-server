@@ -1,0 +1,131 @@
+{
+  "slug": "customer_income",
+  "name": "Customer Income",
+  "reportName": "CustomerIncome",
+  "methodName": "reportCustomerIncome",
+  "category": "Customer",
+  "description": "Provides income, expenses, and net income summarized by customer from the QuickBooks Online Report Service.",
+  "requiredFilters": [],
+  "parameters": [
+    {
+      "name": "customer",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified customers. Supported Values: One or more comma separated customer IDs as returned in the attribute, Customer.Id, of the Customer object response code."
+    },
+    {
+      "name": "term",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents based on term or terms supplied. Supported Values: One or more comma separated term IDs as returned in the attribute, Term.Id of the Term object response code."
+    },
+    {
+      "name": "accounting_method",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Cash",
+        "Accrual"
+      ],
+      "description": "The accounting method used in the report."
+    },
+    {
+      "name": "end_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The end date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    },
+    {
+      "name": "date_macro",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Today",
+        "Yesterday",
+        "This Week",
+        "Last Week",
+        "This Week-to-date",
+        "Last Week-to-date",
+        "Next Week",
+        "Next 4 Weeks",
+        "This Month",
+        "Last Month",
+        "This Month-to-date",
+        "Last Month-to-date",
+        "Next Month",
+        "This Fiscal Quarter",
+        "Last Fiscal Quarter",
+        "This Fiscal Quarter-to-date",
+        "Last Fiscal Quarter-to-date",
+        "Next Fiscal Quarter",
+        "This Fiscal Year",
+        "Last Fiscal Year",
+        "This Fiscal Year-to-date",
+        "Last Fiscal Year-to-date",
+        "Next Fiscal Year"
+      ],
+      "description": "Predefined date range. Use if you want the report to cover a standard report date range; otherwise, use the start_date and end_date to cover an explicit report date range."
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified classes if so configured in the company file. Supported Values: One or more comma separated class IDs as returned in the attribute, Class.Id, of the Class entity response code."
+    },
+    {
+      "name": "sort_order",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "ascend",
+        "descend"
+      ],
+      "description": "The sort order."
+    },
+    {
+      "name": "summarize_column_by",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Total",
+        "Month",
+        "Week",
+        "Days",
+        "Quarter",
+        "Year",
+        "Customers",
+        "Vendors",
+        "Classes",
+        "Departments",
+        "Employees",
+        "ProductsAndServices"
+      ],
+      "description": "The criteria by which to group the report results."
+    },
+    {
+      "name": "department",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified departments if so configured in the company file. Supported Values: One or more comma separated department IDs as returned in the attribute, Department.Id of the Department object response code."
+    },
+    {
+      "name": "vendor",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified vendors. Supported Values: One or more comma separated vendor IDs as returned in the attribute, Vendor.Id, of the Vendor object response code."
+    },
+    {
+      "name": "start_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The start date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    }
+  ],
+  "requestSample": {
+    "start_date": "2024-01-01",
+    "end_date": "2024-12-31",
+    "accounting_method": "Accrual"
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "slug": "account_list_detail",
+  "name": "Account List Detail",
+  "reportName": "AccountList",
+  "methodName": "reportAccountListDetail",
+  "category": "Account List",
+  "description": "The account list detail report lists all accounts in the chart of accounts with their attributes from the QuickBooks Online Report Service.",
+  "requiredFilters": [],
+  "parameters": [
+    {
+      "name": "account_type",
+      "type": "string",
+      "required": false,
+      "description": "Account type from which transactions are included in the report.",
+      "enum": [
+        "AccountsPayable",
+        "AccountsReceivable",
+        "Bank",
+        "CostOfGoodsSold",
+        "CreditCard",
+        "Equity",
+        "Expense",
+        "FixedAsset",
+        "Income",
+        "LongTermLiability",
+        "NonPosting",
+        "OtherAsset",
+        "OtherCurrentAsset",
+        "OtherCurrentLiability",
+        "OtherExpense",
+        "OtherIncome"
+      ]
+    },
+    {
+      "name": "end_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The start date and end date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range."
+    },
+    {
+      "name": "start_moddate",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "If not specified value of moddate_macro is used. Specify an explicit account modification report date range, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use the moddate_macro to cover a standard report date range."
+    },
+    {
+      "name": "sort_by",
+      "type": "string",
+      "required": false,
+      "description": "The column type used in sorting report rows. Specify a column type as defined with the columns query parameter."
+    },
+    {
+      "name": "sort_order",
+      "type": "string",
+      "required": false,
+      "description": "The sort order.",
+      "enum": [
+        "ascend",
+        "descend"
+      ]
+    },
+    {
+      "name": "moddate_macro",
+      "type": "string",
+      "required": false,
+      "description": "Predefined report account modification date range. Use if you want the report to cover a standard report date range when accounts were modified; otherwise, use the start_moddate and end_moddate to cover an explicit report date range.",
+      "enum": [
+        "Today",
+        "Yesterday",
+        "This Week",
+        "Last Week",
+        "This Week-to-date",
+        "Last Week-to-date",
+        "Next Week",
+        "Next 4 Weeks",
+        "This Month",
+        "Last Month",
+        "This Month-to-date",
+        "Last Month-to-date",
+        "Next Month",
+        "This Fiscal Quarter",
+        "Last Fiscal Quarter",
+        "This Fiscal Quarter-to-date",
+        "Last Fiscal Quarter-to-date",
+        "Next Fiscal Quarter",
+        "This Fiscal Year",
+        "Last Fiscal Year",
+        "This Fiscal Year-to-date",
+        "Last Fiscal Year-to-date",
+        "Next Fiscal Year"
+      ]
+    },
+    {
+      "name": "end_moddate",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "If not specified value of moddate_macro is used. Specify an explicit account modification report date range, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use the moddate_macro to cover a standard report date range."
+    },
+    {
+      "name": "account_status",
+      "type": "string",
+      "required": false,
+      "description": "The account status.",
+      "enum": [
+        "Deleted",
+        "Not_Deleted"
+      ]
+    },
+    {
+      "name": "createdate_macro",
+      "type": "string",
+      "required": false,
+      "description": "Predefined report account create date range. Use if you want the report to cover a standard create report date range; otherwise, use start_createdate and end_createdate to cover an explicit report date range.",
+      "enum": [
+        "Today",
+        "Yesterday",
+        "This Week",
+        "Last Week",
+        "This Week-to-date",
+        "Last Week-to-date",
+        "Next Week",
+        "Next 4 Weeks",
+        "This Month",
+        "Last Month",
+        "This Month-to-date",
+        "Last Month-to-date",
+        "Next Month",
+        "This Fiscal Quarter",
+        "Last Fiscal Quarter",
+        "This Fiscal Quarter-to-date",
+        "Last Fiscal Quarter-to-date",
+        "Next Fiscal Quarter",
+        "This Fiscal Year",
+        "Last Fiscal Year",
+        "This Fiscal Year-to-date",
+        "Last Fiscal Year-to-date",
+        "Next Fiscal Year"
+      ]
+    },
+    {
+      "name": "start_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The start date and end date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range."
+    },
+    {
+      "name": "columns",
+      "type": "string",
+      "required": false,
+      "description": "Column types to be shown in the report.",
+      "enum": [
+        "account_name",
+        "account_type",
+        "detail_acc_type",
+        "create_date",
+        "create_by",
+        "last_mod_date",
+        "last_mod_by",
+        "account_desc",
+        "account_bal"
+      ]
+    }
+  ],
+  "requestSample": {
+    "columns": "account_name,account_type",
+    "account_type": "Income"
+  }
+}

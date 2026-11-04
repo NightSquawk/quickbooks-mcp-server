@@ -1,0 +1,271 @@
+{
+  "entity": "attachable",
+  "name": "Attachable",
+  "category": "Lists",
+  "description": "An attachment record representing supplemental information (a file, a note, or both) linked to a QuickBooks transaction or Item object.",
+  "operations": {
+    "create": {
+      "methodName": "createAttachable",
+      "bodyRequired": true,
+      "note": "Use the create endpoint to attach a note. For file attachments, use the upload endpoint instead."
+    },
+    "get": {
+      "methodName": "getAttachable",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findAttachables"
+    },
+    "update": {
+      "methodName": "updateAttachable",
+      "bodyRequired": true,
+      "note": "Full update; body must include Id, SyncToken, and all writable fields. Omitted writable fields are set to NULL."
+    },
+    "delete": {
+      "methodName": "deleteAttachable",
+      "idRequired": true,
+      "bodyRequired": true,
+      "note": "Delete is a POST with operation=delete; body must include the full payload (Id and SyncToken) as returned in a read response."
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique Identifier for an Intuit entity (object). Required for the update operation."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object, used to lock an object for use by one app at a time. Required for the update operation. Only the latest version is maintained by QuickBooks Online."
+    },
+    {
+      "name": "FileName",
+      "type": "string",
+      "required": false,
+      "description": "FileName of the attachment. Conditionally required: required for file attachments."
+    },
+    {
+      "name": "Note",
+      "type": "string",
+      "required": false,
+      "description": "A note related to the attachment specified by FileName, or a standalone note. Conditionally required: required for standalone notes."
+    },
+    {
+      "name": "Category",
+      "type": "string",
+      "required": false,
+      "description": "Category of the attachment (case sensitive). Valid values include: Contact Photo, Document, Image, Receipt, Signature, Sound, Other.",
+      "enum": [
+        "Contact Photo",
+        "Document",
+        "Image",
+        "Receipt",
+        "Signature",
+        "Sound",
+        "Other"
+      ]
+    },
+    {
+      "name": "ContentType",
+      "type": "string",
+      "required": false,
+      "description": "ContentType of the attachment. Returned for file attachments."
+    },
+    {
+      "name": "PlaceName",
+      "type": "string",
+      "required": false,
+      "description": "PlaceName from where the attachment was requested."
+    },
+    {
+      "name": "AttachableRef",
+      "type": "array",
+      "required": false,
+      "description": "Specifies the transaction object(s) to which this attachable file is to be linked.",
+      "attributes": [
+        {
+          "name": "IncludeOnSend",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the attachment is included when the linked transaction is sent."
+        },
+        {
+          "name": "EntityRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the target object the attachment is linked to.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": false,
+              "description": "The Id of the target object as returned in its response body when queried."
+            },
+            {
+              "name": "type",
+              "type": "string",
+              "required": false,
+              "description": "The specific type of the target object (e.g. Invoice, Bill, Purchase)."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Long",
+      "type": "string",
+      "required": false,
+      "description": "Longitude from where the attachment was requested."
+    },
+    {
+      "name": "Tag",
+      "type": "string",
+      "required": false,
+      "description": "Tag name for the requested attachment."
+    },
+    {
+      "name": "Lat",
+      "type": "string",
+      "required": false,
+      "description": "Latitude from where the attachment was requested."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the entity. Values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated."
+        }
+      ]
+    },
+    {
+      "name": "FileAccessUri",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "FullPath FileAccess URI of the attachment. Returned for file attachments."
+    },
+    {
+      "name": "Size",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Size of the attachment. Returned for file attachments."
+    },
+    {
+      "name": "ThumbnailFileAccessUri",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "FullPath FileAccess URI of the attachment thumbnail if the attachment content type supports thumbnails. Returned for file attachments."
+    },
+    {
+      "name": "TempDownloadUri",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "TempDownload URI which can be directly downloaded by clients. Returned for file attachments."
+    },
+    {
+      "name": "ThumbnailTempDownloadUri",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Thumbnail TempDownload URI which can be directly downloaded by clients, available only if the attachment content type supports thumbnails. Returned for file attachments."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "FileName",
+    "Note",
+    "Category",
+    "AttachableRef.EntityRef.Type",
+    "AttachableRef.EntityRef.value",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {
+      "Note": "This is an attached note.",
+      "AttachableRef": [
+        {
+          "IncludeOnSend": "false",
+          "EntityRef": {
+            "type": "Invoice",
+            "value": "95"
+          }
+        }
+      ]
+    },
+    "update": {
+      "Id": "5000000000000010341",
+      "SyncToken": "1",
+      "AttachableRef": [
+        {
+          "IncludeOnSend": false,
+          "EntityRef": {
+            "type": "Invoice",
+            "value": "95"
+          }
+        }
+      ],
+      "Note": "This is an updated attached note."
+    }
+  },
+  "specialOperations": [
+    {
+      "name": "Download an attachment",
+      "method": "GET",
+      "path": "/v3/company/{realmID}/download/{attachableId}",
+      "description": "Retrieves a temporary download URL (valid for 15 minutes) for the file attachment identified by the given attachableId, which the app then uses to download the file in a separate step.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company (realm) ID."
+        },
+        {
+          "name": "attachableId",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the attachable (from the attachable.Id attribute of a read response) whose file is to be downloaded."
+        }
+      ],
+      "note": "Returns a plain temporary download URL string (not a JSON object). The URL expires after 15 minutes, after which the app may request another. Uses a dedicated /download/ endpoint rather than the standard /attachable resource path."
+    },
+    {
+      "name": "Upload attachments",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/upload",
+      "description": "Uploads one or more file attachments, with or without associated Attachable metadata, to the QuickBooks attachment list via a multipart/form-data request, optionally linking each file to a target transaction or item object.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company (realm) ID."
+        }
+      ],
+      "note": "Multipart/form-data request: each part has its own boundary separator and Content-Disposition/Content-Type header; one part is the file binary and an optional second part is the Attachable JSON metadata. May contain multiple files per request, but total request size must not exceed 100 MB. If metadata is not supplied, the system creates the attachable automatically. Response is an AttachableResponse array rather than a single Attachable object."
+    }
+  ]
+}

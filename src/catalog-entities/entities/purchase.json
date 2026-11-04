@@ -1,0 +1,885 @@
+{
+  "entity": "purchase",
+  "name": "Purchase",
+  "category": "Expenses",
+  "description": "A purchase — an expense transaction recording a cash/check/credit-card purchase.",
+  "operations": {
+    "create": {
+      "methodName": "createPurchase",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getPurchase",
+      "idRequired": true
+    },
+    "update": {
+      "methodName": "updatePurchase",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "delete": {
+      "methodName": "deletePurchase",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findPurchases"
+    }
+  },
+  "searchableFields": [
+    "Id",
+    "PaymentType",
+    "AccountRef",
+    "EntityRef",
+    "TxnDate",
+    "TotalAmt",
+    "DocNumber",
+    "PaymentMethodRef",
+    "DepartmentRef",
+    "Credit",
+    "MetaData.LastUpdatedTime",
+    "MetaData.CreateTime"
+  ],
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "System-assigned unique identifier for the Purchase. Required for update/get/delete (passed as id)."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Used for optimistic concurrency; must be supplied on every sparse update."
+    },
+    {
+      "name": "PaymentType",
+      "type": "string",
+      "required": true,
+      "enum": [
+        "Cash",
+        "Check",
+        "CreditCard"
+      ],
+      "description": "The account funding type of the purchase. Required on create."
+    },
+    {
+      "name": "AccountRef",
+      "type": "reference",
+      "required": true,
+      "description": "Reference to the bank or credit-card account funding the purchase. For PaymentType Check, the bank account; for CreditCard, the credit-card account. Required on create.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced Account."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced Account."
+        }
+      ]
+    },
+    {
+      "name": "Line",
+      "type": "array",
+      "required": true,
+      "description": "Individual line items of the purchase. At least one line is required on create. Each line carries a DetailType discriminator that determines which *LineDetail object is populated.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "description": "Line item identifier, unique within the transaction."
+        },
+        {
+          "name": "LineNum",
+          "type": "integer",
+          "required": false,
+          "description": "Position of the line in the collection."
+        },
+        {
+          "name": "Description",
+          "type": "string",
+          "required": false,
+          "description": "Free-form description of the line item."
+        },
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": true,
+          "description": "The amount of the line. Required when the line is present. Max 15 digits in the integer part."
+        },
+        {
+          "name": "DetailType",
+          "type": "string",
+          "required": true,
+          "enum": [
+            "AccountBasedExpenseLineDetail",
+            "ItemBasedExpenseLineDetail"
+          ],
+          "description": "Discriminator indicating which line-detail object is populated for this line."
+        },
+        {
+          "name": "AccountBasedExpenseLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Populated when DetailType is AccountBasedExpenseLineDetail. Categorizes the expense against an expense account.",
+          "attributes": [
+            {
+              "name": "AccountRef",
+              "type": "reference",
+              "required": true,
+              "description": "Reference to the expense account the line is charged against.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "The Id of the referenced expense Account."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced Account."
+                }
+              ]
+            },
+            {
+              "name": "TaxCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the TaxCode for this line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "The Id of the referenced TaxCode."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced TaxCode."
+                }
+              ]
+            },
+            {
+              "name": "BillableStatus",
+              "type": "string",
+              "required": false,
+              "enum": [
+                "Billable",
+                "NotBillable",
+                "HasBeenBilled"
+              ],
+              "description": "The billable status of the expense line."
+            },
+            {
+              "name": "TaxAmount",
+              "type": "decimal",
+              "required": false,
+              "description": "Sales tax paid as part of the expense (used with global tax model)."
+            },
+            {
+              "name": "MarkupInfo",
+              "type": "object",
+              "required": false,
+              "description": "Markup information for the billable expense.",
+              "attributes": [
+                {
+                  "name": "PriceLevelRef",
+                  "type": "reference",
+                  "required": false,
+                  "description": "Reference to a PriceLevel for the markup.",
+                  "attributes": [
+                    {
+                      "name": "value",
+                      "type": "string",
+                      "required": false,
+                      "description": "Id of the referenced PriceLevel."
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "required": false,
+                      "readOnly": true,
+                      "description": "Display name."
+                    }
+                  ]
+                },
+                {
+                  "name": "Percent",
+                  "type": "decimal",
+                  "required": false,
+                  "description": "Markup amount expressed as a percent of the cost."
+                },
+                {
+                  "name": "MarkUpIncomeAccountRef",
+                  "type": "reference",
+                  "required": false,
+                  "description": "Account in which the markup is recorded.",
+                  "attributes": [
+                    {
+                      "name": "value",
+                      "type": "string",
+                      "required": false,
+                      "description": "Id of the income account."
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "required": false,
+                      "readOnly": true,
+                      "description": "Display name."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "CustomerRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the Customer/Project this expense is associated with or billable to.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "The Id of the referenced Customer."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced Customer."
+                }
+              ]
+            },
+            {
+              "name": "ClassRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the Class for this line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "The Id of the referenced Class."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced Class."
+                }
+              ]
+            },
+            {
+              "name": "TaxInclusiveAmt",
+              "type": "decimal",
+              "required": false,
+              "description": "The total amount of the line including tax (used when amounts are tax-inclusive)."
+            }
+          ]
+        },
+        {
+          "name": "ItemBasedExpenseLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Populated when DetailType is ItemBasedExpenseLineDetail. Used to record the purchase of products/services tracked as items.",
+          "attributes": [
+            {
+              "name": "ItemRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the Item purchased.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "The Id of the referenced Item."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced Item."
+                }
+              ]
+            },
+            {
+              "name": "ClassRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the Class for this line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "The Id of the referenced Class."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced Class."
+                }
+              ]
+            },
+            {
+              "name": "PriceLevelRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to a PriceLevel for this line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "The Id of the referenced PriceLevel."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced PriceLevel."
+                }
+              ]
+            },
+            {
+              "name": "TaxCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the TaxCode for this line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "The Id of the referenced TaxCode."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced TaxCode."
+                }
+              ]
+            },
+            {
+              "name": "BillableStatus",
+              "type": "string",
+              "required": false,
+              "enum": [
+                "Billable",
+                "NotBillable",
+                "HasBeenBilled"
+              ],
+              "description": "The billable status of the line item."
+            },
+            {
+              "name": "Qty",
+              "type": "decimal",
+              "required": false,
+              "description": "Number of items purchased."
+            },
+            {
+              "name": "UnitPrice",
+              "type": "decimal",
+              "required": false,
+              "description": "Unit price/cost of the item."
+            },
+            {
+              "name": "TaxInclusiveAmt",
+              "type": "decimal",
+              "required": false,
+              "description": "The total amount of the line including tax."
+            },
+            {
+              "name": "CustomerRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the Customer/Project this line is associated with or billable to.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "The Id of the referenced Customer."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced Customer."
+                }
+              ]
+            },
+            {
+              "name": "MarkupInfo",
+              "type": "object",
+              "required": false,
+              "description": "Markup information for the billable item line.",
+              "attributes": [
+                {
+                  "name": "PriceLevelRef",
+                  "type": "reference",
+                  "required": false,
+                  "description": "Reference to a PriceLevel for the markup.",
+                  "attributes": [
+                    {
+                      "name": "value",
+                      "type": "string",
+                      "required": false,
+                      "description": "Id of the referenced PriceLevel."
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "required": false,
+                      "readOnly": true,
+                      "description": "Display name."
+                    }
+                  ]
+                },
+                {
+                  "name": "Percent",
+                  "type": "decimal",
+                  "required": false,
+                  "description": "Markup amount as a percent of the cost."
+                },
+                {
+                  "name": "MarkUpIncomeAccountRef",
+                  "type": "reference",
+                  "required": false,
+                  "description": "Account in which the markup is recorded.",
+                  "attributes": [
+                    {
+                      "name": "value",
+                      "type": "string",
+                      "required": false,
+                      "description": "Id of the income account."
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "required": false,
+                      "readOnly": true,
+                      "description": "Display name."
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "EntityRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the payee of the purchase (Vendor, Customer, or Employee). The Type sub-field qualifies which entity kind is referenced.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the referenced payee entity."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced payee."
+        },
+        {
+          "name": "type",
+          "type": "string",
+          "required": false,
+          "enum": [
+            "Vendor",
+            "Customer",
+            "Employee"
+          ],
+          "description": "The kind of entity the reference points to."
+        }
+      ]
+    },
+    {
+      "name": "PaymentMethodRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the PaymentMethod for this purchase.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the referenced PaymentMethod."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced PaymentMethod."
+        }
+      ]
+    },
+    {
+      "name": "DepartmentRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Department (location tracking) for this purchase.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the referenced Department."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced Department."
+        }
+      ]
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the currency of all amounts on this transaction. Available only when multicurrency is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Three-letter ISO 4217 currency code."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Full currency name."
+        }
+      ]
+    },
+    {
+      "name": "ExchangeRate",
+      "type": "decimal",
+      "required": false,
+      "description": "The number of home-currency units required to equal one unit of the transaction currency. Used only with multicurrency."
+    },
+    {
+      "name": "Credit",
+      "type": "boolean",
+      "required": false,
+      "description": "When PaymentType is CreditCard, indicates whether this is a refund/credit (true) rather than a charge (false). Ignored for Cash/Check."
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The date of the purchase transaction. Defaults to the current date if not supplied."
+    },
+    {
+      "name": "DocNumber",
+      "type": "string",
+      "required": false,
+      "description": "Reference number for the transaction (e.g. check number). Throws an error if custom transaction numbers are not enabled and a value is supplied."
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "A private, user-entered memo not visible to the payee. Max 4000 characters."
+    },
+    {
+      "name": "TxnTaxDetail",
+      "type": "object",
+      "required": false,
+      "description": "Transaction-level sales-tax details, including the tax code applied and the calculated tax line(s).",
+      "attributes": [
+        {
+          "name": "TxnTaxCodeRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the transaction-level TaxCode.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": false,
+              "description": "The Id of the referenced TaxCode."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "description": "Display name of the referenced TaxCode."
+            }
+          ]
+        },
+        {
+          "name": "TotalTax",
+          "type": "decimal",
+          "required": false,
+          "description": "Total tax calculated for the transaction, excluding any line-level overrides."
+        },
+        {
+          "name": "TaxLine",
+          "type": "array",
+          "required": false,
+          "description": "Individual tax lines, one per tax-rate detail.",
+          "attributes": [
+            {
+              "name": "Amount",
+              "type": "decimal",
+              "required": false,
+              "description": "Tax amount for this tax line."
+            },
+            {
+              "name": "DetailType",
+              "type": "string",
+              "required": false,
+              "enum": [
+                "TaxLineDetail"
+              ],
+              "description": "Discriminator for the tax line detail."
+            },
+            {
+              "name": "TaxLineDetail",
+              "type": "object",
+              "required": false,
+              "description": "Details of the applied tax rate.",
+              "attributes": [
+                {
+                  "name": "TaxRateRef",
+                  "type": "reference",
+                  "required": false,
+                  "description": "Reference to the applied TaxRate.",
+                  "attributes": [
+                    {
+                      "name": "value",
+                      "type": "string",
+                      "required": false,
+                      "description": "Id of the referenced TaxRate."
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "required": false,
+                      "readOnly": true,
+                      "description": "Display name."
+                    }
+                  ]
+                },
+                {
+                  "name": "PercentBased",
+                  "type": "boolean",
+                  "required": false,
+                  "description": "True if the tax rate is percentage-based."
+                },
+                {
+                  "name": "TaxPercent",
+                  "type": "decimal",
+                  "required": false,
+                  "description": "The tax rate percentage applied."
+                },
+                {
+                  "name": "NetAmountTaxable",
+                  "type": "decimal",
+                  "required": false,
+                  "description": "The net taxable amount this tax line is computed on."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "GlobalTaxCalculation",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "TaxExcluded",
+        "TaxInclusive",
+        "NotApplicable"
+      ],
+      "description": "Method used to apply tax for the transaction. Applicable only to companies that use automated sales tax / global tax model."
+    },
+    {
+      "name": "PrintStatus",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "NotSet",
+        "NeedToPrint",
+        "PrintComplete"
+      ],
+      "description": "Print status of the transaction (relevant for check-type purchases)."
+    },
+    {
+      "name": "IncludeInAnnualTPAR",
+      "type": "boolean",
+      "required": false,
+      "description": "Indicates whether the purchase is included in the annual TPAR (Taxable Payments Annual Report). Applicable to Australia (AU) editions only."
+    },
+    {
+      "name": "TotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Total amount of the transaction in the transaction currency, including tax. System-computed from the lines."
+    },
+    {
+      "name": "RecurDataRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the recurring-transaction template (RecurringTransaction) this purchase was created from.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the referenced RecurringTransaction."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced template."
+        }
+      ]
+    },
+    {
+      "name": "TxnSource",
+      "type": "string",
+      "required": false,
+      "description": "Used internally to specify originating source of a transaction (e.g. IntuitPayment)."
+    },
+    {
+      "name": "LinkedTxn",
+      "type": "array",
+      "required": false,
+      "description": "Linked/related transactions (e.g. a Purchase linked to a reimbursable charge).",
+      "attributes": [
+        {
+          "name": "TxnId",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the linked transaction."
+        },
+        {
+          "name": "TxnType",
+          "type": "string",
+          "required": false,
+          "description": "The type of the linked transaction (e.g. ReimburseCharge)."
+        },
+        {
+          "name": "TxnLineId",
+          "type": "string",
+          "required": false,
+          "description": "The specific line Id of the linked transaction, when applicable."
+        }
+      ]
+    },
+    {
+      "name": "domain",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "enum": [
+        "QBO"
+      ],
+      "description": "The platform domain of the object. Internal use; always QBO."
+    },
+    {
+      "name": "sparse",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "When true on a request, indicates a sparse (partial) update so omitted fields are preserved rather than nulled."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "System-maintained descriptive metadata about the object.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was created (read-only)."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was most recently updated (read-only)."
+        }
+      ]
+    }
+  ],
+  "requestSample": {
+    "create": {
+      "PaymentType": "Cash",
+      "AccountRef": {
+        "value": "35"
+      },
+      "Line": [
+        {
+          "Amount": 100,
+          "DetailType": "AccountBasedExpenseLineDetail",
+          "AccountBasedExpenseLineDetail": {
+            "AccountRef": {
+              "value": "7"
+            }
+          }
+        }
+      ]
+    },
+    "update": {
+      "Id": "252",
+      "SyncToken": "0",
+      "sparse": true,
+      "PrivateNote": "Updated memo for this purchase."
+    }
+  }
+}

@@ -1,0 +1,174 @@
+{
+  "slug": "general_ledger",
+  "name": "General Ledger",
+  "reportName": "GeneralLedger",
+  "methodName": "reportGeneralLedgerDetail",
+  "category": "General Ledger",
+  "description": "For each specified account, shows all the transactions that occurred in that account over a period of time, including the beginning balance and total for each account.",
+  "requiredFilters": [],
+  "parameters": [
+    {
+      "name": "customer",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified customers. Supported Values: One or more comma separated customer IDs as returned in the attribute, Customer.Id, of the Customer object response code."
+    },
+    {
+      "name": "account",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified accounts. Supported Values: One or more comma separated account IDs as returned in the attribute, Account.Id, of the Account object response code."
+    },
+    {
+      "name": "accounting_method",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Cash",
+        "Accrual"
+      ],
+      "description": "The accounting method used in the report."
+    },
+    {
+      "name": "source_account",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified source accounts. Supported Values: One or more comma separated account IDs as returned in the attribute, Account.Id, of the Account object response code."
+    },
+    {
+      "name": "end_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The end date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    },
+    {
+      "name": "date_macro",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Today",
+        "Yesterday",
+        "This Week",
+        "Last Week",
+        "This Week-to-date",
+        "Last Week-to-date",
+        "Next Week",
+        "Next 4 Weeks",
+        "This Month",
+        "Last Month",
+        "This Month-to-date",
+        "Last Month-to-date",
+        "Next Month",
+        "This Fiscal Quarter",
+        "Last Fiscal Quarter",
+        "This Fiscal Quarter-to-date",
+        "Last Fiscal Quarter-to-date",
+        "Next Fiscal Quarter",
+        "This Fiscal Year",
+        "Last Fiscal Year",
+        "This Fiscal Year-to-date",
+        "Last Fiscal Year-to-date",
+        "Next Fiscal Year"
+      ],
+      "description": "Predefined date range. Use if you want the report to cover a standard report date range; otherwise, use the start_date and end_date to cover an explicit report date range."
+    },
+    {
+      "name": "account_type",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "AccountsPayable",
+        "AccountsReceivable",
+        "Bank",
+        "CostOfGoodsSold",
+        "CreditCard",
+        "Equity",
+        "Expense",
+        "FixedAsset",
+        "Income",
+        "LongTermLiability",
+        "NonPosting",
+        "OtherAsset",
+        "OtherCurrentAsset",
+        "OtherCurrentLiability",
+        "OtherExpense",
+        "OtherIncome"
+      ],
+      "description": "(source_account_type) Account type from which transactions are included in the report."
+    },
+    {
+      "name": "sort_by",
+      "type": "string",
+      "required": false,
+      "description": "The column type used in sorting report rows. Specify a column type as defined with the columns query parameter."
+    },
+    {
+      "name": "sort_order",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "ascend",
+        "descend"
+      ],
+      "description": "The sort order."
+    },
+    {
+      "name": "start_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The start date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    },
+    {
+      "name": "summarize_column_by",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Total",
+        "Month",
+        "Week",
+        "Days",
+        "Quarter",
+        "Year",
+        "Customers",
+        "Vendors",
+        "Classes",
+        "Departments",
+        "Employees",
+        "ProductsAndServices"
+      ],
+      "description": "The criteria by which to group the report results."
+    },
+    {
+      "name": "department",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified departments if so configured in the company file. Supported Values: One or more comma separated department IDs as returned in the attribute, Department.Id of the Department object response code."
+    },
+    {
+      "name": "vendor",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified vendors. Supported Values: One or more comma separated vendor IDs as returned in the attribute, Vendor.Id, of the Vendor object response code."
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified classes if so configured in the company file. Supported Values: One or more comma separated class IDs as returned in the attribute, Class.Id, of the Class entity response code."
+    },
+    {
+      "name": "columns",
+      "type": "string",
+      "required": false,
+      "description": "Column types to be shown in the report. Supported Values: account_name, chk_print_state, create_by, create_date, cust_name, doc_num, emp_name, inv_date, is_adj, is_ap_paid, is_ar_paid, is_cleared, item_name, last_mod_by, last_mod_date, memo, name, quantity, rate, split_acc, tx_date, txn_type, vend_name. Additional columns when sales tax enabled: net_amount, tax_amount, tax_code. Additional columns when account numbering enabled: account_num. Additional columns when class tracking enabled: klass_name. Additional columns when location tracking enabled: dept_name."
+    }
+  ],
+  "requestSample": {
+    "start_date": "2015-01-01",
+    "end_date": "2015-06-30",
+    "columns": "account_name,subt_nat_amount",
+    "account_type": "Bank"
+  }
+}

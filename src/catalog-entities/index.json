@@ -1,0 +1,561 @@
+{
+  "generatedFrom": "Intuit QBO Accounting API entity reference (accounting.txt, source-grounded + adversarially verified)",
+  "entityCount": 39,
+  "categories": [
+    "Accountant",
+    "Expenses",
+    "Lists",
+    "Sales"
+  ],
+  "entities": [
+    {
+      "entity": "account",
+      "name": "Account",
+      "category": "Lists",
+      "description": "An account in the chart of accounts; a category tracking the company’s financial activity.",
+      "operations": [
+        "create",
+        "update",
+        "search"
+      ],
+      "fieldCount": 22,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "attachable",
+      "name": "Attachable",
+      "category": "Lists",
+      "description": "An attachment record representing supplemental information (a file, a note, or both) linked to a QuickBooks transaction or Item object.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 17,
+      "specialOpCount": 2
+    },
+    {
+      "entity": "bill",
+      "name": "Bill",
+      "category": "Expenses",
+      "description": "A bill — an Accounts Payable transaction recording amounts owed to a vendor.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "delete",
+        "search"
+      ],
+      "fieldCount": 25,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "bill_payment",
+      "name": "BillPayment",
+      "category": "Expenses",
+      "description": "A bill payment — a payment applied against one or more vendor bills.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "delete",
+        "search"
+      ],
+      "fieldCount": 20,
+      "specialOpCount": 1
+    },
+    {
+      "entity": "budget",
+      "name": "Budget",
+      "category": "Accountant",
+      "description": "A budget that assigns an amount on a monthly, quarterly, or annual basis to a specific account or customer, giving a business measurable expense goals for a given time period.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 10,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "change_order",
+      "name": "ChangeOrder",
+      "category": "Sales",
+      "description": "A change order represents a modification to the scope of work on an existing project estimate, capturing additions or deletions to the original contracted work that roll up into the project's total budget alongside the parent estimate. Available for US companies on QuickBooks Online Advanced with the Construction Pack or Intuit Enterprise Suite, with the Projects feature enabled.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 22,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "class",
+      "name": "Class",
+      "category": "Lists",
+      "description": "A Class is a lists entity used to track different segments of a business (income and expenses) independent of any particular client or project, applicable to an entire transaction or to individual detail lines.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update"
+      ],
+      "fieldCount": 8,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "company_currency",
+      "name": "CompanyCurrency",
+      "category": "Lists",
+      "description": "Defines a currency that is active in a multicurrency-enabled QuickBooks Online company, corresponding to the currencies listed in the Currency Center.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update"
+      ],
+      "fieldCount": 7,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "company_info",
+      "name": "CompanyInfo",
+      "category": "Lists",
+      "description": "The CompanyInfo object contains basic company information. In QuickBooks, company info and preferences are displayed in the same place under preferences. In general, properties such as company addresses or name are considered company information. Some attributes may exist in both CompanyInfo and Preferences objects.",
+      "operations": [
+        "get",
+        "search",
+        "update"
+      ],
+      "fieldCount": 17,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "credit_card_payment",
+      "name": "CreditCardPayment",
+      "category": "Expenses",
+      "description": "Represents a financial transaction to record a Credit Card balance payment in QuickBooks Online. It provides an easy way to move money from a Bank account to a Credit Card account, and is essentially a more limited Transfer form. Does not support multi-currency: only payments from home currency Bank accounts to home currency Credit Card accounts are accepted.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 12,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "credit_memo",
+      "name": "CreditMemo",
+      "category": "Sales",
+      "description": "A financial transaction representing a refund or credit of payment, or part of a payment, for goods or services that have been sold.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 32,
+      "specialOpCount": 2
+    },
+    {
+      "entity": "customer",
+      "name": "Customer",
+      "category": "Sales",
+      "description": "A customer — a consumer of the services or products offered by the QuickBooks company.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "delete",
+        "search"
+      ],
+      "fieldCount": 49,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "customer_type",
+      "name": "CustomerType",
+      "category": "Lists",
+      "description": "A categorization that groups customers in business-meaningful ways (such as industry, geographic location, or how a customer first heard about the business) for use in reporting and mailings.",
+      "operations": [
+        "get",
+        "search"
+      ],
+      "fieldCount": 5,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "department",
+      "name": "Department",
+      "category": "Lists",
+      "description": "A Department tracks transactions based on physical locations such as stores, sales regions, or countries, letting you designate the department that sales and expense transactions belong to. Deletion is achieved by setting Active to false to make the record inactive.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update"
+      ],
+      "fieldCount": 8,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "deposit",
+      "name": "Deposit",
+      "category": "Accountant",
+      "description": "A transaction that records one or more deposits into an asset account, either by linking funds previously held in the Undeposited Funds account (via Line.LinkedTxn) or as new direct deposits (via Line.DepositLineDetail).",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 17,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "employee",
+      "name": "Employee",
+      "category": "Lists",
+      "description": "An employee of the QuickBooks company.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "search"
+      ],
+      "fieldCount": 29,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "estimate",
+      "name": "Estimate",
+      "category": "Sales",
+      "description": "An estimate — a proposal for a financial transaction (quote/bid) sent to a customer.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "delete",
+        "search"
+      ],
+      "fieldCount": 41,
+      "specialOpCount": 2
+    },
+    {
+      "entity": "inventory_adjustment",
+      "name": "InventoryAdjustment",
+      "category": "Accountant",
+      "description": "A transaction that changes the quantity of inventory items for reasons such as damage, stock write-off, shrinkage, or expiration, automatically handling the underlying accounting and valuation.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 8,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "invoice",
+      "name": "Invoice",
+      "category": "Sales",
+      "description": "An invoice — a sales form recording a sale to a customer on credit (amounts owed).",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "search"
+      ],
+      "fieldCount": 46,
+      "specialOpCount": 3
+    },
+    {
+      "entity": "item",
+      "name": "Item",
+      "category": "Lists",
+      "description": "An item — a product or service sold, purchased, or tracked by the QuickBooks company.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "search"
+      ],
+      "fieldCount": 37,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "journal_entry",
+      "name": "JournalEntry",
+      "category": "Accountant",
+      "description": "A journal entry — a direct posting of debits and credits to general ledger accounts.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "delete",
+        "search"
+      ],
+      "fieldCount": 16,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "payment",
+      "name": "Payment",
+      "category": "Sales",
+      "description": "A Payment records a customer payment in QuickBooks that can be applied against multiple Invoices and Credit Memos, or created unapplied (recorded as a credit) by specifying only an amount.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 18,
+      "specialOpCount": 3
+    },
+    {
+      "entity": "payment_method",
+      "name": "PaymentMethod",
+      "category": "Lists",
+      "description": "A list entity that represents the method of payment for received goods, where deletion is achieved by setting Active to false to make the record inactive.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update"
+      ],
+      "fieldCount": 6,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "preferences",
+      "name": "Preferences",
+      "category": "Lists",
+      "description": "A set of company preferences that control application and UI behavior in QuickBooks Online, mostly exposed as read-only with only a small writable subset.",
+      "operations": [
+        "get",
+        "search",
+        "update"
+      ],
+      "fieldCount": 15,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "purchase",
+      "name": "Purchase",
+      "category": "Expenses",
+      "description": "A purchase — an expense transaction recording a cash/check/credit-card purchase.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "delete",
+        "search"
+      ],
+      "fieldCount": 25,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "purchase_order",
+      "name": "PurchaseOrder",
+      "category": "Expenses",
+      "description": "A non-posting transaction representing a request to purchase goods or services from a third-party vendor.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 28,
+      "specialOpCount": 2
+    },
+    {
+      "entity": "refund_receipt",
+      "name": "RefundReceipt",
+      "category": "Sales",
+      "description": "A RefundReceipt represents a refund issued to a customer for a product or service that was provided.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 35,
+      "specialOpCount": 2
+    },
+    {
+      "entity": "reimburse_charge",
+      "name": "ReimburseCharge",
+      "category": "Expenses",
+      "description": "A ReimburseCharge is a billable expense created when Expense or Bill lines are marked as billable to a customer to be invoiced later.",
+      "operations": [
+        "get",
+        "search"
+      ],
+      "fieldCount": 12,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "sales_receipt",
+      "name": "SalesReceipt",
+      "category": "Sales",
+      "description": "A SalesReceipt represents a sales receipt given to a customer where payment is received as part of the sale of goods and services, specifying the deposit account where the customer's payment is deposited (defaulting to the Undeposited Funds account if not specified).",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 40,
+      "specialOpCount": 3
+    },
+    {
+      "entity": "tax_agency",
+      "name": "TaxAgency",
+      "category": "Lists",
+      "description": "A TaxAgency identifies the agency (entity) that collects taxes and to which a given tax rate applies.",
+      "operations": [
+        "create",
+        "get",
+        "search"
+      ],
+      "fieldCount": 9,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "tax_classification",
+      "name": "TaxClassification",
+      "category": "Lists",
+      "description": "Segregates items into different tax classifications, a key parameter used to determine the appropriate tax on transactions involving items, sourced from tax governing authorities or external providers.",
+      "operations": [
+        "get",
+        "search"
+      ],
+      "fieldCount": 7,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "tax_code",
+      "name": "TaxCode",
+      "category": "Lists",
+      "description": "Tracks the taxable or non-taxable status of products, services, and customers. Sales tax codes can be assigned to products, services, and customers based on their taxable or non-taxable status and used to generate reports about the taxable or non-taxable status of sales for tax agencies.",
+      "operations": [
+        "get",
+        "search"
+      ],
+      "fieldCount": 12,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "tax_payment",
+      "name": "TaxPayment",
+      "category": "Expenses",
+      "description": "A tax payment or refund made against a filed tax return, applicable for AU, CA, and UK locales only.",
+      "operations": [
+        "get",
+        "search"
+      ],
+      "fieldCount": 8,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "tax_rate",
+      "name": "TaxRate",
+      "category": "Lists",
+      "description": "A TaxRate object represents a rate applied to calculate tax liability (created via the TaxService entity).",
+      "operations": [
+        "get",
+        "search"
+      ],
+      "fieldCount": 13,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "term",
+      "name": "Term",
+      "category": "Lists",
+      "description": "Represents the terms under which a sale is made, typically expressed as days due after goods are received, optionally including an early-payment discount or date-driven due dates.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update"
+      ],
+      "fieldCount": 12,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "time_activity",
+      "name": "TimeActivity",
+      "category": "Lists",
+      "description": "A record of time worked by a vendor or employee.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 22,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "transfer",
+      "name": "Transfer",
+      "category": "Accountant",
+      "description": "A Transfer represents a transaction where funds are moved between two accounts from the company's QuickBooks chart of accounts.",
+      "operations": [
+        "create",
+        "get",
+        "search",
+        "update",
+        "delete"
+      ],
+      "fieldCount": 9,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "vendor",
+      "name": "Vendor",
+      "category": "Expenses",
+      "description": "A vendor — a person or business from whom the company purchases products or services.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "delete",
+        "search"
+      ],
+      "fieldCount": 35,
+      "specialOpCount": 0
+    },
+    {
+      "entity": "vendor_credit",
+      "name": "VendorCredit",
+      "category": "Expenses",
+      "description": "An accounts payable transaction representing a refund or credit of payment for goods or services that a vendor owes you for reasons such as an overpaid bill or returned merchandise.",
+      "operations": [
+        "create",
+        "get",
+        "update",
+        "delete",
+        "search"
+      ],
+      "fieldCount": 18,
+      "specialOpCount": 0
+    }
+  ]
+}

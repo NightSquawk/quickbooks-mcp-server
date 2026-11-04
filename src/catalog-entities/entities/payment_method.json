@@ -1,0 +1,104 @@
+{
+  "entity": "payment_method",
+  "name": "PaymentMethod",
+  "category": "Lists",
+  "description": "A list entity that represents the method of payment for received goods, where deletion is achieved by setting Active to false to make the record inactive.",
+  "operations": {
+    "create": {
+      "methodName": "createPaymentMethod",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getPaymentMethod",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findPaymentMethods"
+    },
+    "update": {
+      "methodName": "updatePaymentMethod",
+      "bodyRequired": true,
+      "note": "Full update; request body must include all writable fields plus Id and SyncToken. Omitted writable fields are set to NULL."
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "required": true,
+      "description": "User recognizable name for the payment method."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update. Used to lock an object for use by one app at a time; incremented on each modification. Modifying with an older SyncToken fails."
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this entity is currently enabled for use by QuickBooks."
+    },
+    {
+      "name": "Type",
+      "type": "string",
+      "required": false,
+      "description": "Defines the type of payment. Valid values include CREDIT_CARD or NON_CREDIT_CARD.",
+      "enum": [
+        "CREDIT_CARD",
+        "NON_CREDIT_CARD"
+      ]
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "Name",
+    "Active",
+    "Type",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {
+      "Name": "Business Check"
+    },
+    "update": {
+      "Id": "7",
+      "SyncToken": "2",
+      "Name": "Platinum Diners Club",
+      "Active": true,
+      "Type": "CREDIT_CARD"
+    }
+  }
+}

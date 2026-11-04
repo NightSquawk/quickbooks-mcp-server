@@ -1,0 +1,129 @@
+{
+  "entity": "department",
+  "name": "Department",
+  "category": "Lists",
+  "description": "A Department tracks transactions based on physical locations such as stores, sales regions, or countries, letting you designate the department that sales and expense transactions belong to. Deletion is achieved by setting Active to false to make the record inactive.",
+  "operations": {
+    "create": {
+      "methodName": "createDepartment",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getDepartment",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findDepartments"
+    },
+    "update": {
+      "methodName": "updateDepartment",
+      "bodyRequired": true,
+      "note": "Full update; request body must include all writable fields plus Id and SyncToken. Omitted writable fields are set to NULL."
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "required": true,
+      "description": "User recognizable name for the Department."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update. Used to lock an object for use by one app at a time; incremented on each modification. Modifying with an older SyncToken fails."
+    },
+    {
+      "name": "ParentRef",
+      "type": "reference",
+      "required": false,
+      "description": "The immediate parent of the SubDepartment. Conditionally required: required for the create operation if this object is a SubDepartment.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The ID for the referenced parent Department object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced parent Department object."
+        }
+      ]
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this entity is currently enabled for use by QuickBooks. If set to false, this entity is not available."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    },
+    {
+      "name": "FullyQualifiedName",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Fully qualified name of the entity, prepending the topmost parent followed by each sub element separated by colons (e.g. Parent:Department1:SubDepartment1:SubDepartment2). Limited to 5 levels."
+    },
+    {
+      "name": "SubDepartment",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "Specifies whether this Department object is a SubDepartment. true = SubDepartment; false or null = top-level Department."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "Name",
+    "Active",
+    "FullyQualifiedName",
+    "SubDepartment",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {
+      "Name": "Marketing Department"
+    },
+    "update": {
+      "Id": "2",
+      "SyncToken": "1",
+      "Name": "Support Department",
+      "Active": true
+    }
+  }
+}

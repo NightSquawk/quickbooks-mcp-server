@@ -1,0 +1,138 @@
+{
+  "slug": "item_sales",
+  "name": "Item Sales",
+  "reportName": "ItemSales",
+  "methodName": "reportItemSales",
+  "category": "Sales",
+  "description": "Provides sales of products and services (the Sales by Product report) from the QuickBooks Online Report Service; the documentation page is titled \"SalesByProduct\" but the report endpoint and ReportName are \"ItemSales\", which matches the requested reportName.",
+  "requiredFilters": [],
+  "parameters": [
+    {
+      "name": "customer",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified customers. Supported Values: One or more comma separated customer IDs as returned in the attribute, Customer.Id, of the Customer object response code."
+    },
+    {
+      "name": "end_duedate",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The range of dates over which receivables are due, in the format YYYY-MM-DD. start_duedate must be less than end_duedate. If not specified, all data is returned."
+    },
+    {
+      "name": "accounting_method",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Cash",
+        "Accrual"
+      ],
+      "description": "The accounting method used in the report. Supported Values: Cash, Accrual"
+    },
+    {
+      "name": "end_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "If not specified value of date_macro is used. The end date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range."
+    },
+    {
+      "name": "date_macro",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Today",
+        "Yesterday",
+        "This Week",
+        "Last Week",
+        "This Week-to-date",
+        "Last Week-to-date",
+        "Next Week",
+        "Next 4 Weeks",
+        "This Month",
+        "Last Month",
+        "This Month-to-date",
+        "Last Month-to-date",
+        "Next Month",
+        "This Fiscal Quarter",
+        "Last Fiscal Quarter",
+        "This Fiscal Quarter-to-date",
+        "Last Fiscal Quarter-to-date",
+        "Next Fiscal Quarter",
+        "This Fiscal Year",
+        "Last Fiscal Year",
+        "This Fiscal Year-to-date",
+        "Last Fiscal Year-to-date",
+        "Next Fiscal Year"
+      ],
+      "description": "Predefined date range. Use if you want the report to cover a standard report date range; otherwise, use the start_date and end_date to cover an explicit report date range. Supported Values: Today, Yesterday, This Week, Last Week, This Week-to-date, Last Week-to-date, Next Week, Next 4 Weeks, This Month, Last Month, This Month-to-date, Last Month-to-date, Next Month, This Fiscal Quarter, Last Fiscal Quarter, This Fiscal Quarter-to-date, Last Fiscal Quarter-to-date, Next Fiscal Quarter, This Fiscal Year, Last Fiscal Year, This Fiscal Year-to-date, Last Fiscal Year-to-date, Next Fiscal Year"
+    },
+    {
+      "name": "start_duedate",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The range of dates over which receivables are due, in the format YYYY-MM-DD. start_duedate must be less than end_duedate. If not specified, all data is returned."
+    },
+    {
+      "name": "class",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified classes if so configured in the company file. Supported Values: One or more comma separated class IDs as returned in the attribute, Class.Id, of the Class entity response code."
+    },
+    {
+      "name": "item",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified items. Supported Values: One or more comma separated item IDs as returned in the attribute, Item.Id, of the Item entity response code."
+    },
+    {
+      "name": "sort_order",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "ascend",
+        "descend"
+      ],
+      "description": "The sort order. Supported Values: ascend, descend"
+    },
+    {
+      "name": "summarize_column_by",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Total",
+        "Month",
+        "Week",
+        "Days",
+        "Quarter",
+        "Year",
+        "Customers",
+        "Vendors",
+        "Classes",
+        "Departments",
+        "Employees",
+        "ProductsAndServices"
+      ],
+      "description": "The criteria by which to group the report results. Supported Values: Total, Month, Week, Days, Quarter, Year, Customers, Vendors, Classes, Departments, Employees, ProductsAndServices"
+    },
+    {
+      "name": "department",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified departments if so configured in the company file. Supported Values: One or more comma separated department IDs as returned in the attribute, Department.Id of the Department object response code."
+    },
+    {
+      "name": "start_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "If not specified value of date_macro is used. The start date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range."
+    }
+  ],
+  "requestSample": {
+    "start_duedate": "2015-08-01",
+    "end_duedate": "2015-09-30"
+  }
+}

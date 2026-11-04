@@ -1,0 +1,397 @@
+{
+  "entity": "payment",
+  "name": "Payment",
+  "category": "Sales",
+  "description": "A Payment records a customer payment in QuickBooks that can be applied against multiple Invoices and Credit Memos, or created unapplied (recorded as a credit) by specifying only an amount.",
+  "operations": {
+    "create": {
+      "methodName": "createPayment",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getPayment",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findPayments"
+    },
+    "update": {
+      "methodName": "updatePayment",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "delete": {
+      "methodName": "deletePayment",
+      "idRequired": true
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "TotalAmt",
+      "type": "decimal",
+      "required": true,
+      "description": "Indicates the total amount of the transaction, including the total of all charges, allowances, and taxes."
+    },
+    {
+      "name": "CustomerRef",
+      "type": "reference",
+      "required": true,
+      "description": "Reference to a customer or job. Use Customer.Id and Customer.DisplayName for CustomerRef.value and CustomerRef.name respectively.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Customer.Id of the referenced customer."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The Customer.DisplayName of the referenced customer."
+        }
+      ]
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object, used to lock an object for use by one app at a time. Required for update; only the latest version is maintained by QuickBooks Online."
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the currency in which all amounts on the associated transaction are expressed. Conditionally required; must be defined if multicurrency is enabled for the company.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The three-letter ISO 4217 currency code."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The full name of the currency."
+        }
+      ]
+    },
+    {
+      "name": "ProjectRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Project ID associated with this transaction. Conditionally required.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Project Id."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The name of the referenced project."
+        }
+      ]
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "User entered, organization-private note about the transaction."
+    },
+    {
+      "name": "PaymentMethodRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to a PaymentMethod associated with this transaction. Use PaymentMethod.Id and PaymentMethod.Name for PaymentMethodRef.value and PaymentMethodRef.name respectively.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The PaymentMethod.Id of the referenced payment method."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The PaymentMethod.Name of the referenced payment method."
+        }
+      ]
+    },
+    {
+      "name": "UnappliedAmt",
+      "type": "decimal",
+      "required": false,
+      "description": "Indicates the amount that has not been applied to pay amounts owed for sales transactions."
+    },
+    {
+      "name": "DepositToAccountRef",
+      "type": "reference",
+      "required": false,
+      "description": "Identifies the account to be used for this payment (Account.AccountType is Other Current Asset or Bank). If not specified, payment is applied to the Undeposited Funds account.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Account.Id of the referenced deposit-to account."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The Account.Name of the referenced account."
+        }
+      ]
+    },
+    {
+      "name": "ExchangeRate",
+      "type": "decimal",
+      "required": false,
+      "description": "The number of home currency units it takes to equal one unit of currency specified by CurrencyRef. Applicable if multicurrency is enabled for the company."
+    },
+    {
+      "name": "Line",
+      "type": "array",
+      "required": false,
+      "description": "Zero or more transactions accounting for this payment. Line.LinkedTxn.TxnType can be Expense, Check, CreditCardCredit, JournalEntry, CreditMemo, or Invoice.",
+      "attributes": [
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": false,
+          "description": "The amount of the line, in the home currency."
+        },
+        {
+          "name": "LinkedTxn",
+          "type": "array",
+          "required": false,
+          "description": "Transactions linked to this payment line.",
+          "attributes": [
+            {
+              "name": "TxnId",
+              "type": "string",
+              "required": true,
+              "description": "The ID of the linked transaction. Use as the ID in a separate read request for the specific resource."
+            },
+            {
+              "name": "TxnType",
+              "type": "string",
+              "required": true,
+              "description": "The type of the linked transaction.",
+              "enum": [
+                "Expense",
+                "Check",
+                "CreditCardCredit",
+                "JournalEntry",
+                "CreditMemo",
+                "Invoice"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "LineEx",
+          "type": "object",
+          "required": false,
+          "readOnly": true,
+          "description": "Internal extension data (name/value pairs such as txnId, txnOpenBalance, txnReferenceNumber)."
+        }
+      ]
+    },
+    {
+      "name": "TxnSource",
+      "type": "string",
+      "required": false,
+      "description": "Used internally to specify originating source of a credit card transaction."
+    },
+    {
+      "name": "PaymentRefNum",
+      "type": "string",
+      "required": false,
+      "description": "The reference number for the payment received. For example, Check # for a check, envelope # for a cash donation."
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "description": "The date entered by the user when this transaction occurred. For posting transactions, this is the posting date that affects the financial statements. Defaults to the current server date. Sort order is ASC by default."
+    },
+    {
+      "name": "CreditCardPayment",
+      "type": "object",
+      "required": false,
+      "description": "Information about a payment received by credit card. Inject with data only if the payment was transacted through Intuit Payments API."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the entity. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    },
+    {
+      "name": "TaxExemptionRef",
+      "type": "reference",
+      "required": false,
+      "readOnly": true,
+      "description": "Reference to the TaxExemption ID associated with this object. Available for companies that have automated sales tax enabled. For internal use only.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The system-generated Id of the exemption type."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The Tax Exemption Id for the customer, typically issued by the state."
+        }
+      ]
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "CustomerRef",
+    "TxnDate",
+    "TotalAmt",
+    "PaymentRefNum",
+    "MetaData.LastUpdatedTime",
+    "MetaData.CreateTime"
+  ],
+  "requestSample": {
+    "create": {
+      "TotalAmt": 25,
+      "CustomerRef": {
+        "value": "20"
+      }
+    },
+    "update": {
+      "Id": "69",
+      "SyncToken": "0",
+      "sparse": true,
+      "PaymentRefNum": "123456"
+    }
+  },
+  "specialOperations": [
+    {
+      "name": "Void a payment",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/payment?operation=update&include=void",
+      "description": "Voids an existing Payment object via a sparse update, leaving the transaction active but zeroing all amounts/quantities and prepending 'Voided' to PrivateNote.",
+      "queryParams": [
+        {
+          "name": "operation",
+          "type": "string",
+          "required": true,
+          "description": "Must be set to 'update' to perform the void via sparse update."
+        },
+        {
+          "name": "include",
+          "type": "string",
+          "required": true,
+          "description": "Must be set to 'void' to void the payment."
+        }
+      ],
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company (realm) ID."
+        }
+      ],
+      "note": "POST with operation=update&include=void query params; request body must be a sparse update including Payment.Id, Payment.SyncToken, and sparse=true. If funds were deposited, the associated deposit object must be deleted before voiding."
+    },
+    {
+      "name": "Get a payment as PDF",
+      "method": "GET",
+      "path": "/v3/company/{realmID}/payment/{paymentId}/pdf",
+      "description": "Returns the specified Payment object as an Adobe PDF file formatted according to the company's custom form styles.",
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company (realm) ID."
+        },
+        {
+          "name": "paymentId",
+          "type": "string",
+          "required": true,
+          "description": "The ID of the Payment object to retrieve as PDF."
+        }
+      ],
+      "note": "Returns binary PDF content (application/pdf) rather than JSON."
+    },
+    {
+      "name": "Send a payment",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/payment/{paymentId}/send?sendTo={emailAddr}",
+      "description": "Emails the specified Payment to the explicitly provided email address and returns the Payment response body.",
+      "queryParams": [
+        {
+          "name": "sendTo",
+          "type": "string",
+          "required": true,
+          "description": "The explicit email address to send the payment to; must be specified in the POST request."
+        }
+      ],
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company (realm) ID."
+        },
+        {
+          "name": "paymentId",
+          "type": "string",
+          "required": true,
+          "description": "The ID of the Payment object to send."
+        }
+      ],
+      "note": "Doc lists only the explicit-email-address variant (POST with sendTo query param); the email address should be explicitly mentioned in the POST request."
+    }
+  ]
+}

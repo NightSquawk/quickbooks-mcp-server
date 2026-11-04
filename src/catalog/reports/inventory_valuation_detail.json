@@ -1,0 +1,156 @@
+{
+  "slug": "inventory_valuation_detail",
+  "name": "Inventory Valuation Detail",
+  "reportName": "InventoryValuationDetail",
+  "methodName": "",
+  "category": "Inventory",
+  "description": "Provides a reference on how to access the Inventory Valuation Detail report from the QuickBooks Online Report Service.",
+  "requiredFilters": [],
+  "parameters": [
+    {
+      "name": "end_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The end date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    },
+    {
+      "name": "end_svcdate",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The end date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    },
+    {
+      "name": "date_macro",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Today",
+        "Yesterday",
+        "This Week",
+        "Last Week",
+        "This Week-to-date",
+        "Last Week-to-date",
+        "Next Week",
+        "Next 4 Weeks",
+        "This Month",
+        "Last Month",
+        "This Month-to-date",
+        "Last Month-to-date",
+        "Next Month",
+        "This Fiscal Quarter",
+        "Last Fiscal Quarter",
+        "This Fiscal Quarter-to-date",
+        "Last Fiscal Quarter-to-date",
+        "Next Fiscal Quarter",
+        "This Fiscal Year",
+        "Last Fiscal Year",
+        "This Fiscal Year-to-date",
+        "Last Fiscal Year-to-date",
+        "Next Fiscal Year"
+      ],
+      "description": "Predefined date range. Use if you want the report to cover a standard report date range; otherwise, use the start_date and end_date to cover an explicit report date range."
+    },
+    {
+      "name": "svcdate_macro",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Today",
+        "Yesterday",
+        "This Week",
+        "Last Week",
+        "This Week-to-date",
+        "Last Week-to-date",
+        "Next Week",
+        "Next 4 Weeks",
+        "This Month",
+        "Last Month",
+        "This Month-to-date",
+        "Last Month-to-date",
+        "Next Month",
+        "This Fiscal Quarter",
+        "Last Fiscal Quarter",
+        "This Fiscal Quarter-to-date",
+        "Last Fiscal Quarter-to-date",
+        "Next Fiscal Quarter",
+        "This Fiscal Year",
+        "Last Fiscal Year",
+        "This Fiscal Year-to-date",
+        "Last Fiscal Year-to-date",
+        "Next Fiscal Year"
+      ],
+      "description": "Predefined date range. Use if you want the report to cover a standard report date range; otherwise, use the start_date and end_date to cover an explicit report date range."
+    },
+    {
+      "name": "start_svcdate",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The start date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    },
+    {
+      "name": "group_by",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Name",
+        "Account",
+        "Transaction Type",
+        "Customer",
+        "Vendor",
+        "Employee",
+        "Location",
+        "Payment Method",
+        "Day",
+        "Week",
+        "Month",
+        "Quarter",
+        "Year",
+        "None"
+      ],
+      "description": "The field in the transaction by which to group results."
+    },
+    {
+      "name": "start_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The start date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    },
+    {
+      "name": "columns",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "tx_date",
+        "txn_id",
+        "txn_type",
+        "doc_num",
+        "name",
+        "quantity",
+        "rate",
+        "home_amount",
+        "qty_on_hand",
+        "asset_value",
+        "create_date",
+        "create_by",
+        "last_mod_date",
+        "last_mod_by",
+        "item_sku",
+        "memo",
+        "exch_rate",
+        "account_name",
+        "service_date",
+        "rate_inventory",
+        "asset_value_nt",
+        "tracking_num"
+      ],
+      "description": "Column types to show in the report."
+    }
+  ],
+  "requestSample": {
+    "date_macro": "This Month"
+  }
+}

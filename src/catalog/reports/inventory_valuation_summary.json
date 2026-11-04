@@ -1,0 +1,98 @@
+{
+  "slug": "inventory_valuation_summary",
+  "name": "Inventory Valuation Summary",
+  "reportName": "InventoryValuationSummary",
+  "methodName": "reportInventoryValuationSummary",
+  "category": "Inventory",
+  "description": "Provides a reference on how to access the Inventory Valuation summary report from the QuickBooks Online Report Service.",
+  "requiredFilters": [],
+  "parameters": [
+    {
+      "name": "qzurl",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "true",
+        "false"
+      ],
+      "description": "Specifies whether Quick Zoom URL information should be generated for rows in the report. Quick Zoom URL is a hyperlink to another report containing further details about the particular column of data."
+    },
+    {
+      "name": "date_macro",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Today",
+        "Yesterday",
+        "This Week",
+        "Last Week",
+        "This Week-to-date",
+        "Last Week-to-date",
+        "Next Week",
+        "Next 4 Weeks",
+        "This Month",
+        "Last Month",
+        "This Month-to-date",
+        "Last Month-to-date",
+        "Next Month",
+        "This Fiscal Quarter",
+        "Last Fiscal Quarter",
+        "This Fiscal Quarter-to-date",
+        "Last Fiscal Quarter-to-date",
+        "Next Fiscal Quarter",
+        "This Fiscal Year",
+        "Last Fiscal Year",
+        "This Fiscal Year-to-date",
+        "Last Fiscal Year-to-date",
+        "Next Fiscal Year"
+      ],
+      "description": "Predefined date range. Use if you want the report to cover a standard report date range; otherwise, use the start_date and end_date to cover an explicit report date range."
+    },
+    {
+      "name": "item",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified items. Supported Values: One or more comma separated item IDs as returned in the attribute, Item.Id, of the Item entity response code."
+    },
+    {
+      "name": "report_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "Start date to use for the report, in the format YYYY-MM-DD."
+    },
+    {
+      "name": "sort_order",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "ascend",
+        "descend"
+      ],
+      "description": "The sort order."
+    },
+    {
+      "name": "summarize_column_by",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Total",
+        "Month",
+        "Week",
+        "Days",
+        "Quarter",
+        "Year",
+        "Customers",
+        "Vendors",
+        "Classes",
+        "Departments",
+        "Employees",
+        "ProductsAndServices"
+      ],
+      "description": "The criteria by which to group the report results."
+    }
+  ],
+  "requestSample": {
+    "date_macro": "This Fiscal Year-to-date"
+  }
+}

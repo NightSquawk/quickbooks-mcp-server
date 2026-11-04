@@ -1,0 +1,336 @@
+{
+  "entity": "time_activity",
+  "name": "TimeActivity",
+  "category": "Lists",
+  "description": "A record of time worked by a vendor or employee.",
+  "operations": {
+    "create": {
+      "methodName": "createTimeActivity",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getTimeActivity",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findTimeActivitys"
+    },
+    "update": {
+      "methodName": "updateTimeActivity",
+      "bodyRequired": true,
+      "note": "Full update; body must include Id and SyncToken and all writable fields (omitted writable fields are set to NULL)."
+    },
+    "delete": {
+      "methodName": "deleteTimeActivity",
+      "idRequired": true
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Sort order is ASC by default. Required for update."
+    },
+    {
+      "name": "NameOf",
+      "type": "string",
+      "required": true,
+      "description": "Enumeration of time activity types. Required in conjunction with either EmployeeRef or VendorRef attributes for create operations.",
+      "enum": [
+        "Vendor",
+        "Employee"
+      ]
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Used to lock an object for use by one app at a time; incremented on each modification. Required for update."
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "description": "The date for the time activity. This is the posting date that affects financial statements. If not supplied, the current date on the server is used. Conditionally required."
+    },
+    {
+      "name": "BreakHours BreakMinutes",
+      "type": "integer",
+      "required": false,
+      "description": "Hours and minutes of break taken between StartTime and EndTime. Use when StartTime and EndTime are specified. Conditionally required."
+    },
+    {
+      "name": "EndTime",
+      "type": "datetime",
+      "required": false,
+      "description": "Time that work ends. Required if Hours and Minutes not specified. Conditionally required."
+    },
+    {
+      "name": "Hours",
+      "type": "integer",
+      "required": false,
+      "description": "Hours worked. Required if StartTime and EndTime not specified. Conditionally required."
+    },
+    {
+      "name": "VendorRef",
+      "type": "reference",
+      "required": false,
+      "description": "Specifies the vendor whose time is being recorded. Required if NameOf is set to Vendor. Conditionally required.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Vendor.Id of the referenced vendor."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Vendor.Name of the referenced vendor."
+        }
+      ]
+    },
+    {
+      "name": "ProjectRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Project ID associated with this transaction. Conditionally required.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Id of the referenced project."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced project."
+        }
+      ]
+    },
+    {
+      "name": "HourlyRate",
+      "type": "decimal",
+      "required": false,
+      "description": "Hourly bill rate of the employee or vendor for this time activity. Required if BillableStatus is set to Billable. Conditionally required."
+    },
+    {
+      "name": "CustomerRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to a customer or job. Required if BillableStatus is set to Billable. Conditionally required.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Customer.Id of the referenced customer or job."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Customer.DisplayName of the referenced customer or job."
+        }
+      ]
+    },
+    {
+      "name": "EmployeeRef",
+      "type": "reference",
+      "required": false,
+      "description": "Specifies the employee whose time is being recorded. Required if NameOf is set to Employee. Conditionally required.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Employee.Id of the referenced employee."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Employee.DisplayName of the referenced employee."
+        }
+      ]
+    },
+    {
+      "name": "StartTime",
+      "type": "datetime",
+      "required": false,
+      "description": "Time that work starts. Required if Hours and Minutes not specified. Conditionally required."
+    },
+    {
+      "name": "ClassRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Class associated with this object. Available if Preferences.AccountingInfoPrefs.ClassTrackingPerTxn is set to true.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Class.Id of the referenced class."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Class.Name of the referenced class."
+        }
+      ]
+    },
+    {
+      "name": "Description",
+      "type": "string",
+      "required": false,
+      "description": "Description of work completed during time activity."
+    },
+    {
+      "name": "Taxable",
+      "type": "boolean",
+      "required": false,
+      "description": "True if the time recorded is both billable and taxable."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. Set by Data Services and read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was last updated."
+        }
+      ]
+    },
+    {
+      "name": "CostRate",
+      "type": "decimal",
+      "required": false,
+      "description": "Pay rate of the employee or vendor for this time activity."
+    },
+    {
+      "name": "ItemRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the service item associated with this object (Item.Type is Service).",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Item.Id of the referenced service item."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Item.Name of the referenced service item."
+        }
+      ]
+    },
+    {
+      "name": "PayrollItemRef",
+      "type": "reference",
+      "required": false,
+      "description": "Specifies how much the employee should be paid for doing the work specified by the Compensation Id. Available only for a closed group of developers.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "EmployeeCompensation.Id of the referenced payroll compensation."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "EmployerCompensation.Name of the referenced payroll compensation."
+        }
+      ]
+    },
+    {
+      "name": "BillableStatus",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Billable status of the time recorded. Not updatable through an API request; changes automatically when an invoice is created.",
+      "enum": [
+        "Billable",
+        "NotBillable",
+        "HasBeenBilled"
+      ]
+    },
+    {
+      "name": "DepartmentRef",
+      "type": "reference",
+      "required": false,
+      "description": "A reference to a Department object specifying the location of this object. Available if Preferences.AccountingInfoPrefs.TrackDepartments is set to true.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Department.Id of the referenced department."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Department.Name of the referenced department."
+        }
+      ]
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "NameOf",
+    "TxnDate",
+    "BillableStatus",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {
+      "TxnDate": "2021-02-02",
+      "EndTime": "17:00:00-08:00",
+      "EmployeeRef": {
+        "name": "Emily Platt",
+        "value": "55"
+      },
+      "StartTime": "08:00:00-08:00",
+      "NameOf": "Employee"
+    },
+    "update": {
+      "Id": "3",
+      "SyncToken": "0",
+      "NameOf": "Employee",
+      "Description": "Updated descirption"
+    }
+  }
+}

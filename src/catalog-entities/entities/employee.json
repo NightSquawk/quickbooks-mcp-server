@@ -1,0 +1,371 @@
+{
+  "entity": "employee",
+  "name": "Employee",
+  "category": "Lists",
+  "description": "An employee of the QuickBooks company.",
+  "operations": {
+    "create": {
+      "methodName": "createEmployee",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getEmployee",
+      "idRequired": true
+    },
+    "update": {
+      "methodName": "updateEmployee",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "search": {
+      "methodName": "findEmployees"
+    }
+  },
+  "searchableFields": [
+    "Id",
+    "DisplayName",
+    "GivenName",
+    "FamilyName",
+    "Active",
+    "EmployeeNumber",
+    "MetaData.LastUpdatedTime"
+  ],
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Sort order is ASC by default. System-generated and required for update/get operations."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update operations to provide optimistic locking; the latest value must be supplied."
+    },
+    {
+      "name": "DisplayName",
+      "type": "string",
+      "required": false,
+      "description": "The name of the employee as displayed. Must be unique across all Customer, Vendor, and Employee objects. If not supplied, it is derived from name components (GivenName, MiddleName, FamilyName, Suffix). Maximum 500 characters."
+    },
+    {
+      "name": "Title",
+      "type": "string",
+      "required": false,
+      "description": "Title of the person. Examples: Mr., Mrs., Dr. Maximum 16 characters. Part of the name; not derived from DisplayName."
+    },
+    {
+      "name": "GivenName",
+      "type": "string",
+      "required": false,
+      "description": "Given (first) name of the employee. Maximum 100 characters. At least one of Title, GivenName, MiddleName, FamilyName, or Suffix is required."
+    },
+    {
+      "name": "MiddleName",
+      "type": "string",
+      "required": false,
+      "description": "Middle name of the employee. The person can have zero or more middle names. Maximum 100 characters."
+    },
+    {
+      "name": "FamilyName",
+      "type": "string",
+      "required": false,
+      "description": "Family (last) name of the employee. Maximum 100 characters."
+    },
+    {
+      "name": "Suffix",
+      "type": "string",
+      "required": false,
+      "description": "Suffix appended to the name of the employee. Example: Jr. Maximum 16 characters."
+    },
+    {
+      "name": "PrintOnCheckName",
+      "type": "string",
+      "required": false,
+      "description": "Name of the employee as printed on a check. If not provided, it is populated from DisplayName. Maximum 100 characters."
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this entity is currently enabled for use by QuickBooks. The default value is true."
+    },
+    {
+      "name": "PrimaryAddr",
+      "type": "object",
+      "required": false,
+      "description": "Primary physical address of the employee. PhysicalAddress structure.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Unique identifier of the address object within the object it is referenced from. Read-only and system-defined."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address. Maximum 500 characters."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address. Maximum 500 characters."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address. Maximum 500 characters."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address. Maximum 500 characters."
+        },
+        {
+          "name": "Line5",
+          "type": "string",
+          "required": false,
+          "description": "Fifth line of the address. Maximum 500 characters."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name. Maximum 255 characters."
+        },
+        {
+          "name": "Country",
+          "type": "string",
+          "required": false,
+          "description": "Country name. Maximum 255 characters."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region within a country, such as state in the USA or province in Canada. Maximum 255 characters."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal (ZIP) code. Maximum 30 characters."
+        },
+        {
+          "name": "Lat",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Latitude coordinate of the geocoded address. Returned only if the address has been geocoded."
+        },
+        {
+          "name": "Long",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Longitude coordinate of the geocoded address. Returned only if the address has been geocoded."
+        }
+      ]
+    },
+    {
+      "name": "PrimaryEmailAddr",
+      "type": "object",
+      "required": false,
+      "description": "Primary email address of the employee. EmailAddress structure.",
+      "attributes": [
+        {
+          "name": "Address",
+          "type": "string",
+          "required": false,
+          "description": "An email address. The maximum length is 100 characters. Must be a valid email format."
+        }
+      ]
+    },
+    {
+      "name": "PrimaryPhone",
+      "type": "object",
+      "required": false,
+      "description": "Primary phone number of the employee. TelephoneNumber structure.",
+      "attributes": [
+        {
+          "name": "FreeFormNumber",
+          "type": "string",
+          "required": false,
+          "description": "Specifies the telephone number in free-form. Maximum 30 characters."
+        }
+      ]
+    },
+    {
+      "name": "Mobile",
+      "type": "object",
+      "required": false,
+      "description": "Mobile phone number of the employee. TelephoneNumber structure.",
+      "attributes": [
+        {
+          "name": "FreeFormNumber",
+          "type": "string",
+          "required": false,
+          "description": "Specifies the mobile telephone number in free-form. Maximum 30 characters."
+        }
+      ]
+    },
+    {
+      "name": "BillableTime",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this employee's time is billable; the duration captured against this employee can be billed to a customer. The default is false."
+    },
+    {
+      "name": "BillRate",
+      "type": "decimal",
+      "required": false,
+      "description": "The wage rate, per hour, billed for this employee's time when BillableTime is true. Specified as a monetary amount. Available when QuickBooks Time/time tracking is enabled."
+    },
+    {
+      "name": "CostRate",
+      "type": "decimal",
+      "required": false,
+      "description": "Pay rate, per hour, of the employee. Specified as a monetary amount."
+    },
+    {
+      "name": "BirthDate",
+      "type": "date",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "Birth date of the employee. Local timezone: YYYY-MM-DD."
+    },
+    {
+      "name": "Gender",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Male",
+        "Female"
+      ],
+      "description": "Gender of the employee. Supported only when the QuickBooks Payroll feature is enabled."
+    },
+    {
+      "name": "HiredDate",
+      "type": "date",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "Date the employee was hired. Local timezone: YYYY-MM-DD."
+    },
+    {
+      "name": "ReleasedDate",
+      "type": "date",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "Release date of the employee, i.e., the date employment was terminated. Local timezone: YYYY-MM-DD."
+    },
+    {
+      "name": "SSN",
+      "type": "string",
+      "required": false,
+      "description": "Social Security Number (SSN) of the employee. For US companies. The value is masked in responses; for example, XXX-XX-1234. Input format may include or omit dashes."
+    },
+    {
+      "name": "EmployeeNumber",
+      "type": "string",
+      "required": false,
+      "description": "Employee reference number, such as a badge or payroll number, as assigned by the QuickBooks company."
+    },
+    {
+      "name": "EmployeeType",
+      "type": "string",
+      "required": false,
+      "description": "The employee type used for payroll classification. Free-form string in QuickBooks Online (the fixed enumeration applies to QuickBooks Desktop only)."
+    },
+    {
+      "name": "Organization",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this entity refers to an organization/company rather than a person. The default is false for an Employee."
+    },
+    {
+      "name": "V4IDPseudonym",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Pseudonym Id, used internally to associate the Employee object with payroll. System-generated and read-only."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object, including create and last-modified timestamps. System-generated.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    },
+    {
+      "name": "domain",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "enum": [
+        "QBO"
+      ],
+      "description": "The originating domain of the object. Always QBO for entities created via the API. Internal use, read-only."
+    },
+    {
+      "name": "sparse",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "Indicates whether the response represents a sparse (partial) object. When true, only specified fields were updated. Internal use, read-only."
+    }
+  ],
+  "requestSample": {
+    "create": {
+      "DisplayName": "Jane A. Smith",
+      "GivenName": "Jane",
+      "MiddleName": "A.",
+      "FamilyName": "Smith",
+      "PrimaryEmailAddr": {
+        "Address": "jane.smith@example.com"
+      },
+      "PrimaryPhone": {
+        "FreeFormNumber": "(415) 555-0100"
+      },
+      "PrimaryAddr": {
+        "Line1": "123 Main St",
+        "City": "Mountain View",
+        "CountrySubDivisionCode": "CA",
+        "PostalCode": "94042",
+        "Country": "USA"
+      }
+    },
+    "update": {
+      "Id": "55",
+      "SyncToken": "0",
+      "sparse": true,
+      "PrimaryPhone": {
+        "FreeFormNumber": "(415) 555-0199"
+      }
+    }
+  }
+}

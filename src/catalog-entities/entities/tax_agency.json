@@ -1,0 +1,112 @@
+{
+  "entity": "tax_agency",
+  "name": "TaxAgency",
+  "category": "Lists",
+  "description": "A TaxAgency identifies the agency (entity) that collects taxes and to which a given tax rate applies.",
+  "operations": {
+    "create": {
+      "methodName": "createTaxAgency",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getTaxAgency",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findTaxAgencys"
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "DisplayName",
+      "type": "string",
+      "required": true,
+      "description": "Name of the agency."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update. Used to lock an object for use by one app at a time; incremented on each modification."
+    },
+    {
+      "name": "TaxTrackedOnSales",
+      "type": "boolean",
+      "required": false,
+      "description": "Denotes whether this tax agency is used to track tax on sales."
+    },
+    {
+      "name": "TaxTrackedOnPurchases",
+      "type": "boolean",
+      "required": false,
+      "description": "Denotes whether this tax agency is used to track tax on purchases."
+    },
+    {
+      "name": "LastFileDate",
+      "type": "date",
+      "required": false,
+      "description": "The last tax filing date for this tax agency. Automatically populated by QuickBooks business logic at tax filing time."
+    },
+    {
+      "name": "TaxRegistrationNumber",
+      "type": "string",
+      "required": false,
+      "description": "Registration number for the agency."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the entity. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated."
+        }
+      ]
+    },
+    {
+      "name": "TaxAgencyConfig",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Flag to identify whether the TaxAgency is system defined by the Automated Sales Tax engine or user generated.",
+      "enum": [
+        "USER_DEFINED",
+        "SYSTEM_GENERATED"
+      ]
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "DisplayName",
+    "TaxTrackedOnSales",
+    "TaxTrackedOnPurchases",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {
+      "DisplayName": "CityTaxAgency"
+    },
+    "update": {}
+  }
+}

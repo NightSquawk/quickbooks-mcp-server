@@ -1,0 +1,681 @@
+{
+  "entity": "preferences",
+  "name": "Preferences",
+  "category": "Lists",
+  "description": "A set of company preferences that control application and UI behavior in QuickBooks Online, mostly exposed as read-only with only a small writable subset.",
+  "operations": {
+    "get": {
+      "methodName": "getPreferences",
+      "idRequired": false,
+      "note": "Read retrieves all preferences for the company; there is no notion of preference objects or object IDs, so no Id is required."
+    },
+    "search": {
+      "methodName": "findPreferencess",
+      "note": "Query supports sorting and filtering on MetaData timestamp attributes; pagination is not supported."
+    },
+    "update": {
+      "methodName": "updatePreferences",
+      "bodyRequired": true,
+      "note": "Full update of the writable subset; body must include Id and SyncToken. Writable fields omitted from the request body are set to NULL or reverted to a default value."
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update. Used to lock an object for use by one app at a time; incremented on each modification. Attempts to modify with an older SyncToken fail. Only the latest version of the object is maintained by QuickBooks Online."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. Values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated."
+        }
+      ]
+    },
+    {
+      "name": "EmailMessagesPrefs",
+      "type": "object",
+      "required": false,
+      "description": "Default email messages used for sales forms.",
+      "attributes": [
+        {
+          "name": "InvoiceMessage",
+          "type": "object",
+          "required": false,
+          "description": "Default email message for invoices.",
+          "attributes": [
+            {
+              "name": "Message",
+              "type": "string",
+              "required": false,
+              "description": "Body of the email message."
+            },
+            {
+              "name": "Subject",
+              "type": "string",
+              "required": false,
+              "description": "Subject of the email message."
+            }
+          ]
+        },
+        {
+          "name": "EstimateMessage",
+          "type": "object",
+          "required": false,
+          "description": "Default email message for estimates.",
+          "attributes": [
+            {
+              "name": "Message",
+              "type": "string",
+              "required": false,
+              "description": "Body of the email message."
+            },
+            {
+              "name": "Subject",
+              "type": "string",
+              "required": false,
+              "description": "Subject of the email message."
+            }
+          ]
+        },
+        {
+          "name": "SalesReceiptMessage",
+          "type": "object",
+          "required": false,
+          "description": "Default email message for sales receipts.",
+          "attributes": [
+            {
+              "name": "Message",
+              "type": "string",
+              "required": false,
+              "description": "Body of the email message."
+            },
+            {
+              "name": "Subject",
+              "type": "string",
+              "required": false,
+              "description": "Subject of the email message."
+            }
+          ]
+        },
+        {
+          "name": "StatementMessage",
+          "type": "object",
+          "required": false,
+          "description": "Default email message for statements.",
+          "attributes": [
+            {
+              "name": "Message",
+              "type": "string",
+              "required": false,
+              "description": "Body of the email message."
+            },
+            {
+              "name": "Subject",
+              "type": "string",
+              "required": false,
+              "description": "Subject of the email message."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ProductAndServicesPrefs",
+      "type": "object",
+      "required": false,
+      "description": "Preferences for products and services tracking.",
+      "attributes": [
+        {
+          "name": "QuantityWithPriceAndRate",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether quantity with price and rate is enabled."
+        },
+        {
+          "name": "ForPurchase",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether items can be tracked for purchase."
+        },
+        {
+          "name": "QuantityOnHand",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether quantity-on-hand tracking is enabled."
+        },
+        {
+          "name": "ForSales",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether items can be tracked for sales."
+        }
+      ]
+    },
+    {
+      "name": "ReportPrefs",
+      "type": "object",
+      "required": false,
+      "description": "Preferences for report generation.",
+      "attributes": [
+        {
+          "name": "ReportBasis",
+          "type": "string",
+          "required": false,
+          "description": "Accounting basis for reports.",
+          "enum": [
+            "Accrual",
+            "Cash"
+          ]
+        },
+        {
+          "name": "CalcAgingReportFromTxnDate",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether aging reports are calculated from transaction date."
+        }
+      ]
+    },
+    {
+      "name": "AccountingInfoPrefs",
+      "type": "object",
+      "required": false,
+      "description": "Accounting information preferences. The following settings are available for QuickBooks Online Plus editions only.",
+      "attributes": [
+        {
+          "name": "FirstMonthOfFiscalYear",
+          "type": "string",
+          "required": false,
+          "description": "First month of the fiscal year."
+        },
+        {
+          "name": "UseAccountNumbers",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether account numbers are used."
+        },
+        {
+          "name": "TaxYearMonth",
+          "type": "string",
+          "required": false,
+          "description": "First month of the tax year."
+        },
+        {
+          "name": "ClassTrackingPerTxn",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether class tracking is enabled per transaction."
+        },
+        {
+          "name": "TrackDepartments",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether department/location tracking is enabled."
+        },
+        {
+          "name": "TaxForm",
+          "type": "string",
+          "required": false,
+          "description": "Tax form identifier."
+        },
+        {
+          "name": "CustomerTerminology",
+          "type": "string",
+          "required": false,
+          "description": "Terminology used for customers."
+        },
+        {
+          "name": "BookCloseDate",
+          "type": "date",
+          "required": false,
+          "description": "Date through which the books are closed."
+        },
+        {
+          "name": "DepartmentTerminology",
+          "type": "string",
+          "required": false,
+          "description": "Terminology used for departments/locations."
+        },
+        {
+          "name": "ClassTrackingPerTxnLine",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether class tracking is enabled per transaction line."
+        }
+      ]
+    },
+    {
+      "name": "SalesFormsPrefs",
+      "type": "object",
+      "required": false,
+      "description": "Preferences for sales forms.",
+      "attributes": [
+        {
+          "name": "ETransactionPaymentEnabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether electronic transaction payment is enabled."
+        },
+        {
+          "name": "CustomTxnNumbers",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether custom transaction numbers are enabled."
+        },
+        {
+          "name": "AllowShipping",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether shipping is allowed on sales forms."
+        },
+        {
+          "name": "AllowServiceDate",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether a service date is allowed on sales forms."
+        },
+        {
+          "name": "ETransactionEnabledStatus",
+          "type": "string",
+          "required": false,
+          "description": "Status of electronic transactions.",
+          "enum": [
+            "NotApplicable",
+            "Enabled",
+            "Disabled"
+          ]
+        },
+        {
+          "name": "DefaultCustomerMessage",
+          "type": "string",
+          "required": false,
+          "description": "Default customer message on sales forms."
+        },
+        {
+          "name": "EmailCopyToCompany",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether a copy of emailed sales forms is sent to the company."
+        },
+        {
+          "name": "AllowEstimates",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether estimates are allowed."
+        },
+        {
+          "name": "DefaultTerms",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the default terms for sales forms.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": false,
+              "description": "ID of the referenced Term."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "description": "Display name of the referenced Term."
+            }
+          ]
+        },
+        {
+          "name": "AllowDiscount",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether discounts are allowed on sales forms."
+        },
+        {
+          "name": "DefaultDiscountAccount",
+          "type": "string",
+          "required": false,
+          "description": "ID of the default discount account."
+        },
+        {
+          "name": "AllowDeposit",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether deposits are allowed on sales forms."
+        },
+        {
+          "name": "AutoApplyPayments",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether payments are automatically applied."
+        },
+        {
+          "name": "IPNSupportEnabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether IPN support is enabled."
+        },
+        {
+          "name": "AutoApplyCredit",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether credits are automatically applied."
+        },
+        {
+          "name": "CustomField",
+          "type": "array",
+          "required": false,
+          "description": "Custom fields for sales forms, expressed as nested CustomField name/value/type entries.",
+          "attributes": [
+            {
+              "name": "CustomField",
+              "type": "array",
+              "required": false,
+              "description": "Nested list of custom field definitions.",
+              "attributes": [
+                {
+                  "name": "Name",
+                  "type": "string",
+                  "required": false,
+                  "description": "Name of the custom field."
+                },
+                {
+                  "name": "Type",
+                  "type": "string",
+                  "required": false,
+                  "description": "Data type of the custom field.",
+                  "enum": [
+                    "BooleanType",
+                    "StringType"
+                  ]
+                },
+                {
+                  "name": "BooleanValue",
+                  "type": "boolean",
+                  "required": false,
+                  "description": "Boolean value of the custom field."
+                },
+                {
+                  "name": "StringValue",
+                  "type": "string",
+                  "required": false,
+                  "description": "String value of the custom field."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "UsingPriceLevels",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether price levels are used."
+        },
+        {
+          "name": "ETransactionAttachPDF",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether a PDF is attached to electronic transactions."
+        }
+      ]
+    },
+    {
+      "name": "VendorAndPurchasesPrefs",
+      "type": "object",
+      "required": false,
+      "description": "Preferences for vendors and purchases.",
+      "attributes": [
+        {
+          "name": "BillableExpenseTracking",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether billable expense tracking is enabled."
+        },
+        {
+          "name": "TrackingByCustomer",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether expenses are tracked by customer."
+        },
+        {
+          "name": "POCustomField",
+          "type": "array",
+          "required": false,
+          "description": "Custom fields for purchase orders, expressed as nested CustomField name/value/type entries.",
+          "attributes": [
+            {
+              "name": "CustomField",
+              "type": "array",
+              "required": false,
+              "description": "Nested list of custom field definitions.",
+              "attributes": [
+                {
+                  "name": "Name",
+                  "type": "string",
+                  "required": false,
+                  "description": "Name of the custom field."
+                },
+                {
+                  "name": "Type",
+                  "type": "string",
+                  "required": false,
+                  "description": "Data type of the custom field.",
+                  "enum": [
+                    "BooleanType",
+                    "StringType"
+                  ]
+                },
+                {
+                  "name": "BooleanValue",
+                  "type": "boolean",
+                  "required": false,
+                  "description": "Boolean value of the custom field."
+                },
+                {
+                  "name": "StringValue",
+                  "type": "string",
+                  "required": false,
+                  "description": "String value of the custom field."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TaxPrefs",
+      "type": "object",
+      "required": false,
+      "description": "Tax preferences.",
+      "attributes": [
+        {
+          "name": "TaxGroupCodeRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the tax group code.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": false,
+              "description": "ID of the referenced tax group code."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "description": "Display name of the referenced tax group code."
+            }
+          ]
+        },
+        {
+          "name": "UsingSalesTax",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether sales tax is enabled."
+        }
+      ]
+    },
+    {
+      "name": "OtherPrefs",
+      "type": "object",
+      "required": false,
+      "description": "Extension of the Preferences resource to allow Name-Value pair based extensions at the top level.",
+      "attributes": [
+        {
+          "name": "NameValue",
+          "type": "array",
+          "required": false,
+          "description": "List of additional preferences as Name/Value pairs.",
+          "attributes": [
+            {
+              "name": "Name",
+              "type": "string",
+              "required": false,
+              "description": "Name of the preference."
+            },
+            {
+              "name": "Value",
+              "type": "string",
+              "required": false,
+              "description": "Value of the preference."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TimeTrackingPrefs",
+      "type": "object",
+      "required": false,
+      "description": "Preferences for time tracking.",
+      "attributes": [
+        {
+          "name": "WorkWeekStartDate",
+          "type": "string",
+          "required": false,
+          "description": "Day on which the work week starts."
+        },
+        {
+          "name": "MarkTimeEntriesBillable",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether time entries are marked billable by default."
+        },
+        {
+          "name": "ShowBillRateToAll",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether the bill rate is shown to all users."
+        },
+        {
+          "name": "UseServices",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether services are used for time tracking."
+        },
+        {
+          "name": "BillCustomers",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether customers are billed for time entries."
+        }
+      ]
+    },
+    {
+      "name": "CurrencyPrefs",
+      "type": "object",
+      "required": false,
+      "description": "Currency preferences.",
+      "attributes": [
+        {
+          "name": "HomeCurrency",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the home currency.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": false,
+              "description": "Three-letter ISO 4217 currency code."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "description": "Display name of the currency."
+            }
+          ]
+        },
+        {
+          "name": "MultiCurrencyEnabled",
+          "type": "boolean",
+          "required": false,
+          "description": "Whether multicurrency is enabled."
+        }
+      ]
+    },
+    {
+      "name": "domain",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "The originating domain of the object (e.g. QBO)."
+    },
+    {
+      "name": "sparse",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "Whether the object is a sparse representation containing only updated fields."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "MetaData.CreateTime",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {},
+    "update": {
+      "Id": "1",
+      "SyncToken": "20",
+      "sparse": false,
+      "ProductAndServicesPrefs": {
+        "ForPurchase": true,
+        "ForSales": true
+      },
+      "SalesFormsPrefs": {
+        "AllowEstimates": true
+      }
+    }
+  }
+}

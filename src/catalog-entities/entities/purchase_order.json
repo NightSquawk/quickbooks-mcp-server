@@ -1,0 +1,733 @@
+{
+  "entity": "purchase_order",
+  "name": "PurchaseOrder",
+  "category": "Expenses",
+  "description": "A non-posting transaction representing a request to purchase goods or services from a third-party vendor.",
+  "operations": {
+    "create": {
+      "methodName": "createPurchaseOrder",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getPurchaseOrder",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findPurchaseOrders"
+    },
+    "update": {
+      "methodName": "updatePurchaseOrder",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "delete": {
+      "methodName": "deletePurchaseOrder",
+      "idRequired": true
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "APAccountRef",
+      "type": "reference",
+      "required": true,
+      "description": "Specifies to which AP account the bill is credited. The account must have Classification set to Liability and AccountSubType set to AccountsPayable. Recommended to be explicitly specified in all cases.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Account.Id of the AP account."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Account.Name of the AP account."
+        }
+      ]
+    },
+    {
+      "name": "VendorRef",
+      "type": "reference",
+      "required": true,
+      "description": "Reference to the vendor for this transaction.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Vendor.Id of the vendor."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Vendor.Name of the vendor."
+        }
+      ]
+    },
+    {
+      "name": "Line",
+      "type": "array",
+      "required": true,
+      "description": "Individual line items of a transaction. Valid Line types include: ItemBasedExpenseLine and AccountBasedExpenseLine.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the line item."
+        },
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": true,
+          "description": "The amount of the line item."
+        },
+        {
+          "name": "DetailType",
+          "type": "string",
+          "required": true,
+          "description": "The type of line detail. e.g. ItemBasedExpenseLineDetail or AccountBasedExpenseLineDetail."
+        },
+        {
+          "name": "ProjectRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the project associated with the line.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": true,
+              "description": "Project.Id."
+            }
+          ]
+        },
+        {
+          "name": "ItemBasedExpenseLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Detail for an item-based expense line.",
+          "attributes": [
+            {
+              "name": "ItemRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the item. Must reference an Item that has an expense account linked to it.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "Item.Id."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Item.Name."
+                }
+              ]
+            },
+            {
+              "name": "CustomerRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the customer associated with the line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "Customer.Id."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Customer.Name."
+                }
+              ]
+            },
+            {
+              "name": "Qty",
+              "type": "decimal",
+              "required": false,
+              "description": "Quantity of the item."
+            },
+            {
+              "name": "UnitPrice",
+              "type": "decimal",
+              "required": false,
+              "description": "Unit price of the item."
+            },
+            {
+              "name": "TaxCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the tax code for the line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "TaxCode.Id."
+                }
+              ]
+            },
+            {
+              "name": "BillableStatus",
+              "type": "string",
+              "required": false,
+              "description": "Billable status of the line. e.g. NotBillable, Billable, HasBeenBilled."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update. Used to lock an object for use by one app at a time."
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the currency in which all amounts on the associated transaction are expressed. Conditionally required: must be defined if multicurrency is enabled for the company.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The three-letter ISO 4217 currency code."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The full name of the currency."
+        }
+      ]
+    },
+    {
+      "name": "GlobalTaxCalculation",
+      "type": "string",
+      "required": false,
+      "description": "Method in which tax is applied. Not applicable to US companies; required for non-US companies.",
+      "enum": [
+        "TaxExcluded",
+        "TaxInclusive",
+        "NotApplicable"
+      ]
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "description": "The date entered by the user when this transaction occurred. If not supplied, the current date on the server is used. Sort order is ASC by default."
+    },
+    {
+      "name": "CustomField",
+      "type": "array",
+      "required": false,
+      "description": "One of, up to three custom fields for the transaction. Available for custom fields so configured for the company.",
+      "attributes": [
+        {
+          "name": "DefinitionId",
+          "type": "string",
+          "required": true,
+          "description": "The unique identifier of the custom field definition."
+        },
+        {
+          "name": "Name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The name of the custom field."
+        },
+        {
+          "name": "Type",
+          "type": "string",
+          "required": false,
+          "description": "The data type of the custom field. e.g. StringType."
+        }
+      ]
+    },
+    {
+      "name": "POEmail",
+      "type": "object",
+      "required": false,
+      "description": "Used to specify the vendor e-mail address where the purchase req is sent.",
+      "attributes": [
+        {
+          "name": "Address",
+          "type": "string",
+          "required": false,
+          "description": "The email address."
+        }
+      ]
+    },
+    {
+      "name": "ClassRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Class associated with the transaction. Available if ClassTrackingPerTxn is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Class.Id."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Class.Name."
+        }
+      ]
+    },
+    {
+      "name": "SalesTermRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the sales term associated with the transaction.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Term.Id."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Term.Name."
+        }
+      ]
+    },
+    {
+      "name": "LinkedTxn",
+      "type": "array",
+      "required": false,
+      "description": "Zero or more Bill objects linked to this purchase order; LinkedTxn.TxnType is set to Bill.",
+      "attributes": [
+        {
+          "name": "TxnId",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the linked transaction."
+        },
+        {
+          "name": "TxnType",
+          "type": "string",
+          "required": false,
+          "description": "The type of the linked transaction. e.g. Bill."
+        }
+      ]
+    },
+    {
+      "name": "Memo",
+      "type": "string",
+      "required": false,
+      "description": "A message for the vendor. This text appears on the Purchase Order object sent to the vendor."
+    },
+    {
+      "name": "POStatus",
+      "type": "string",
+      "required": false,
+      "description": "Purchase order status.",
+      "enum": [
+        "Open",
+        "Closed"
+      ]
+    },
+    {
+      "name": "DueDate",
+      "type": "date",
+      "required": false,
+      "description": "Date when the payment of the transaction is due. If not provided, the number of days specified in SalesTermRef added to the transaction date will be used."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. Set by Data Services and read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was last updated."
+        }
+      ]
+    },
+    {
+      "name": "DocNumber",
+      "type": "string",
+      "required": false,
+      "description": "Reference number for the transaction. If not explicitly provided, populated based on the VendorAndPurchasesPrefs.UseCustomTxnNumbers preference. Sort order is ASC by default."
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "User entered, organization-private note about the transaction. Does not appear on the purchase order to the vendor. Maps to the Memo field on the Purchase Order form."
+    },
+    {
+      "name": "ShipMethodRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the user-defined ShipMethod associated with the transaction. Store shipping method string in both ShipMethodRef.value and ShipMethodRef.name.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The shipping method string."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The shipping method string."
+        }
+      ]
+    },
+    {
+      "name": "TxnTaxDetail",
+      "type": "object",
+      "required": false,
+      "description": "Information for taxes charged on the transaction as a whole. Ignored and not stored if sales tax is disabled.",
+      "attributes": [
+        {
+          "name": "TxnTaxCodeRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the transaction tax code.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": true,
+              "description": "TaxCode.Id."
+            }
+          ]
+        },
+        {
+          "name": "TotalTax",
+          "type": "decimal",
+          "required": false,
+          "description": "Total tax calculated for the transaction, excluding any embedded tax."
+        },
+        {
+          "name": "TaxLine",
+          "type": "array",
+          "required": false,
+          "description": "Tax detail lines for the transaction."
+        }
+      ]
+    },
+    {
+      "name": "ShipTo",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the customer to whose shipping address the order will be shipped to.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Customer.Id."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Customer.Name."
+        }
+      ]
+    },
+    {
+      "name": "ExchangeRate",
+      "type": "decimal",
+      "required": false,
+      "description": "The number of home currency units it takes to equal one unit of currency specified by CurrencyRef. Applicable if multicurrency is enabled."
+    },
+    {
+      "name": "ShipAddr",
+      "type": "object",
+      "required": false,
+      "description": "Address to which the vendor shipped or will ship any goods associated with the purchase.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Unique identifier of the address object."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region within a country, such as state or province."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal code."
+        }
+      ]
+    },
+    {
+      "name": "VendorAddr",
+      "type": "object",
+      "required": false,
+      "description": "Address to which the payment should be sent.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Unique identifier of the address object."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region within a country, such as state or province."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal code."
+        }
+      ]
+    },
+    {
+      "name": "EmailStatus",
+      "type": "string",
+      "required": false,
+      "description": "Email status of the purchase order.",
+      "enum": [
+        "NotSet",
+        "NeedToSend",
+        "EmailSent"
+      ]
+    },
+    {
+      "name": "TotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Indicates the total amount of the transaction, including all charges, allowances, and taxes. Calculated by QuickBooks; any value supplied is over-written."
+    },
+    {
+      "name": "RecurDataRef",
+      "type": "reference",
+      "required": false,
+      "readOnly": true,
+      "description": "A reference to the Recurring Transaction. Captures what recurring transaction template the PurchaseOrder was created from.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the recurring transaction template."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The name of the recurring transaction template."
+        }
+      ]
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "DocNumber",
+    "TxnDate",
+    "POStatus",
+    "VendorRef",
+    "TotalAmt",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {
+      "APAccountRef": {
+        "name": "Accounts Payable (A/P)",
+        "value": "33"
+      },
+      "VendorRef": {
+        "name": "Hicks Hardware",
+        "value": "41"
+      },
+      "Line": [
+        {
+          "DetailType": "ItemBasedExpenseLineDetail",
+          "Amount": 25,
+          "ItemBasedExpenseLineDetail": {
+            "ItemRef": {
+              "name": "Pump",
+              "value": "11"
+            },
+            "Qty": 1,
+            "UnitPrice": 25
+          }
+        }
+      ]
+    },
+    "update": {
+      "Id": "257",
+      "SyncToken": "0",
+      "PrivateNote": "This is a private note added during update."
+    }
+  },
+  "specialOperations": [
+    {
+      "name": "Get a purchase order as PDF",
+      "method": "GET",
+      "path": "/v3/company/{realmID}/purchaseorder/{purchaseorderId}/pdf",
+      "description": "Returns the specified purchase order in the response body as an Adobe PDF file formatted according to the company's custom form styles.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company (realm) ID."
+        },
+        {
+          "name": "purchaseorderId",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the purchase order to retrieve as PDF."
+        }
+      ]
+    },
+    {
+      "name": "Send a purchase order",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/purchaseorder/{purchaseorderId}/send",
+      "description": "Emails the specified purchase order to the vendor, setting PurchaseOrder.EmailStatus to EmailSent.",
+      "queryParams": [
+        {
+          "name": "sendTo",
+          "type": "string",
+          "required": false,
+          "description": "Explicit email address to send the purchase order to; if specified (and minor version >= 17), PurchaseOrder.POEmail.Address is updated to this value."
+        }
+      ],
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company (realm) ID."
+        },
+        {
+          "name": "purchaseorderId",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the purchase order to send."
+        }
+      ],
+      "note": "Two variants: implicit (uses email in PurchaseOrder.POEmail.Address) via POST .../send, and explicit (POST .../send?sendTo=<emailAddr>). EmailStatus is set to EmailSent on success."
+    }
+  ]
+}

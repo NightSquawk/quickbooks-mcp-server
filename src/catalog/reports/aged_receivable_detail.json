@@ -1,0 +1,108 @@
+{
+  "slug": "aged_receivable_detail",
+  "name": "Aged Receivable Detail",
+  "reportName": "AgedReceivableDetail",
+  "methodName": "reportAgedReceivableDetail",
+  "category": "Aging",
+  "description": "Provides detailed accounts receivable aging information showing outstanding customer balances grouped by how far past due they are, accessed from the QuickBooks Online Report Service.",
+  "requiredFilters": [],
+  "parameters": [
+    {
+      "name": "customer",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified customers. Supported Values: One or more comma separated customer IDs as returned in the attribute, Customer.Id, of the Customer object response code."
+    },
+    {
+      "name": "shipvia",
+      "type": "string",
+      "required": false,
+      "description": "Filter by the shipping method as stored in Invoice.ShipMethodRef.Name. Supported Values: Any shipping method as sent in the Invoice.ShipMethodRef.Name attribute at Invoice create- or update-time."
+    },
+    {
+      "name": "term",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents based on term or terms supplied. Supported Values: One or more comma separated term IDs as returned in the attribute, Term.Id of the Term object response code."
+    },
+    {
+      "name": "end_duedate",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The range of dates over which receivables are due, in the format YYYY-MM-DD. start_duedate must be less than end_duedate. If not specified, all data is returned."
+    },
+    {
+      "name": "start_duedate",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The range of dates over which receivables are due, in the format YYYY-MM-DD. start_duedate must be less than end_duedate. If not specified, all data is returned."
+    },
+    {
+      "name": "custom1",
+      "type": "string",
+      "required": false,
+      "description": "Filter by the specified custom field as defined by the CustomField attribute in transaction entities where supported. Supported Values: Name of custom field."
+    },
+    {
+      "name": "custom2",
+      "type": "string",
+      "required": false,
+      "description": "Filter by the specified custom field as defined by the CustomField attribute in transaction entities where supported. Supported Values: Name of custom field."
+    },
+    {
+      "name": "custom3",
+      "type": "string",
+      "required": false,
+      "description": "Filter by the specified custom field as defined by the CustomField attribute in transaction entities where supported. Supported Values: Name of custom field."
+    },
+    {
+      "name": "report_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "Start date to use for the report, in the format YYYY-MM-DD."
+    },
+    {
+      "name": "num_periods",
+      "type": "number",
+      "required": false,
+      "description": "The number of periods to be shown in the report. Supported Values: A numeric value."
+    },
+    {
+      "name": "aging_method",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Report_Date",
+        "Current"
+      ],
+      "description": "The date upon which aging is determined. Supported Values: Report_Date, Current."
+    },
+    {
+      "name": "past_due",
+      "type": "number",
+      "required": false,
+      "description": "Filters report contents based on minimum days past due. Supported Values: Integer number of days. No filtering."
+    },
+    {
+      "name": "aging_period",
+      "type": "number",
+      "required": false,
+      "description": "The number of days in the aging period. Supported Values: A numeric value."
+    },
+    {
+      "name": "columns",
+      "type": "string",
+      "required": false,
+      "description": "Column types to be shown in the report. Supported Values: bill_addr, create_by, create_date, cust_bill_email, cust_comp_name, cust_msg, cust_name, deliv_addr, doc_num*, due_date*, last_mod_by, last_mod_date, memo*, past_due, sale_sent_state, ship_addr, term_name, tx_date*, txn_type*. Additional columns with custom fields enabled: sales_cust1, sales_cust2, sales_cust3. Additional columns with location tracking enabled: dept_name*."
+    }
+  ],
+  "requestSample": {
+    "report_date": "2015-06-30",
+    "start_duedate": "2015-01-01",
+    "end_duedate": "2015-06-30",
+    "columns": "due_date,cust_name"
+  }
+}

@@ -1,0 +1,141 @@
+{
+  "entity": "term",
+  "name": "Term",
+  "category": "Lists",
+  "description": "Represents the terms under which a sale is made, typically expressed as days due after goods are received, optionally including an early-payment discount or date-driven due dates.",
+  "operations": {
+    "create": {
+      "methodName": "createTerm",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getTerm",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findTerms"
+    },
+    "update": {
+      "methodName": "updateTerm",
+      "bodyRequired": true,
+      "note": "Full update; body must include all writable fields plus Id and SyncToken. Omitted writable fields are set to NULL."
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "required": true,
+      "description": "User recognizable name for the term. For example, Net 30."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object, used to lock an object for use by one app at a time. Required for update. Incremented on each modification; older SyncTokens are rejected."
+    },
+    {
+      "name": "DiscountPercent",
+      "type": "decimal",
+      "required": false,
+      "description": "Discount percentage available against an amount if paid within the days specified by DiscountDays."
+    },
+    {
+      "name": "DiscountDays",
+      "type": "integer",
+      "required": false,
+      "description": "Discount applies if paid within this number of days. Used only when DueDays is specified."
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this entity is currently enabled for use by QuickBooks."
+    },
+    {
+      "name": "Type",
+      "type": "string",
+      "required": false,
+      "description": "Type of the Sales Term. STANDARD is used if DueDays is not null; DATE_DRIVEN is used if DueDays is null.",
+      "enum": [
+        "STANDARD",
+        "DATE_DRIVEN"
+      ]
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. Values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated."
+        }
+      ]
+    },
+    {
+      "name": "DayOfMonthDue",
+      "type": "integer",
+      "required": false,
+      "description": "Payment must be received by this day of the month. Used only if DueDays is not specified. Required if DueDays not present."
+    },
+    {
+      "name": "DiscountDayOfMonth",
+      "type": "integer",
+      "required": false,
+      "description": "Discount applies if paid before this day of month. Required if DueDays not present."
+    },
+    {
+      "name": "DueNextMonthDays",
+      "type": "integer",
+      "required": false,
+      "description": "Payment due next month if issued that many days before the DayOfMonthDue. Required if DueDays not present."
+    },
+    {
+      "name": "DueDays",
+      "type": "integer",
+      "required": false,
+      "description": "Number of days from delivery of goods or services until the payment is due. Required if DayOfMonthDue not present."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "Name",
+    "Active",
+    "Type",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {
+      "DueDays": "120",
+      "Name": "Term120"
+    },
+    "update": {
+      "Id": "3",
+      "SyncToken": "0",
+      "Name": "Net 30",
+      "DueDays": 30,
+      "DiscountDays": 10
+    }
+  }
+}

@@ -1,0 +1,109 @@
+{
+  "generatedFrom": "Intuit QBO Accounting API reference (accounting.txt, source-grounded + adversarially verified)",
+  "groupCount": 6,
+  "groups": [
+    {
+      "slug": "batch",
+      "name": "Batch",
+      "category": "Utility",
+      "description": "Performs multiple create, update, delete, or query operations on QuickBooks Online entities in a single request to reduce network roundtrips and improve throughput.",
+      "operations": [
+        {
+          "name": "Sample batch request",
+          "method": "POST",
+          "path": "/v3/company/{realmID}/batch"
+        }
+      ]
+    },
+    {
+      "slug": "change_data_capture",
+      "name": "ChangeDataCapture",
+      "category": "Utility",
+      "description": "The change data capture (cdc) operation returns a list of objects that have changed since a specified date-time, enabling an app to periodically poll data services and refresh its local copy of object data with a look-back time of up to 30 days.",
+      "operations": [
+        {
+          "name": "Get a list of changed entities",
+          "method": "GET",
+          "path": "/v3/company/{realmID}/cdc?entities={entityList}&changedSince={dateTime}"
+        }
+      ]
+    },
+    {
+      "slug": "entitlements",
+      "name": "Entitlements",
+      "category": "Utility",
+      "description": "Retrieves the features available to a company, identified by the company's realmID. The available features are determined by the type of company established during QuickBooks Online setup, and represent a superset of those enabled for the company by preferences and for a user by permissions.",
+      "operations": [
+        {
+          "name": "Read entitlements",
+          "method": "GET",
+          "path": "/entitlements/v3/{realmID}"
+        }
+      ]
+    },
+    {
+      "slug": "exchange_rate",
+      "name": "Exchangerate",
+      "category": "Utility",
+      "description": "Applicable only for those companies that enable multicurrency, the exchangerate resource provides the ability to query and set exchange rates available to the QuickBooks Online company. This entity works in combination with the companycurrency entity and the Currency Center in the QuickBooks Online UI to manage exchange rates for the company.",
+      "operations": [
+        {
+          "name": "Get an exchangerate for an individual currency code.",
+          "method": "GET",
+          "path": "/v3/company/{realmID}/exchangerate?sourcecurrencycode={currencycode}&asofdate={yyyy-mm-dd}"
+        },
+        {
+          "name": "Query exchangerate objects.",
+          "method": "GET",
+          "path": "/v3/company/{realmID}/query?query={selectStatement}"
+        },
+        {
+          "name": "Update an exchangerate",
+          "method": "POST",
+          "path": "/v3/company/{realmID}/exchangerate"
+        }
+      ]
+    },
+    {
+      "slug": "recurring_transaction",
+      "name": "RecurringTransaction",
+      "category": "Utility",
+      "description": "Schedules the creation of transactions, sets up reminders, and creates reusable transaction templates in QuickBooks Online Essentials and Plus.",
+      "operations": [
+        {
+          "name": "Create a recurring transaction",
+          "method": "POST",
+          "path": "/v3/company/{realmID}/recurringtransaction"
+        },
+        {
+          "name": "Delete a recurring transaction",
+          "method": "POST",
+          "path": "/v3/company/{realmID}/recurringtransaction"
+        },
+        {
+          "name": "Query a recurring transaction",
+          "method": "GET",
+          "path": "/v3/company/{realmID}/query"
+        },
+        {
+          "name": "Read a recurring transaction",
+          "method": "GET",
+          "path": "/v3/company/{realmID}/recurringtransaction/{recurringtransactionId}"
+        }
+      ]
+    },
+    {
+      "slug": "tax_service",
+      "name": "TaxService",
+      "category": "Utility",
+      "description": "Creates a new TaxCode object (with associated existing or dynamically-created TaxRate objects) in QuickBooks Online.",
+      "operations": [
+        {
+          "name": "Create a taxservice",
+          "method": "POST",
+          "path": "/v3/company/{realmID}/taxservice/taxcode"
+        }
+      ]
+    }
+  ]
+}

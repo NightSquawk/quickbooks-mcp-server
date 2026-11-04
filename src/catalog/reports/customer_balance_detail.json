@@ -1,0 +1,111 @@
+{
+  "slug": "customer_balance_detail",
+  "name": "Customer Balance Detail",
+  "reportName": "CustomerBalanceDetail",
+  "methodName": "reportCustomerBalanceDetail",
+  "category": "Customer",
+  "description": "Provides access to the Customer Balance Detail report from the QuickBooks Online Report Service.",
+  "requiredFilters": [],
+  "parameters": [
+    {
+      "name": "customer",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified customers. Supported Values: One or more comma separated customer IDs as returned in the attribute, Customer.Id, of the Customer object response code."
+    },
+    {
+      "name": "shipvia",
+      "type": "string",
+      "required": false,
+      "description": "Filter by the shipping method as stored in Invoice.ShipMethodRef.Name. Supported Values: Any shipping method as sent in the Invoice.ShipMethodRef.Name attribute at Invoice create- or update-time."
+    },
+    {
+      "name": "term",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents based on term or terms supplied. Supported Values: One or more comma separated term IDs as returned in the attribute, Term.Id of the Term object response code."
+    },
+    {
+      "name": "end_duedate",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The range of dates over which receivables are due, in the format YYYY-MM-DD. start_duedate must be less than end_duedate. If not specified, all data is returned."
+    },
+    {
+      "name": "start_duedate",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The range of dates over which receivables are due, in the format YYYY-MM-DD. start_duedate must be less than end_duedate. If not specified, all data is returned."
+    },
+    {
+      "name": "custom1",
+      "type": "string",
+      "required": false,
+      "description": "Filter by the specified custom field as defined by the CustomField attribute in transaction entities where supported. Supported Values: Name of custom field."
+    },
+    {
+      "name": "sort_by",
+      "type": "string",
+      "required": false,
+      "description": "The column type used in sorting report rows. Specify a column type as defined with the columns query parameter."
+    },
+    {
+      "name": "arpaid",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "All",
+        "Paid",
+        "Unpaid"
+      ],
+      "description": "Supported Values: All, Paid, Unpaid"
+    },
+    {
+      "name": "report_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "Start date to use for the report, in the format YYYY-MM-DD."
+    },
+    {
+      "name": "sort_order",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "ascend",
+        "descend"
+      ],
+      "description": "The sort order. Supported Values: ascend, descend"
+    },
+    {
+      "name": "aging_method",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Report_Date",
+        "Current"
+      ],
+      "description": "The date upon which aging is determined. Supported Values: Report_Date, Current"
+    },
+    {
+      "name": "department",
+      "type": "string",
+      "required": false,
+      "description": "Filters report contents to include information for specified departments if so configured in the company file. Supported Values: One or more comma separated department IDs as returned in the attribute, Department.Id of the Department object response code."
+    },
+    {
+      "name": "columns",
+      "type": "string",
+      "required": false,
+      "description": "Column types to be shown in the report. Supported Values: bill_addr, create_by, create_date, cust_bill_email, cust_comp_name, cust_msg, cust_phone_other, cust_tel, cust_name, deliv_addr, doc_num*, due_date*, last_mod_by, last_mod_date, memo*, sale_sent_state, ship_addr, ship_date, ship_via, term_name, tracking_num, tx_date*, txn_type* Additional columns with custom fields enabled: sales_cust1, sales_cust2, sales_cust3 Additional columns with location tracking enabled: dept_name*"
+    }
+  ],
+  "requestSample": {
+    "customer": "1",
+    "start_duedate": "2015-08-01",
+    "end_duedate": "2015-09-30",
+    "columns": "subt_amount,tx_date"
+  }
+}

@@ -1,0 +1,439 @@
+{
+  "entity": "item",
+  "name": "Item",
+  "category": "Lists",
+  "description": "An item — a product or service sold, purchased, or tracked by the QuickBooks company.",
+  "operations": {
+    "create": {
+      "methodName": "createItem",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getItem",
+      "idRequired": true
+    },
+    "update": {
+      "methodName": "updateItem",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "search": {
+      "methodName": "findItems"
+    }
+  },
+  "searchableFields": [
+    "Name",
+    "Type",
+    "Active",
+    "Sku",
+    "FullyQualifiedName",
+    "ParentRef"
+  ],
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "System-assigned unique identifier of the item. Read-only; required on update (in the body) and used to address get."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Returned by the server; must be supplied unchanged in the body on update to avoid stale-write conflicts."
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "required": true,
+      "description": "User-recognizable name for the item. Required for create. Must be unique among items; max 100 characters. Cannot contain a colon (:)."
+    },
+    {
+      "name": "Type",
+      "type": "string",
+      "required": true,
+      "enum": [
+        "Inventory",
+        "Service",
+        "NonInventory"
+      ],
+      "description": "Classification of the item. Required for create. 'Inventory' requires QuickBooks Plus and inventory tracking enabled, and requires IncomeAccountRef, AssetAccountRef, ExpenseAccountRef, InvStartDate, QtyOnHand, and TrackQtyOnHand=true. Once set, Type is largely immutable except certain allowed conversions."
+    },
+    {
+      "name": "Sku",
+      "type": "string",
+      "required": false,
+      "description": "Stock Keeping Unit (SKU) for the item. Max 100 characters."
+    },
+    {
+      "name": "Description",
+      "type": "string",
+      "required": false,
+      "description": "Description of the item shown on sales forms. Max 4000 characters."
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "Whether the item is active and available for use. Defaults to true. Inactive items are filtered from default queries."
+    },
+    {
+      "name": "SubItem",
+      "type": "boolean",
+      "required": false,
+      "description": "Whether this item is a sub-item (child) of another item. When true, ParentRef must be supplied. Defaults to false."
+    },
+    {
+      "name": "ParentRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the parent item, establishing item hierarchy / sub-items. Set SubItem to true when ParentRef is used.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the parent item."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the parent item."
+        }
+      ]
+    },
+    {
+      "name": "Level",
+      "type": "integer",
+      "required": false,
+      "readOnly": true,
+      "description": "Depth of the item within the parent/child hierarchy (0 for top-level). System-computed; specifies the level of the item in the hierarchy."
+    },
+    {
+      "name": "FullyQualifiedName",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Fully qualified name of the item including its parent hierarchy, separated by colons (e.g. 'Parent:Child'). System-generated; max 100 characters."
+    },
+    {
+      "name": "Taxable",
+      "type": "boolean",
+      "required": false,
+      "description": "Whether the item is subject to sales tax. Applicable when automated sales tax is not enabled; behavior varies by company tax configuration."
+    },
+    {
+      "name": "SalesTaxIncluded",
+      "type": "boolean",
+      "required": false,
+      "description": "Whether the unit price/amount on sales forms already includes tax. Used in tax-inclusive jurisdictions."
+    },
+    {
+      "name": "UnitPrice",
+      "type": "decimal",
+      "required": false,
+      "description": "Monetary value of the item's sales price (per unit). Max length 15 digits. Applies to Service, NonInventory, and Inventory types."
+    },
+    {
+      "name": "IncomeAccountRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the posting account that records the proceeds from the sale of this item. Required for Inventory and (when sold) Service/NonInventory items. Must reference an Income-type account.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced income account."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced account."
+        }
+      ]
+    },
+    {
+      "name": "PurchaseDesc",
+      "type": "string",
+      "required": false,
+      "description": "Purchase description for the item, shown on purchase forms. Max 1000 characters."
+    },
+    {
+      "name": "PurchaseTaxIncluded",
+      "type": "boolean",
+      "required": false,
+      "description": "Whether the purchase cost already includes tax. Used in tax-inclusive jurisdictions."
+    },
+    {
+      "name": "PurchaseCost",
+      "type": "decimal",
+      "required": false,
+      "description": "Amount paid when buying or ordering the item (per unit cost). Max length 15 digits."
+    },
+    {
+      "name": "ExpenseAccountRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the expense account used to pay for / track purchases of this item. Required for Inventory items (the COGS account) and for purchased Service/NonInventory items. For Inventory, must reference a Cost of Goods Sold account.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced expense (or COGS) account."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced account."
+        }
+      ]
+    },
+    {
+      "name": "AssetAccountRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the inventory asset account that tracks the current value of inventory on hand. Required for Inventory items; must reference an Other Current Asset account of subtype Inventory.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced inventory asset account."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced account."
+        }
+      ]
+    },
+    {
+      "name": "TrackQtyOnHand",
+      "type": "boolean",
+      "required": false,
+      "description": "Whether quantity on hand is tracked for this item. Must be true for Inventory items. Once true it cannot be set back to false."
+    },
+    {
+      "name": "QtyOnHand",
+      "type": "decimal",
+      "required": false,
+      "description": "Current quantity of the item on hand. Required for Inventory items on create (sets the starting quantity). After create it is system-maintained via transactions and should not be set directly on update; adjust via inventory transactions."
+    },
+    {
+      "name": "InvStartDate",
+      "type": "date",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "Date the item was first stocked / inventory tracking began. Required for Inventory items on create."
+    },
+    {
+      "name": "ReorderPoint",
+      "type": "decimal",
+      "required": false,
+      "description": "Quantity at which QuickBooks prompts to reorder the inventory item. Applicable to Inventory items."
+    },
+    {
+      "name": "ClassRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Class associated with the item. Available when class tracking is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced class."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced class."
+        }
+      ]
+    },
+    {
+      "name": "PrefVendorRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the preferred vendor from whom this item is purchased. Applicable to Inventory and purchased items.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced vendor."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced vendor."
+        }
+      ]
+    },
+    {
+      "name": "SalesTaxCodeRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the sales tax code applied when this item is sold. Applicable in non-automated-sales-tax companies.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced sales tax code."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced tax code."
+        }
+      ]
+    },
+    {
+      "name": "PurchaseTaxCodeRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the purchase tax code applied when this item is bought. Applicable in non-automated-sales-tax companies.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced purchase tax code."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced tax code."
+        }
+      ]
+    },
+    {
+      "name": "TaxClassificationRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the tax classification (product/service taxability category) for the item. Used with automated sales tax to determine taxability.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id/key of the referenced tax classification."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the tax classification."
+        }
+      ]
+    },
+    {
+      "name": "AbatementRate",
+      "type": "decimal",
+      "required": false,
+      "description": "Sales tax abatement rate. Applicable only to India versions of QuickBooks Online."
+    },
+    {
+      "name": "ReverseChargeRate",
+      "type": "decimal",
+      "required": false,
+      "description": "Reverse charge tax rate. Applicable only to India versions of QuickBooks Online."
+    },
+    {
+      "name": "ServiceType",
+      "type": "string",
+      "required": false,
+      "description": "Sales tax service type. Applicable only to India versions of QuickBooks Online."
+    },
+    {
+      "name": "ItemCategoryType",
+      "type": "string",
+      "required": false,
+      "description": "Categorization label distinguishing products from services (e.g. 'Product' or 'Service'). Used in some locales/UI groupings."
+    },
+    {
+      "name": "Source",
+      "type": "string",
+      "required": false,
+      "description": "Origin of the item record (e.g. 'QBCommerce'). Identifies items created/synced from a connected channel."
+    },
+    {
+      "name": "domain",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "enum": [
+        "QBO"
+      ],
+      "description": "Internal use. Identifies the data domain; always 'QBO' for Accounting API objects."
+    },
+    {
+      "name": "sparse",
+      "type": "boolean",
+      "required": false,
+      "description": "Indicates that the object contains only a subset of fields (sparse representation). Set to true in sparse update bodies."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive read-only metadata about the object's creation and last update.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "format": "YYYY-MM-DDTHH:MM:SS-HH:MM",
+          "description": "Timestamp when the item was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "format": "YYYY-MM-DDTHH:MM:SS-HH:MM",
+          "description": "Timestamp when the item was last modified."
+        }
+      ]
+    }
+  ],
+  "requestSample": {
+    "create": {
+      "Name": "Garden Hose",
+      "Type": "NonInventory",
+      "IncomeAccountRef": {
+        "value": "79"
+      }
+    },
+    "update": {
+      "Id": "11",
+      "SyncToken": "0",
+      "sparse": true,
+      "UnitPrice": 29.99
+    }
+  }
+}

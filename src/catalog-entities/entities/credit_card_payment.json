@@ -1,0 +1,209 @@
+{
+  "entity": "credit_card_payment",
+  "name": "CreditCardPayment",
+  "category": "Expenses",
+  "description": "Represents a financial transaction to record a Credit Card balance payment in QuickBooks Online. It provides an easy way to move money from a Bank account to a Credit Card account, and is essentially a more limited Transfer form. Does not support multi-currency: only payments from home currency Bank accounts to home currency Credit Card accounts are accepted.",
+  "operations": {
+    "create": {
+      "methodName": "createCreditCardPayment",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getCreditCardPayment",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findCreditCardPayments"
+    },
+    "update": {
+      "methodName": "updateCreditCardPayment",
+      "bodyRequired": true,
+      "note": "Full or sparse update. The request body must include the Id and the latest SyncToken of the existing object. For a sparse update set sparse:true; for a full update all writable fields must be supplied or omitted fields are set to NULL."
+    },
+    "delete": {
+      "methodName": "deleteCreditCardPayment",
+      "idRequired": true
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "CreditCardAccountRef",
+      "type": "reference",
+      "required": true,
+      "description": "Identifies the credit card account to which funds are transferred. Must be a Credit Card account. Query the Account name list resource to determine the appropriate Account object for this reference.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced credit card Account object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The display name of the referenced credit card Account object."
+        }
+      ]
+    },
+    {
+      "name": "Amount",
+      "type": "decimal",
+      "required": true,
+      "description": "Indicates the total amount of the transaction."
+    },
+    {
+      "name": "BankAccountRef",
+      "type": "reference",
+      "required": true,
+      "description": "Identifies the bank account from which funds are transferred. Must be a Bank account. Query the Account name list resource to determine the appropriate Account object for this reference.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced bank Account object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The display name of the referenced bank Account object."
+        }
+      ]
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update. It is used to lock an object for use by one app at a time. As soon as an application modifies an object, its SyncToken is incremented. Attempts to modify an object specifying an older SyncToken fails. Only the latest version of the object is maintained by QuickBooks Online."
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "User entered, organization-private note about the transaction. This field maps to the Memo field on the Pay down credit card form."
+    },
+    {
+      "name": "VendorRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the vendor for this transaction. Query the Vendor name list resource to determine the appropriate Vendor object for this reference. Use Vendor.Id and Vendor.Name from that object for VendorRef.value and VendorRef.name, respectively.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced Vendor object (Vendor.Id)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The name of the referenced Vendor object (Vendor.Name)."
+        }
+      ]
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "description": "The date entered by the user when this transaction occurred. For posting transactions, this is the posting date that affects the financial statements. If the date is not supplied, the current date on the server is used. Sort order is ASC by default."
+    },
+    {
+      "name": "Memo",
+      "type": "string",
+      "required": false,
+      "description": "User entered, organization-private note about the transaction. This field maps to the Memo field on the Pay down credit card form."
+    },
+    {
+      "name": "PrintStatus",
+      "type": "string",
+      "required": false,
+      "description": "Printing status of the credit-card-payment.",
+      "enum": [
+        "NotSet",
+        "NeedToPrint",
+        "PrintComplete"
+      ]
+    },
+    {
+      "name": "CheckNum",
+      "type": "string",
+      "required": false,
+      "description": "User entered, Check number. This field maps to the Check no. field on the Pay down credit card form."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "TxnDate",
+    "Amount",
+    "MetaData.LastUpdatedTime",
+    "MetaData.CreateTime"
+  ],
+  "requestSample": {
+    "create": {
+      "TxnDate": "2020-03-27",
+      "Amount": "100",
+      "BankAccountRef": {
+        "name": "Checking",
+        "value": 37
+      },
+      "CreditCardAccountRef": {
+        "name": "Credit Card",
+        "value": 57
+      },
+      "PrivateNote": "This will fill in the memo field."
+    },
+    "update": {
+      "Id": "29",
+      "SyncToken": "1",
+      "sparse": true,
+      "TxnDate": "2020-03-27",
+      "Amount": "100",
+      "BankAccountRef": {
+        "name": "Checking",
+        "value": 37
+      },
+      "CreditCardAccountRef": {
+        "name": "Credit Card",
+        "value": 57
+      },
+      "PrivateNote": "This is a corrected memo field."
+    }
+  }
+}

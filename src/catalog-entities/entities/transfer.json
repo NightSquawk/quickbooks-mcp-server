@@ -1,0 +1,182 @@
+{
+  "entity": "transfer",
+  "name": "Transfer",
+  "category": "Accountant",
+  "description": "A Transfer represents a transaction where funds are moved between two accounts from the company's QuickBooks chart of accounts.",
+  "operations": {
+    "create": {
+      "methodName": "createTransfer",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getTransfer",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findTransfers"
+    },
+    "update": {
+      "methodName": "updateTransfer",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "delete": {
+      "methodName": "deleteTransfer",
+      "idRequired": true
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Sort order is ASC by default. Required for update."
+    },
+    {
+      "name": "ToAccountRef",
+      "type": "reference",
+      "required": true,
+      "description": "Identifies the asset account to which funds are transfered. Query the Account name list resource to determine the appropriate Account object. Use Account.Id and Account.Name for ToAccountRef.value and ToAccountRef.name. The specified account must have Account.Classification set to Asset.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Account.Id of the destination asset account."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The Account.Name of the destination asset account."
+        }
+      ]
+    },
+    {
+      "name": "Amount",
+      "type": "decimal",
+      "required": true,
+      "description": "Indicates the total amount of the transaction."
+    },
+    {
+      "name": "FromAccountRef",
+      "type": "reference",
+      "required": true,
+      "description": "Identifies the asset account from which funds are transfered. Query the Account name list resource to determine the appropriate Account object. Use Account.Id and Account.Name for FromAccountRef.value and FromAccountRef.name. The specified account must have Account.Classification set to Asset.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Account.Id of the source asset account."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The Account.Name of the source asset account."
+        }
+      ]
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Used to lock an object for use by one app at a time. Incremented on modification. Required for update."
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "User entered, organization-private note about the transaction. This note does not appear on the invoice to the customer. Maps to the Memo field on the Invoice form."
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "description": "The date entered by the user when this transaction occurred. For posting transactions, this is the posting date that affects the financial statements. If not supplied, the current date on the server is used. Sort order is ASC by default."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    },
+    {
+      "name": "RecurDataRef",
+      "type": "reference",
+      "required": false,
+      "readOnly": true,
+      "description": "A reference to the Recurring Transaction. It captures what recurring transaction template the Transfer was created from.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The Id of the recurring transaction template."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The name of the recurring transaction template."
+        }
+      ]
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "TxnDate",
+    "MetaData.LastUpdatedTime",
+    "MetaData.CreateTime"
+  ],
+  "requestSample": {
+    "create": {
+      "Amount": "120.00",
+      "ToAccountRef": {
+        "name": "Savings",
+        "value": "36"
+      },
+      "FromAccountRef": {
+        "name": "Checking",
+        "value": "35"
+      }
+    },
+    "update": {
+      "Id": "170",
+      "SyncToken": "1",
+      "sparse": true,
+      "Amount": 660,
+      "ToAccountRef": {
+        "name": "Savings",
+        "value": "36"
+      },
+      "FromAccountRef": {
+        "name": "Checking",
+        "value": "35"
+      }
+    }
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "entity": "tax_payment",
+  "name": "TaxPayment",
+  "category": "Expenses",
+  "description": "A tax payment or refund made against a filed tax return, applicable for AU, CA, and UK locales only.",
+  "operations": {
+    "get": {
+      "methodName": "getTaxPayment",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findTaxPayments"
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update. It is used to lock an object for use by one app at a time. As soon as an application modifies an object, its SyncToken is incremented. Attempts to modify an object specifying an older SyncToken fails. Only the latest version of the object is maintained by QuickBooks Online."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    },
+    {
+      "name": "Refund",
+      "type": "boolean",
+      "required": false,
+      "description": "Indicate if this transaction is a refund. Returns false for the payment."
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "readOnly": true,
+      "description": "Indicates the tax payment date."
+    },
+    {
+      "name": "PaymentAccountRef",
+      "type": "reference",
+      "required": false,
+      "readOnly": true,
+      "description": "Indicates the Account ID from which the payment was made (or refund was moved to).",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The ID for the referenced account."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "An identifying display name for the referenced account."
+        }
+      ]
+    },
+    {
+      "name": "Description",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Specifies the Memo/Description added for this payment."
+    },
+    {
+      "name": "PaymentAmount",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Specifies the tax payment amount paid towards a filed tax return."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {},
+    "update": {}
+  }
+}

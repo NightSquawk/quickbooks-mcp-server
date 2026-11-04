@@ -1,0 +1,85 @@
+{
+  "slug": "tax_service",
+  "name": "TaxService",
+  "category": "Utility",
+  "description": "Creates a new TaxCode object (with associated existing or dynamically-created TaxRate objects) in QuickBooks Online.",
+  "operations": [
+    {
+      "name": "Create a taxservice",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/taxservice/taxcode",
+      "description": "Creates a new tax code and associates one or more tax rate specifications (existing or dynamically created) with it. Returns the newly created taxservice object.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "String",
+          "required": true,
+          "description": "The QuickBooks company (realm) identifier."
+        }
+      ],
+      "queryParams": [],
+      "requestBody": {
+        "required": true,
+        "description": "The minimum elements to create a taxservice object. RateValue must be between 0 and 100 (%). To use an existing tax rate, supply its TaxRateId (query the TaxRate resource for the Id); to dynamically create a new tax rate, omit TaxRateId and instead supply TaxRateName, RateValue and TaxAgencyId.",
+        "attributes": [
+          {
+            "name": "TaxCode",
+            "type": "String",
+            "required": true,
+            "description": "Name of the new tax code. To query the list of currently defined tax codes, use the TaxCode endpoint."
+          },
+          {
+            "name": "TaxRateDetails",
+            "type": "TaxRateDetails [0..n]",
+            "required": true,
+            "description": "Container to hold one or more tax rate specifications.",
+            "attributes": [
+              {
+                "name": "RateValue",
+                "type": "String",
+                "required": false,
+                "description": "The tax rate value as a percentage; must be between 0 and 100. A single tax rate may not be listed twice in the list."
+              },
+              {
+                "name": "TaxRateId",
+                "type": "String",
+                "required": false,
+                "description": "Id of an existing tax rate (query the TaxRate endpoint to determine the Id). Omit to dynamically create a new tax rate."
+              },
+              {
+                "name": "TaxApplicableOn",
+                "type": "String",
+                "required": false,
+                "description": "Indicates whether the tax rate applies to Sales or Purchase."
+              },
+              {
+                "name": "TaxAgencyId",
+                "type": "String",
+                "required": false,
+                "description": "Id of the tax agency for the tax rate. The referenced TaxAgency must already exist."
+              },
+              {
+                "name": "TaxRateName",
+                "type": "String",
+                "required": false,
+                "description": "Name of the tax rate. Required when dynamically creating a new tax rate (i.e. when TaxRateId is not specified)."
+              }
+            ]
+          }
+        ]
+      },
+      "note": "On success the response includes the server-generated TaxCodeId and, for dynamically created rates, the generated TaxRateId. US-based QuickBooks companies only display system-created tax agencies and the tax rates visible via the QuickBooks UI."
+    }
+  ],
+  "requestSample": {
+    "TaxRateDetails": [
+      {
+        "RateValue": "8",
+        "TaxApplicableOn": "Sales",
+        "TaxAgencyId": "1",
+        "TaxRateName": "myNewTaxRateName"
+      }
+    ],
+    "TaxCode": "MyTaxCodeName"
+  }
+}

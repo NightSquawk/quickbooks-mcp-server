@@ -1,0 +1,212 @@
+{
+  "entity": "tax_code",
+  "name": "TaxCode",
+  "category": "Lists",
+  "description": "Tracks the taxable or non-taxable status of products, services, and customers. Sales tax codes can be assigned to products, services, and customers based on their taxable or non-taxable status and used to generate reports about the taxable or non-taxable status of sales for tax agencies.",
+  "operations": {
+    "get": {
+      "methodName": "getTaxCode",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findTaxCodes"
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Sort order is ASC by default. Required for update."
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "required": true,
+      "description": "User recognizable name for the tax sales code."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update. It is used to lock an object for use by one app at a time. As soon as an application modifies an object, its SyncToken is incremented. Attempts to modify an object specifying an older SyncToken fails. Only the latest version of the object is maintained by QuickBooks Online."
+    },
+    {
+      "name": "PurchaseTaxRateList",
+      "type": "object",
+      "required": false,
+      "description": "List of references to tax rates that apply for purchase transactions when this tax code represents a group of tax rates. Required when TaxGroup is set to true.",
+      "attributes": [
+        {
+          "name": "TaxRateDetail",
+          "type": "array",
+          "required": false,
+          "description": "Collection of tax rate detail entries for the purchase tax rate list.",
+          "attributes": [
+            {
+              "name": "TaxTypeApplicable",
+              "type": "string",
+              "required": false,
+              "description": "Indicates how the tax rate is applied (e.g., TaxOnAmount)."
+            },
+            {
+              "name": "TaxRateRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the applicable tax rate.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "The Id of the referenced TaxRate object."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced TaxRate object."
+                }
+              ]
+            },
+            {
+              "name": "TaxOrder",
+              "type": "integer",
+              "required": false,
+              "description": "Order in which the tax rate is applied."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SalesTaxRateList",
+      "type": "object",
+      "required": false,
+      "description": "List of references to tax rates that apply for sales transactions when this tax code represents a group of tax rates. Required when TaxGroup is set to true.",
+      "attributes": [
+        {
+          "name": "TaxRateDetail",
+          "type": "array",
+          "required": false,
+          "description": "Collection of tax rate detail entries for the sales tax rate list.",
+          "attributes": [
+            {
+              "name": "TaxTypeApplicable",
+              "type": "string",
+              "required": false,
+              "description": "Indicates how the tax rate is applied (e.g., TaxOnAmount)."
+            },
+            {
+              "name": "TaxRateRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the applicable tax rate.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "The Id of the referenced TaxRate object."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced TaxRate object."
+                }
+              ]
+            },
+            {
+              "name": "TaxOrder",
+              "type": "integer",
+              "required": false,
+              "description": "Order in which the tax rate is applied."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TaxGroup",
+      "type": "boolean",
+      "required": false,
+      "description": "true: this object represents a group of one or more tax rates. false: this object represents pseudo-tax codes TAX and NON."
+    },
+    {
+      "name": "Taxable",
+      "type": "boolean",
+      "required": false,
+      "description": "False or null means non-taxable. True means taxable. Always true, except for the pseudo taxcode NON."
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "False if inactive. Inactive sales tax codes may be hidden from display and may not be used on financial transactions."
+    },
+    {
+      "name": "Description",
+      "type": "string",
+      "required": false,
+      "description": "User entered description for the sales tax code."
+    },
+    {
+      "name": "Hidden",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "Read-only. Denotes whether active tax codes are displayed on transactions. true: this tax code is hidden on transactions. false: this tax code is displayed on transactions."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    },
+    {
+      "name": "TaxCodeConfigType",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Read only. Flag to identify whether the TaxCode is system defined by the Automated Sales Tax engine or user generated.",
+      "enum": [
+        "USER_DEFINED",
+        "SYSTEM_GENERATED"
+      ]
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "Name",
+    "Active",
+    "Taxable",
+    "TaxGroup",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {},
+    "update": {}
+  }
+}

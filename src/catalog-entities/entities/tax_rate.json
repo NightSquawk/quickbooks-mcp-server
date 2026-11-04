@@ -1,0 +1,154 @@
+{
+  "entity": "tax_rate",
+  "name": "TaxRate",
+  "category": "Lists",
+  "description": "A TaxRate object represents a rate applied to calculate tax liability (created via the TaxService entity).",
+  "operations": {
+    "get": {
+      "methodName": "getTaxRate",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findTaxRates"
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Sort order is ASC by default."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update. Used to lock an object for use by one app at a time; incremented on each modification."
+    },
+    {
+      "name": "RateValue",
+      "type": "string",
+      "required": false,
+      "description": "Value of the tax rate."
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "required": false,
+      "description": "User recognizable name for the tax rate."
+    },
+    {
+      "name": "AgencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the tax agency associated with this object.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The ID of the referenced tax agency object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "An identifying display name for the referenced object."
+        }
+      ]
+    },
+    {
+      "name": "SpecialTaxType",
+      "type": "string",
+      "required": false,
+      "description": "Special tax type to handle zero rate taxes. Used with VAT registered businesses who receive goods/services (acquisitions) from other EU countries, to calculate VAT due but not paid on these acquisitions."
+    },
+    {
+      "name": "EffectiveTaxRate",
+      "type": "array",
+      "required": false,
+      "description": "List of EffectiveTaxRate. An EffectiveTaxRate is used to know which taxrate is applicable on any date."
+    },
+    {
+      "name": "DisplayType",
+      "type": "string",
+      "required": false,
+      "description": "TaxRate DisplayType enum which acts as display config."
+    },
+    {
+      "name": "TaxReturnLineRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the tax return line associated with this object.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The ID of the referenced tax return line object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "An identifying display name for the referenced object."
+        }
+      ]
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this object is currently enabled for use by QuickBooks."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    },
+    {
+      "name": "OriginalTaxRate",
+      "type": "string",
+      "required": false,
+      "description": "ID of the original tax rate from which the new tax rate is derived. Helps to understand the relationship between corresponding tax rate entities."
+    },
+    {
+      "name": "Description",
+      "type": "string",
+      "required": false,
+      "description": "User entered description for the tax rate."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "Name",
+    "Active",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {},
+    "update": {}
+  }
+}

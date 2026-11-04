@@ -1,0 +1,95 @@
+{
+  "entity": "tax_classification",
+  "name": "TaxClassification",
+  "category": "Lists",
+  "description": "Segregates items into different tax classifications, a key parameter used to determine the appropriate tax on transactions involving items, sourced from tax governing authorities or external providers.",
+  "operations": {
+    "get": {
+      "methodName": "getTaxClassification",
+      "idRequired": true,
+      "note": "Read a TaxClassification by ID (GET /v3/company/<realmID>/taxclassification/<taxClassificationId>)."
+    },
+    "search": {
+      "methodName": "findTaxClassifications",
+      "note": "Read TaxClassifications: all (GET /v3/company/<realmID>/taxclassification), by parent ID (.../taxclassification/<parentid>/children), or by level (.../taxclassification?level=<level>). No SQL-style query operation is documented; only these read endpoints."
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object (present in sample JSON, e.g. 'EUC-01010101-V1-00100000'). Read only, system defined."
+    },
+    {
+      "name": "ParentRef",
+      "type": "reference",
+      "required": true,
+      "description": "Reference Type for parent tax classification.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced parent tax classification."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced parent tax classification."
+        }
+      ]
+    },
+    {
+      "name": "ApplicableTo",
+      "type": "array",
+      "required": false,
+      "description": "List of item types the tax classification is applicable to. Includes Inventory, NonInventory, Bundle and Service.",
+      "enum": [
+        "Inventory",
+        "NonInventory",
+        "Bundle",
+        "Service"
+      ]
+    },
+    {
+      "name": "Code",
+      "type": "string",
+      "required": false,
+      "description": "Code for the tax classification."
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "required": false,
+      "description": "Name of the tax classification."
+    },
+    {
+      "name": "Description",
+      "type": "string",
+      "required": false,
+      "description": "Description of the tax classification."
+    },
+    {
+      "name": "Level",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Tax classification level (numeric value 1 or 2; 1 specifies a parent tax classification). Read only."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "Name",
+    "Code",
+    "Level",
+    "ParentRef"
+  ],
+  "requestSample": {
+    "create": {},
+    "update": {}
+  }
+}

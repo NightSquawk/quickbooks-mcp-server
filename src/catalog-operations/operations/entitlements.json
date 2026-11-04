@@ -1,0 +1,31 @@
+{
+  "slug": "entitlements",
+  "name": "Entitlements",
+  "category": "Utility",
+  "description": "Retrieves the features available to a company, identified by the company's realmID. The available features are determined by the type of company established during QuickBooks Online setup, and represent a superset of those enabled for the company by preferences and for a user by permissions.",
+  "operations": [
+    {
+      "name": "Read entitlements",
+      "method": "GET",
+      "path": "/entitlements/v3/{realmID}",
+      "description": "Retrieves the entitlements details.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realmID) identifying the QuickBooks Online company whose entitlements are retrieved."
+        }
+      ],
+      "queryParams": [],
+      "note": "This resource does not accept an application/json Accept header. Use application/xml as the Accept header; the response is returned as XML (EntitlementsResponse). The path uses the /entitlements/v3/<realmID> form rather than the standard /v3/company/<realmID>/... form."
+    }
+  ],
+  "requestSample": {
+    "method": "GET",
+    "path": "/entitlements/v3/{realmID}",
+    "headers": {
+      "Accept": "application/xml"
+    }
+  }
+}

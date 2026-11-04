@@ -1,0 +1,356 @@
+{
+  "entity": "deposit",
+  "name": "Deposit",
+  "category": "Accountant",
+  "description": "A transaction that records one or more deposits into an asset account, either by linking funds previously held in the Undeposited Funds account (via Line.LinkedTxn) or as new direct deposits (via Line.DepositLineDetail).",
+  "operations": {
+    "create": {
+      "methodName": "createDeposit",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getDeposit",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findDeposits"
+    },
+    "update": {
+      "methodName": "updateDeposit",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "delete": {
+      "methodName": "deleteDeposit",
+      "idRequired": true
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "DepositToAccountRef",
+      "type": "reference",
+      "required": true,
+      "description": "Identifies the account to be used for this deposit. Reference an Account where AccountType is Other Current Asset or Bank.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Account.Id of the referenced account."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Account.Name of the referenced account."
+        }
+      ]
+    },
+    {
+      "name": "Line",
+      "type": "array",
+      "required": true,
+      "description": "Individual line items comprising the deposit. Specify a Line.LinkedTxn element along with DepositLine detail type to record a deposit for an existing transaction. Valid Line types include: LinkedTxn and DepositLine.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The line item identifier."
+        },
+        {
+          "name": "LineNum",
+          "type": "integer",
+          "required": false,
+          "description": "Position of the line in the collection."
+        },
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": false,
+          "description": "The amount of the line item."
+        },
+        {
+          "name": "DetailType",
+          "type": "string",
+          "required": false,
+          "description": "The type of line detail. Valid value: DepositLineDetail.",
+          "enum": [
+            "DepositLineDetail"
+          ]
+        },
+        {
+          "name": "ProjectRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the Project associated with the line.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": true,
+              "description": "Project.Id of the referenced project."
+            }
+          ]
+        },
+        {
+          "name": "LinkedTxn",
+          "type": "array",
+          "required": false,
+          "description": "Linked transaction(s) funding the deposit. Possible linked transaction types include Transfer, Payment, SalesReceipt, RefundReceipt, JournalEntry.",
+          "attributes": [
+            {
+              "name": "TxnId",
+              "type": "string",
+              "required": true,
+              "description": "Transaction Id of the linked object."
+            },
+            {
+              "name": "TxnType",
+              "type": "string",
+              "required": true,
+              "description": "Transaction type of the linked object (e.g. Payment, SalesReceipt)."
+            },
+            {
+              "name": "TxnLineId",
+              "type": "string",
+              "required": false,
+              "description": "Line Id of the linked transaction."
+            }
+          ]
+        },
+        {
+          "name": "DepositLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Detail for a direct deposit line.",
+          "attributes": [
+            {
+              "name": "AccountRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the account for this deposit line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "Account.Id of the referenced account."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Account.Name of the referenced account."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update. Used to lock an object for use by one app at a time; incremented on each modification."
+    },
+    {
+      "name": "GlobalTaxCalculation",
+      "type": "string",
+      "required": false,
+      "description": "Method in which tax is applied. Not applicable to US companies; required for non-US companies (conditionally required).",
+      "enum": [
+        "TaxExcluded",
+        "TaxInclusive",
+        "NotApplicable"
+      ]
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the currency in which all amounts on the transaction are expressed. Conditionally required: must be defined if multicurrency is enabled for the company.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Three-letter ISO 4217 currency code."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Full name of the currency."
+        }
+      ]
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "User entered, organization-private note about the transaction. Maps to the Memo field on the Invoice form."
+    },
+    {
+      "name": "ExchangeRate",
+      "type": "decimal",
+      "required": false,
+      "description": "The number of home currency units it takes to equal one unit of currency specified by CurrencyRef. Applicable if multicurrency is enabled."
+    },
+    {
+      "name": "DepartmentRef",
+      "type": "reference",
+      "required": false,
+      "description": "A reference to a Department object specifying the location of the transaction. Available if location tracking is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Department.Id of the referenced department."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Department.Name of the referenced department."
+        }
+      ]
+    },
+    {
+      "name": "TxnSource",
+      "type": "string",
+      "required": false,
+      "description": "Used internally to specify originating source of a credit card transaction."
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "description": "The date entered by the user when this transaction occurred. For posting transactions, this is the posting date. Defaults to the current server date if not supplied."
+    },
+    {
+      "name": "CashBack",
+      "type": "object",
+      "required": false,
+      "description": "Cash back information for the deposit (CashBackInfo)."
+    },
+    {
+      "name": "TxnTaxDetail",
+      "type": "object",
+      "required": false,
+      "description": "Provides information for taxes charged on the transaction as a whole, capturing sales taxes calculated based on the tax codes referenced by the transaction."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. Set by Data Services and read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated."
+        }
+      ]
+    },
+    {
+      "name": "RecurDataRef",
+      "type": "reference",
+      "required": false,
+      "readOnly": true,
+      "description": "A reference to the Recurring Transaction template the Deposit was created from.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced recurring transaction."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name of the referenced recurring transaction."
+        }
+      ]
+    },
+    {
+      "name": "TotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Total amount of the transaction, including all charges, allowances, and taxes. Calculated by QuickBooks business logic."
+    },
+    {
+      "name": "HomeTotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Total amount of the transaction in the home currency. Calculated by QuickBooks business logic; valid only when CurrencyRef is specified and multicurrency is enabled."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "TxnDate",
+    "DepositToAccountRef",
+    "TotalAmt",
+    "MetaData.LastUpdatedTime",
+    "MetaData.CreateTime"
+  ],
+  "requestSample": {
+    "create": {
+      "Line": [
+        {
+          "DetailType": "DepositLineDetail",
+          "Amount": 20,
+          "DepositLineDetail": {
+            "AccountRef": {
+              "name": "Unapplied Cash Payment Income",
+              "value": "87"
+            }
+          }
+        }
+      ],
+      "DepositToAccountRef": {
+        "name": "Checking",
+        "value": "35"
+      }
+    },
+    "update": {
+      "Id": "146",
+      "SyncToken": "0",
+      "sparse": true,
+      "DepositToAccountRef": {
+        "name": "Checking",
+        "value": "35"
+      },
+      "TxnDate": "2014-12-02"
+    }
+  }
+}

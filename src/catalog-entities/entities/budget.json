@@ -1,0 +1,228 @@
+{
+  "entity": "budget",
+  "name": "Budget",
+  "category": "Accountant",
+  "description": "A budget that assigns an amount on a monthly, quarterly, or annual basis to a specific account or customer, giving a business measurable expense goals for a given time period.",
+  "operations": {
+    "create": {
+      "methodName": "createBudget",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getBudget",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findBudgets"
+    },
+    "update": {
+      "methodName": "updateBudget",
+      "bodyRequired": true,
+      "note": "Full update; the request body must include all writable fields plus Id and SyncToken. Writable fields omitted from the request body are set to NULL."
+    },
+    "delete": {
+      "methodName": "deleteBudget",
+      "idRequired": true
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Sort order is ASC by default. Required for update."
+    },
+    {
+      "name": "EndDate",
+      "type": "datetime",
+      "required": true,
+      "description": "Budget end date."
+    },
+    {
+      "name": "StartDate",
+      "type": "datetime",
+      "required": true,
+      "description": "Budget begin date."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. It is used to lock an object for use by one app at a time. As soon as an application modifies an object, its SyncToken is incremented. Required for update."
+    },
+    {
+      "name": "BudgetEntryType",
+      "type": "string",
+      "required": false,
+      "description": "Period that this budget detail covers.",
+      "enum": [
+        "Monthly",
+        "Quarterly",
+        "Annually"
+      ]
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "required": false,
+      "description": "User recognizable name for the Account. Account.Name attribute must not contain double quotes (\") or colon (:)."
+    },
+    {
+      "name": "BudgetDetail",
+      "type": "array",
+      "required": false,
+      "description": "Container for the budget items. [0..n]",
+      "attributes": [
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": false,
+          "description": "Budgeted amount for this detail line."
+        },
+        {
+          "name": "BudgetDate",
+          "type": "date",
+          "required": false,
+          "description": "Date that this budget detail amount applies to."
+        },
+        {
+          "name": "AccountRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the account for this budget detail.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": false,
+              "description": "The Id of the referenced account."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "description": "The display name of the referenced account."
+            }
+          ]
+        },
+        {
+          "name": "CustomerRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the customer for this budget detail.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": false,
+              "description": "The Id of the referenced customer."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "description": "The display name of the referenced customer."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "BudgetType",
+      "type": "string",
+      "required": false,
+      "description": "Budget types. The only value currently supported is ProfitAndLoss.",
+      "enum": [
+        "ProfitAndLoss"
+      ]
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "Whether or not active; inactive accounts may be hidden from most display purposes and may not be posted to."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated."
+        }
+      ]
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "Name",
+    "Active",
+    "BudgetType",
+    "BudgetEntryType",
+    "StartDate",
+    "EndDate",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {
+      "StartDate": "2024-01-01",
+      "BudgetEntryType": "Quarterly",
+      "EndDate": "2024-12-31",
+      "Name": "MyBudget",
+      "BudgetType": "ProfitAndLoss",
+      "BudgetDetail": [
+        {
+          "Amount": 12.0,
+          "CustomerRef": {
+            "value": "2"
+          },
+          "AccountRef": {
+            "value": "5"
+          },
+          "BudgetDate": "2024-01-01"
+        }
+      ]
+    },
+    "update": {
+      "Id": "21",
+      "SyncToken": "3",
+      "StartDate": "2015-01-01",
+      "EndDate": "2015-12-31",
+      "BudgetEntryType": "Monthly",
+      "Name": "New",
+      "BudgetType": "ProfitAndLoss",
+      "Active": "true",
+      "BudgetDetail": [
+        {
+          "Amount": "7.00",
+          "AccountRef": {
+            "name": "Fees Billed",
+            "value": "5"
+          },
+          "CustomerRef": {
+            "name": "Fazil",
+            "value": "3"
+          },
+          "BudgetDate": "2015-01-01"
+        }
+      ]
+    }
+  }
+}

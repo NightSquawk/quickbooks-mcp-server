@@ -1,0 +1,131 @@
+{
+  "slug": "exchange_rate",
+  "name": "Exchangerate",
+  "category": "Utility",
+  "description": "Applicable only for those companies that enable multicurrency, the exchangerate resource provides the ability to query and set exchange rates available to the QuickBooks Online company. This entity works in combination with the companycurrency entity and the Currency Center in the QuickBooks Online UI to manage exchange rates for the company.",
+  "operations": [
+    {
+      "name": "Get an exchangerate for an individual currency code.",
+      "method": "GET",
+      "path": "/v3/company/{realmID}/exchangerate?sourcecurrencycode={currencycode}&asofdate={yyyy-mm-dd}",
+      "description": "Returns the exchangerate object for an individual source currency code, optionally as of a specific effective date.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID) of the QuickBooks Online company."
+        }
+      ],
+      "queryParams": [
+        {
+          "name": "sourcecurrencycode",
+          "type": "string",
+          "required": true,
+          "description": "The desired currency code. Required."
+        },
+        {
+          "name": "asofdate",
+          "type": "string",
+          "required": false,
+          "description": "The desired effective date in yyyy-mm-dd format. If not specified, today's date is used."
+        }
+      ]
+    },
+    {
+      "name": "Query exchangerate objects.",
+      "method": "GET",
+      "path": "/v3/company/{realmID}/query?query={selectStatement}",
+      "description": "Returns the results of a SQL-like select statement against exchangerate objects, e.g. \"select * from exchangerate where sourcecurrencycode in ('EUR', 'INR') and asofdate='2015-07-07'\".",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID) of the QuickBooks Online company."
+        }
+      ],
+      "queryParams": [
+        {
+          "name": "query",
+          "type": "string",
+          "required": true,
+          "description": "The select statement specifying the exchangerate objects to return."
+        }
+      ]
+    },
+    {
+      "name": "Update an exchangerate",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/exchangerate",
+      "description": "Sets or updates an exchange rate. SourceCurrencyCode, Rate, and AsOfDate are mandatory fields. TargetCurrencyCode defaults to Home Currency if not supplied. Setting exchange rate to anything other than 1 for a case where SourceCurrencyCode=TargetCurrencyCode results in the exchange rate set to 1. Setting an exchange rate for the home currency, that is, where SourceCurrencyCode is set to the home currency results in a validation error.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID) of the QuickBooks Online company."
+        }
+      ],
+      "queryParams": [],
+      "requestBody": {
+        "required": true,
+        "description": "The exchangerate object to set or update.",
+        "attributes": [
+          {
+            "name": "SyncToken",
+            "type": "String",
+            "required": true,
+            "description": "Required for update. Version number of the object. It is used to lock an object for use by one app at a time. As soon as an application modifies an object, its SyncToken is incremented. Attempts to modify an object specifying an older SyncToken fails. Only the latest version of the object is maintained by QuickBooks Online."
+          },
+          {
+            "name": "AsOfDate",
+            "type": "Boolean",
+            "required": true,
+            "description": "Required for update. Date on which this exchange rate was set."
+          },
+          {
+            "name": "SourceCurrencyCode",
+            "type": "String",
+            "required": true,
+            "description": "Required for update. The source currency from which the exchange rate is specified, and usually. Specify as a three letter string representing the ISO 4217 code for the currency. For example, USD , AUD , EUR , and so on. For example, in the equation 65 INR = 1 USD , INR is the source currency."
+          },
+          {
+            "name": "Rate",
+            "type": "Decimal",
+            "required": true,
+            "description": "Required for update. The exchange rate between SourceCurrencyCode and TargetCurrencyCode on the AsOfDate date."
+          },
+          {
+            "name": "CustomField",
+            "type": "CustomField",
+            "required": false,
+            "description": "Optional. One of, up to three custom fields for the transaction. Available for custom fields so configured for the company. Check Preferences.SalesFormsPrefs.CustomField and Preferences.VendorAndPurchasesPrefs.POCustomField for custom fields currenly configured. Click here to learn about managing custom fields."
+          },
+          {
+            "name": "TargetCurrencyCode",
+            "type": "String",
+            "required": false,
+            "description": "Optional. The target currency against which the exchange rate is specified. Specify as a three letter string representing the ISO 4217 code for the currency. For example, USD , AUD , EUR , and so on. For example, in the equation 65 INR = 1 USD , USA is the target currency."
+          },
+          {
+            "name": "MetaData",
+            "type": "ModificationMetaData",
+            "required": false,
+            "description": "Optional. Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications."
+          }
+        ]
+      }
+    }
+  ],
+  "requestSample": {
+    "SyncToken": "0",
+    "AsOfDate": "2015-07-08",
+    "SourceCurrencyCode": "INR",
+    "Rate": 7,
+    "TargetCurrencyCode": "USD",
+    "MetaData": {
+      "LastUpdatedTime": "2015-07-07T12:38:40-07:00"
+    }
+  }
+}

@@ -1,0 +1,502 @@
+{
+  "entity": "change_order",
+  "name": "ChangeOrder",
+  "category": "Sales",
+  "description": "A change order represents a modification to the scope of work on an existing project estimate, capturing additions or deletions to the original contracted work that roll up into the project's total budget alongside the parent estimate. Available for US companies on QuickBooks Online Advanced with the Construction Pack or Intuit Enterprise Suite, with the Projects feature enabled.",
+  "operations": {
+    "create": {
+      "methodName": "createChangeOrder",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getChangeOrder",
+      "idRequired": true
+    },
+    "update": {
+      "methodName": "updateChangeOrder",
+      "bodyRequired": true,
+      "note": "Full update; request body must include all writable fields of the existing object plus Id and SyncToken. Writable fields omitted are set to NULL. The Line array uses full-replace behavior; lines omitted are deleted, and every line must re-include its LinkedTxn referencing the parent estimate."
+    },
+    "delete": {
+      "methodName": "deleteChangeOrder",
+      "idRequired": true
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update and delete. Sort order is ASC by default."
+    },
+    {
+      "name": "LinkedTxn",
+      "type": "array",
+      "required": true,
+      "description": "One or more linked transaction references at the header level, reflecting the parent project estimate. Also appears on each line item. Use LinkedTxn.TxnId as the ID in a separate Estimate read request to retrieve details of the linked object. TxnType must always be Estimate.",
+      "attributes": [
+        {
+          "name": "TxnId",
+          "type": "string",
+          "required": true,
+          "description": "The ID of the linked transaction (the parent Estimate). Use as the ID in a separate Estimate read request to retrieve details of the linked object."
+        },
+        {
+          "name": "TxnType",
+          "type": "string",
+          "required": true,
+          "description": "Type of the linked transaction. Must always be Estimate.",
+          "enum": [
+            "Estimate"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Line",
+      "type": "array",
+      "required": true,
+      "description": "Individual line items describing the work being added or removed. Supports SalesItemLineDetail and SubTotalLineDetail line types. Every line must include a LinkedTxn array referencing the parent project estimate with TxnType: Estimate, and all lines must reference the same parent estimate. The Line array uses full-replace behavior on update; lines omitted from an update request are deleted.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Identifier of the line item."
+        },
+        {
+          "name": "LineNum",
+          "type": "integer",
+          "required": false,
+          "description": "Position of the line in the collection of transaction lines."
+        },
+        {
+          "name": "Description",
+          "type": "string",
+          "required": false,
+          "description": "Free-form text description of the line item."
+        },
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": false,
+          "description": "The amount of the line item."
+        },
+        {
+          "name": "CostAmount",
+          "type": "decimal",
+          "required": false,
+          "description": "The cost amount of the line item; contributes to the read-only TotalCostAmt."
+        },
+        {
+          "name": "DetailType",
+          "type": "string",
+          "required": false,
+          "description": "The type of detail for the line. SalesItemLineDetail for added/removed work; SubTotalLineDetail for system-generated subtotals on output.",
+          "enum": [
+            "SalesItemLineDetail",
+            "SubTotalLineDetail"
+          ]
+        },
+        {
+          "name": "LinkedTxn",
+          "type": "array",
+          "required": true,
+          "description": "Array referencing the parent project estimate. Each entry must use TxnType: Estimate and all lines must reference the same parent estimate. Omitting this causes the transaction to be treated as a standalone estimate.",
+          "attributes": [
+            {
+              "name": "TxnId",
+              "type": "string",
+              "required": true,
+              "description": "The ID of the parent Estimate transaction."
+            },
+            {
+              "name": "TxnType",
+              "type": "string",
+              "required": true,
+              "description": "Type of the linked transaction. Must be Estimate.",
+              "enum": [
+                "Estimate"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SalesItemLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Detail for a sales item line.",
+          "attributes": [
+            {
+              "name": "ItemRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the item for this line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "Item Id."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Item display name."
+                }
+              ]
+            },
+            {
+              "name": "TaxCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the tax code for this line (for example, TAX, NON).",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "Tax code Id."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Tax code name."
+                }
+              ]
+            },
+            {
+              "name": "Qty",
+              "type": "decimal",
+              "required": false,
+              "description": "Quantity of the item."
+            },
+            {
+              "name": "UnitPrice",
+              "type": "decimal",
+              "required": false,
+              "description": "Unit price of the item."
+            },
+            {
+              "name": "UnitCostPrice",
+              "type": "decimal",
+              "required": false,
+              "description": "Unit cost price of the item."
+            }
+          ]
+        },
+        {
+          "name": "SubTotalLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Detail for a subtotal line; an empty object on output."
+        }
+      ]
+    },
+    {
+      "name": "ProjectRef",
+      "type": "reference",
+      "required": true,
+      "description": "Reference to the project this change order belongs to. Must reference an active project. Required on every create and update request. Without a valid ProjectRef, the change order will not appear in the Projects dashboard.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Project Id."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Project name."
+        }
+      ]
+    },
+    {
+      "name": "CustomerRef",
+      "type": "reference",
+      "required": true,
+      "description": "Reference to the customer associated with this change order. Must match the customer on the parent project estimate. Use Customer.Id and Customer.DisplayName for value and name respectively.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Customer Id."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Customer display name."
+        }
+      ]
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object, used to lock an object for use by one app at a time. Required for update and delete. Incremented on each modification; modifying with an older SyncToken fails. Only the latest version is maintained by QuickBooks Online."
+    },
+    {
+      "name": "BillEmail",
+      "type": "object",
+      "required": false,
+      "description": "Email address where the change order is sent. Conditionally required: required when EmailStatus is set to NeedToSend.",
+      "attributes": [
+        {
+          "name": "Address",
+          "type": "string",
+          "required": false,
+          "description": "Email address."
+        }
+      ]
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "description": "The date entered by the user when this transaction occurred. For posting transactions, this is the posting date affecting financial statements. If not supplied, the current server date is used. Sort order is ASC by default."
+    },
+    {
+      "name": "PrintStatus",
+      "type": "string",
+      "required": false,
+      "description": "Printing status of the change order.",
+      "enum": [
+        "NotSet",
+        "NeedToPrint",
+        "PrintComplete"
+      ]
+    },
+    {
+      "name": "TxnStatus",
+      "type": "string",
+      "required": false,
+      "description": "Current status of the change order. Pending (default — created but not yet reviewed), Accepted (customer approved; project contracted total increases accordingly), Closed (converted to an Invoice or manually closed), Rejected (customer declined; does not affect project total).",
+      "enum": [
+        "Pending",
+        "Accepted",
+        "Closed",
+        "Rejected"
+      ]
+    },
+    {
+      "name": "AcceptedDate",
+      "type": "date",
+      "required": false,
+      "description": "Date the change order was accepted. Populated when TxnStatus is set to Accepted."
+    },
+    {
+      "name": "ExpirationDate",
+      "type": "date",
+      "required": false,
+      "description": "Date by which the change order must be accepted before it expires."
+    },
+    {
+      "name": "ApplyTaxAfterDiscount",
+      "type": "boolean",
+      "required": false,
+      "description": "If false or null, sales tax is calculated first and then any discount is applied. If true, the discount is subtracted first and then sales tax is calculated."
+    },
+    {
+      "name": "DocNumber",
+      "type": "string",
+      "required": false,
+      "description": "Reference number for the change order (for example, CO-001). If not provided, the value is null."
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "Organization-private note about the change order. Does not appear on documents sent to the customer."
+    },
+    {
+      "name": "CustomerMemo",
+      "type": "object",
+      "required": false,
+      "description": "User-entered message to the customer; visible on the Change Order document sent to the customer.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The memo text."
+        }
+      ]
+    },
+    {
+      "name": "TxnTaxDetail",
+      "type": "object",
+      "required": false,
+      "description": "Tax details for the transaction. Captures sales taxes calculated based on tax codes referenced by the transaction lines.",
+      "attributes": [
+        {
+          "name": "TotalTax",
+          "type": "decimal",
+          "required": false,
+          "description": "Total tax calculated for the transaction."
+        }
+      ]
+    },
+    {
+      "name": "AcceptedBy",
+      "type": "string",
+      "required": false,
+      "description": "Name of the customer or representative who accepted the change order. Populated when TxnStatus is set to Accepted."
+    },
+    {
+      "name": "EmailStatus",
+      "type": "string",
+      "required": false,
+      "description": "Email status of the change order.",
+      "enum": [
+        "NotSet",
+        "NeedToSend",
+        "EmailSent"
+      ]
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. Set by Data Services and read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was last updated."
+        }
+      ]
+    },
+    {
+      "name": "TotalCostAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Total cost amount of the transaction, calculated from the sum of all line CostAmount values. Calculated by QuickBooks business logic; any value supplied is overwritten."
+    },
+    {
+      "name": "TotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Total amount of the transaction including all line charges and taxes. Calculated by QuickBooks business logic from the sum of all line Amount values plus applicable tax; do not include in create or update request bodies."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "DocNumber",
+    "TxnStatus",
+    "TxnDate",
+    "EmailStatus",
+    "PrintStatus",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {
+      "ProjectRef": {
+        "name": "Kitchen Renovation - Phase 2",
+        "value": "39298034"
+      },
+      "CustomerRef": {
+        "name": "Acme Construction Corp",
+        "value": "58"
+      },
+      "Line": [
+        {
+          "LinkedTxn": [
+            {
+              "TxnId": "512",
+              "TxnType": "Estimate"
+            }
+          ],
+          "Description": "Structural steel — additional load-bearing beam (LB-200)",
+          "DetailType": "SalesItemLineDetail",
+          "SalesItemLineDetail": {
+            "TaxCodeRef": {
+              "value": "TAX"
+            },
+            "Qty": 3,
+            "UnitPrice": 800.0,
+            "UnitCostPrice": 200.0,
+            "ItemRef": {
+              "name": "Structural Materials",
+              "value": "21"
+            }
+          },
+          "LineNum": 1,
+          "Amount": 2400.0,
+          "CostAmount": 600.0
+        }
+      ]
+    },
+    "update": {
+      "Id": "621",
+      "SyncToken": "1",
+      "ProjectRef": {
+        "name": "Kitchen Renovation - Phase 2",
+        "value": "39298034"
+      },
+      "CustomerRef": {
+        "name": "Acme Construction Corp",
+        "value": "58"
+      },
+      "LinkedTxn": [
+        {
+          "TxnId": "512",
+          "TxnType": "Estimate"
+        }
+      ],
+      "TxnStatus": "Accepted",
+      "AcceptedBy": "John Smith",
+      "AcceptedDate": "2024-09-16",
+      "Line": [
+        {
+          "LinkedTxn": [
+            {
+              "TxnId": "512",
+              "TxnType": "Estimate"
+            }
+          ],
+          "Description": "Structural steel — additional load-bearing beam (LB-200)",
+          "DetailType": "SalesItemLineDetail",
+          "SalesItemLineDetail": {
+            "TaxCodeRef": {
+              "value": "TAX"
+            },
+            "Qty": 3,
+            "UnitPrice": 800.0,
+            "ItemRef": {
+              "name": "Structural Materials",
+              "value": "21"
+            }
+          },
+          "LineNum": 1,
+          "Amount": 2400.0,
+          "Id": "1"
+        }
+      ]
+    }
+  }
+}

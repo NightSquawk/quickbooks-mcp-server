@@ -1,0 +1,313 @@
+{
+  "entity": "reimburse_charge",
+  "name": "ReimburseCharge",
+  "category": "Expenses",
+  "description": "A ReimburseCharge is a billable expense created when Expense or Bill lines are marked as billable to a customer to be invoiced later.",
+  "operations": {
+    "get": {
+      "methodName": "getReimburseCharge",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findReimburseCharges"
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Sort order is ASC by default."
+    },
+    {
+      "name": "Line",
+      "type": "array",
+      "required": true,
+      "description": "Line items of the reimburse charge.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "description": "Line identifier."
+        },
+        {
+          "name": "LineNum",
+          "type": "integer",
+          "required": false,
+          "description": "Line number."
+        },
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": false,
+          "description": "The amount of the line item."
+        },
+        {
+          "name": "Description",
+          "type": "string",
+          "required": false,
+          "description": "Free-form description of the line."
+        },
+        {
+          "name": "DetailType",
+          "type": "string",
+          "required": false,
+          "description": "Detail type of the line (e.g. ReimburseLineDetail)."
+        },
+        {
+          "name": "LinkedTxn",
+          "type": "array",
+          "required": false,
+          "description": "Linked transactions for the line.",
+          "attributes": [
+            {
+              "name": "TxnId",
+              "type": "string",
+              "required": false,
+              "description": "Transaction Id of the linked transaction."
+            },
+            {
+              "name": "TxnType",
+              "type": "string",
+              "required": false,
+              "description": "Transaction type of the linked transaction (e.g. Invoice)."
+            }
+          ]
+        },
+        {
+          "name": "ReimburseLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Reimburse line detail.",
+          "attributes": [
+            {
+              "name": "ItemRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the item.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "Item Id."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Item name."
+                }
+              ]
+            },
+            {
+              "name": "Qty",
+              "type": "decimal",
+              "required": false,
+              "description": "Quantity."
+            },
+            {
+              "name": "TaxCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the tax code.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "Tax code Id."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Tax code name."
+                }
+              ]
+            },
+            {
+              "name": "MarkupInfo",
+              "type": "object",
+              "required": false,
+              "description": "Markup information.",
+              "attributes": [
+                {
+                  "name": "Percent",
+                  "type": "decimal",
+                  "required": false,
+                  "description": "Markup percentage."
+                }
+              ]
+            },
+            {
+              "name": "ItemAccountRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the income account.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "Account Id."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Account name."
+                }
+              ]
+            },
+            {
+              "name": "UnitPrice",
+              "type": "decimal",
+              "required": false,
+              "description": "Unit price."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Amount",
+      "type": "decimal",
+      "required": true,
+      "description": "The amount of the line item."
+    },
+    {
+      "name": "CustomerRef",
+      "type": "reference",
+      "required": true,
+      "description": "Reference to a customer or job. Use Customer.Id and Customer.DisplayName for value and name respectively.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Customer Id."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Customer display name."
+        }
+      ]
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Required for update. Version number of the object used to lock it for use by one app at a time."
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Conditionally required. Reference to the currency in which all amounts on the transaction are expressed. Must be defined if multicurrency is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "Three-letter ISO currency code."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Currency name."
+        }
+      ]
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "User entered, organization-private note about the transaction. Maps to the Statement Memo field on the Invoice form."
+    },
+    {
+      "name": "LinkedTxn",
+      "type": "array",
+      "required": false,
+      "description": "Will contain the Invoice Id if the ReimburseCharge has been linked with an Invoice.",
+      "attributes": [
+        {
+          "name": "TxnId",
+          "type": "string",
+          "required": false,
+          "description": "Transaction Id of the linked transaction."
+        },
+        {
+          "name": "TxnType",
+          "type": "string",
+          "required": false,
+          "description": "Transaction type of the linked transaction (e.g. Invoice)."
+        }
+      ]
+    },
+    {
+      "name": "ExchangeRate",
+      "type": "decimal",
+      "required": false,
+      "description": "The number of home currency units it takes to equal one unit of currency specified by CurrencyRef. Applicable if multicurrency is enabled."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. Set by Data Services and read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was created."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was last updated."
+        }
+      ]
+    },
+    {
+      "name": "HasBeenInvoiced",
+      "type": "boolean",
+      "required": false,
+      "description": "Boolean indicating whether the reimbursable charge has been linked to an Invoice."
+    },
+    {
+      "name": "HomeTotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Total amount of the transaction in the home currency, including charges, allowances and taxes. Calculated by QuickBooks business logic. Valid only when CurrencyRef is specified and multicurrency is enabled."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "HasBeenInvoiced",
+    "CustomerRef",
+    "Amount",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {},
+    "update": {}
+  }
+}

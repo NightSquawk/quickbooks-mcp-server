@@ -1,0 +1,106 @@
+{
+  "entity": "company_currency",
+  "name": "CompanyCurrency",
+  "category": "Lists",
+  "description": "Defines a currency that is active in a multicurrency-enabled QuickBooks Online company, corresponding to the currencies listed in the Currency Center.",
+  "operations": {
+    "create": {
+      "methodName": "createCompanyCurrency",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getCompanyCurrency",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findCompanyCurrencys"
+    },
+    "update": {
+      "methodName": "updateCompanyCurrency",
+      "bodyRequired": true,
+      "note": "Full update; request body must include all writable fields plus Id and SyncToken. Omitted writable fields are set to NULL. Delete is performed by setting Active to false in an update request."
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "Code",
+      "type": "string",
+      "required": true,
+      "description": "A three letter string representing the ISO 4217 code for the currency. For example, USD, AUD, EUR, and so on."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update. Used to lock an object for use by one app at a time; incremented on each modification. Attempts to modify an object specifying an older SyncToken fails."
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "required": false,
+      "description": "The full name of the currency."
+    },
+    {
+      "name": "CustomField",
+      "type": "array",
+      "required": false,
+      "description": "One of, up to three custom fields for the transaction. Available for custom fields so configured for the company."
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "Indicates whether this currency is active in the company. true: active and enabled for use by QuickBooks. false: inactive, hidden from most display purposes, and not available for use with financial transactions."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the object. The MetaData values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "Code",
+    "Name",
+    "Active",
+    "MetaData.LastUpdatedTime"
+  ],
+  "requestSample": {
+    "create": {
+      "Code": "GBP"
+    },
+    "update": {
+      "Id": "7",
+      "SyncToken": "0",
+      "Code": "GBP",
+      "Name": "British Pound Sterling",
+      "Active": false
+    }
+  }
+}

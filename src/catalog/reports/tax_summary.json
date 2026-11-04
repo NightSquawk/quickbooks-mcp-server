@@ -1,0 +1,89 @@
+{
+  "slug": "tax_summary",
+  "name": "Tax Summary",
+  "reportName": "TaxSummary",
+  "methodName": "reportTaxSummary",
+  "category": "Tax",
+  "description": "Provides a Tax Summary report for non-US locale companies, accessed from the QuickBooks Online Report Service.",
+  "requiredFilters": [
+    "agency_id"
+  ],
+  "parameters": [
+    {
+      "name": "agency_id",
+      "type": "string",
+      "required": true,
+      "description": "The ID of the Tax Agency for which to generate the report. Read the TaxAgency object to get all valid values for this field."
+    },
+    {
+      "name": "accounting_method",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Cash",
+        "Accrual"
+      ],
+      "description": "The accounting method used in the report."
+    },
+    {
+      "name": "end_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The end date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    },
+    {
+      "name": "date_macro",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Today",
+        "Yesterday",
+        "This Week",
+        "Last Week",
+        "This Week-to-date",
+        "Last Week-to-date",
+        "Next Week",
+        "Next 4 Weeks",
+        "This Month",
+        "Last Month",
+        "This Month-to-date",
+        "Last Month-to-date",
+        "Next Month",
+        "This Fiscal Quarter",
+        "Last Fiscal Quarter",
+        "This Fiscal Quarter-to-date",
+        "Last Fiscal Quarter-to-date",
+        "Next Fiscal Quarter",
+        "This Fiscal Year",
+        "Last Fiscal Year",
+        "This Fiscal Year-to-date",
+        "Last Fiscal Year-to-date",
+        "Next Fiscal Year"
+      ],
+      "description": "Predefined date range. Use if you want the report to cover a standard report date range; otherwise, use the start_date and end_date to cover an explicit report date range."
+    },
+    {
+      "name": "sort_order",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "ascend",
+        "descend"
+      ],
+      "description": "The sort order."
+    },
+    {
+      "name": "start_date",
+      "type": "string",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The start date of the report, in the format YYYY-MM-DD. start_date must be less than end_date. Use if you want the report to cover an explicit date range; otherwise, use date_macro to cover a standard report date range. If not specified value of date_macro is used."
+    }
+  ],
+  "requestSample": {
+    "agency_id": "1",
+    "start_date": "2024-01-01",
+    "end_date": "2024-12-31"
+  }
+}

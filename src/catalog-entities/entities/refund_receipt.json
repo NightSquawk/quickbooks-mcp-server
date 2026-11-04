@@ -1,0 +1,818 @@
+{
+  "entity": "refund_receipt",
+  "name": "RefundReceipt",
+  "category": "Sales",
+  "description": "A RefundReceipt represents a refund issued to a customer for a product or service that was provided.",
+  "operations": {
+    "create": {
+      "methodName": "createRefundReceipt",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getRefundReceipt",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findRefundReceipts"
+    },
+    "update": {
+      "methodName": "updateRefundReceipt",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "delete": {
+      "methodName": "deleteRefundReceipt",
+      "idRequired": true
+    }
+  },
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object. Required for update. Sort order is ASC by default."
+    },
+    {
+      "name": "DepositToAccountRef",
+      "type": "reference",
+      "required": true,
+      "description": "Account from which payment money is refunded. Account.AccountType must be Other Current Asset or Bank.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Account.Id of the deposit-to account."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Account.Name of the deposit-to account."
+        }
+      ]
+    },
+    {
+      "name": "Line",
+      "type": "array",
+      "required": true,
+      "description": "Individual line items of a transaction. Valid Line types include: SalesItemLine, GroupLine, DescriptionOnlyLine, DiscountLine and SubTotalLine (read-only).",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Identifier of the line item."
+        },
+        {
+          "name": "LineNum",
+          "type": "integer",
+          "required": false,
+          "description": "Position of the line in the collection of transaction lines."
+        },
+        {
+          "name": "Description",
+          "type": "string",
+          "required": false,
+          "description": "Free-form description of the line item."
+        },
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": true,
+          "description": "The amount of the line item."
+        },
+        {
+          "name": "DetailType",
+          "type": "string",
+          "required": true,
+          "description": "The type of line detail (e.g. SalesItemLineDetail, SubTotalLineDetail).",
+          "enum": [
+            "SalesItemLineDetail",
+            "GroupLineDetail",
+            "DescriptionLineDetail",
+            "DiscountLineDetail",
+            "SubTotalLineDetail"
+          ]
+        },
+        {
+          "name": "SalesItemLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Line detail for a sales item line.",
+          "attributes": [
+            {
+              "name": "ItemRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the item.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "Item.Id of the referenced item."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Item.Name of the referenced item."
+                }
+              ]
+            },
+            {
+              "name": "Qty",
+              "type": "decimal",
+              "required": false,
+              "description": "Number of items for the line."
+            },
+            {
+              "name": "UnitPrice",
+              "type": "decimal",
+              "required": false,
+              "description": "Unit price of the item."
+            },
+            {
+              "name": "TaxCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the TaxCode for the line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "TaxCode.Id of the referenced tax code."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name of the referenced tax code."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SubTotalLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Line detail for a subtotal line (read-only)."
+        }
+      ]
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object, used to lock an object for use by one app at a time. Required for update. Only the latest version is maintained by QuickBooks Online."
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the currency in which all amounts on the transaction are expressed. Conditionally required: must be defined if multicurrency is enabled for the company.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Three-letter ISO 4217 currency code."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Full name of the currency."
+        }
+      ]
+    },
+    {
+      "name": "PaymentRefNum",
+      "type": "string",
+      "required": false,
+      "description": "The reference number for the payment received (e.g. check # for a check). Conditionally required. Provide when DepositToAccountRef references a Bank account; required when PrintStatus is PrintComplete."
+    },
+    {
+      "name": "GlobalTaxCalculation",
+      "type": "string",
+      "required": false,
+      "description": "Method in which tax is applied. Not applicable to US companies; required for non-US companies.",
+      "enum": [
+        "TaxExcluded",
+        "TaxInclusive",
+        "NotApplicable"
+      ]
+    },
+    {
+      "name": "ProjectRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Project ID associated with this transaction. Conditionally required.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Project.Id of the referenced project."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name of the referenced project."
+        }
+      ]
+    },
+    {
+      "name": "BillEmail",
+      "type": "object",
+      "required": false,
+      "description": "Identifies the e-mail address where the invoice is sent. Conditionally required: required input if EmailStatus=NeedToSend.",
+      "attributes": [
+        {
+          "name": "Address",
+          "type": "string",
+          "required": false,
+          "description": "An email address."
+        }
+      ]
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "description": "The date entered by the user when this transaction occurred. Defaults to the current server date if not supplied. Sort order is ASC by default."
+    },
+    {
+      "name": "CustomField",
+      "type": "array",
+      "required": false,
+      "description": "One of, up to three custom fields for the transaction.",
+      "attributes": [
+        {
+          "name": "DefinitionId",
+          "type": "string",
+          "required": false,
+          "description": "Unique identifier of the CustomField definition."
+        },
+        {
+          "name": "Name",
+          "type": "string",
+          "required": false,
+          "description": "Name of the custom field."
+        },
+        {
+          "name": "Type",
+          "type": "string",
+          "required": false,
+          "description": "Data type of the custom field (e.g. StringType)."
+        },
+        {
+          "name": "StringValue",
+          "type": "string",
+          "required": false,
+          "description": "The value of the custom field when Type is StringType."
+        }
+      ]
+    },
+    {
+      "name": "ClassRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Class associated with the transaction. Available if class tracking per transaction is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Class.Id of the referenced class."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Class.Name of the referenced class."
+        }
+      ]
+    },
+    {
+      "name": "PrintStatus",
+      "type": "string",
+      "required": false,
+      "description": "Printing status of the invoice.",
+      "enum": [
+        "NotSet",
+        "NeedToPrint",
+        "PrintComplete"
+      ]
+    },
+    {
+      "name": "CheckPayment",
+      "type": "object",
+      "required": false,
+      "description": "Information about a check payment for the transaction. Used when PaymentType is Check."
+    },
+    {
+      "name": "TxnSource",
+      "type": "string",
+      "required": false,
+      "description": "The originating source of the credit card transaction. Currently the only supported value is IntuitPayment.",
+      "enum": [
+        "IntuitPayment"
+      ]
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive information about the entity. Values are set by Data Services and are read only for all applications.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created in the source domain."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated in the source domain."
+        }
+      ]
+    },
+    {
+      "name": "DocNumber",
+      "type": "string",
+      "required": false,
+      "description": "Reference number for the transaction. If not provided at create time, populated based on Preferences:CustomTxnNumber. Sort order is ASC by default."
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "User entered, organization-private note about the transaction. Maps to the Memo field on the refund receipt form; not shown to the customer."
+    },
+    {
+      "name": "CustomerMemo",
+      "type": "object",
+      "required": false,
+      "description": "User-entered message to the customer; this message is visible to the end user on their transaction.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The memo text shown to the customer."
+        }
+      ]
+    },
+    {
+      "name": "CreditCardPayment",
+      "type": "object",
+      "required": false,
+      "description": "Information about a credit card payment for the transaction. Used when PaymentType is CreditCard."
+    },
+    {
+      "name": "CustomerRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to a customer or job.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Customer.Id of the referenced customer."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Customer.DisplayName of the referenced customer."
+        }
+      ]
+    },
+    {
+      "name": "TxnTaxDetail",
+      "type": "object",
+      "required": false,
+      "description": "Information for taxes charged on the transaction as a whole.",
+      "attributes": [
+        {
+          "name": "TotalTax",
+          "type": "decimal",
+          "required": false,
+          "description": "Total tax calculated for the transaction, excluding any tax lines manually inserted into the transaction line list."
+        },
+        {
+          "name": "TxnTaxCodeRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the transaction tax code.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": true,
+              "description": "TaxCode.Id of the referenced tax code."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "description": "Name of the referenced tax code."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "PaymentMethodRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to a PaymentMethod associated with this transaction.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "PaymentMethod.Id of the referenced payment method."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "PaymentMethod.Name of the referenced payment method."
+        }
+      ]
+    },
+    {
+      "name": "ExchangeRate",
+      "type": "decimal",
+      "required": false,
+      "description": "The number of home currency units it takes to equal one unit of currency specified by CurrencyRef. Applicable if multicurrency is enabled."
+    },
+    {
+      "name": "ShipAddr",
+      "type": "object",
+      "required": false,
+      "description": "Identifies the address where the goods must be shipped.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Unique identifier of the address object."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region within a country (e.g. state)."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal code."
+        },
+        {
+          "name": "Lat",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Latitude coordinate of the geocoded address."
+        },
+        {
+          "name": "Long",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Longitude coordinate of the geocoded address."
+        }
+      ]
+    },
+    {
+      "name": "DepartmentRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to a Department object specifying the location of the transaction. Available if department tracking is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Department.Id of the referenced department."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Department.Name of the referenced department."
+        }
+      ]
+    },
+    {
+      "name": "PaymentType",
+      "type": "string",
+      "required": false,
+      "description": "The payment type for the refund.",
+      "enum": [
+        "Cash",
+        "Check",
+        "CreditCard",
+        "Other"
+      ]
+    },
+    {
+      "name": "BillAddr",
+      "type": "object",
+      "required": false,
+      "description": "Bill-to address of the Invoice.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Unique identifier of the address object."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region within a country (e.g. state)."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal code."
+        },
+        {
+          "name": "Lat",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Latitude coordinate of the geocoded address."
+        },
+        {
+          "name": "Long",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Longitude coordinate of the geocoded address."
+        }
+      ]
+    },
+    {
+      "name": "ApplyTaxAfterDiscount",
+      "type": "boolean",
+      "required": false,
+      "description": "If false or null, calculate sales tax first then apply discount. If true, subtract discount first then calculate tax. Default false. US versions only."
+    },
+    {
+      "name": "HomeBalance",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Convenience field containing the amount in Balance expressed in the home currency. Calculated by QuickBooks. Applicable if multicurrency is enabled."
+    },
+    {
+      "name": "RecurDataRef",
+      "type": "reference",
+      "required": false,
+      "readOnly": true,
+      "description": "A reference to the Recurring Transaction template the RefundReceipt was created from.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced recurring transaction."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name of the referenced recurring transaction."
+        }
+      ]
+    },
+    {
+      "name": "TotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Total amount of the transaction, including all charges, allowances, and taxes. Calculated by QuickBooks; any supplied value is overwritten."
+    },
+    {
+      "name": "TaxExemptionRef",
+      "type": "reference",
+      "required": false,
+      "readOnly": true,
+      "description": "Reference to the TaxExemption ID associated with this object. Available for companies with automated sales tax enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "System-generated Id of the exemption type. For internal use only."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The Tax Exemption Id for the customer, typically issued by the state."
+        }
+      ]
+    },
+    {
+      "name": "Balance",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "The balance reflecting any payments made against the transaction. Initially set to TotalAmt. Calculated by QuickBooks; any supplied value is overwritten."
+    },
+    {
+      "name": "HomeTotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Total amount of the transaction in the home currency. Calculated by QuickBooks. Valid only when CurrencyRef is specified. Applicable if multicurrency is enabled."
+    }
+  ],
+  "searchableFields": [
+    "Id",
+    "DocNumber",
+    "CustomerRef",
+    "TxnDate",
+    "TotalAmt",
+    "Balance",
+    "PaymentType",
+    "PrintStatus",
+    "MetaData.LastUpdatedTime",
+    "MetaData.CreateTime"
+  ],
+  "requestSample": {
+    "create": {
+      "Line": [
+        {
+          "DetailType": "SalesItemLineDetail",
+          "Amount": 420,
+          "SalesItemLineDetail": {
+            "ItemRef": {
+              "value": "38"
+            }
+          }
+        }
+      ],
+      "DepositToAccountRef": {
+        "name": "Checking",
+        "value": "35"
+      }
+    },
+    "update": {
+      "SyncToken": "2",
+      "PrivateNote": "This is a new private note added via sparse update.",
+      "Id": "66",
+      "sparse": true
+    }
+  },
+  "specialOperations": [
+    {
+      "name": "Get a refund receipt as PDF",
+      "method": "GET",
+      "path": "/v3/company/{realmID}/refundreceipt/{refundreceiptId}/pdf",
+      "description": "Returns the specified RefundReceipt object as an Adobe PDF file formatted according to the company's custom form styles.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm) for the QuickBooks Online company."
+        },
+        {
+          "name": "refundreceiptId",
+          "type": "string",
+          "required": true,
+          "description": "The ID of the RefundReceipt to retrieve as a PDF."
+        }
+      ],
+      "note": "Returns a binary application/pdf response rather than JSON."
+    },
+    {
+      "name": "Send a refund receipt",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/refundreceipt/{refundreceiptId}/send",
+      "description": "Emails the specified RefundReceipt; populates DeliveryInfo and updates BillEmail.Address when an explicit sendTo email is supplied.",
+      "queryParams": [
+        {
+          "name": "sendTo",
+          "type": "string",
+          "required": false,
+          "description": "Explicit recipient email address. If omitted, the address in RefundReceipt.BillEmail.EmailAddress is used. When supplied, RefundReceipt.BillEmail.Address is updated to this value."
+        }
+      ],
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm) for the QuickBooks Online company."
+        },
+        {
+          "name": "refundreceiptId",
+          "type": "string",
+          "required": true,
+          "description": "The ID of the RefundReceipt to send."
+        }
+      ],
+      "note": "Two variants: implicit (uses RefundReceipt.BillEmail.EmailAddress) vs explicit (?sendTo=<emailAddr> query param)."
+    }
+  ]
+}

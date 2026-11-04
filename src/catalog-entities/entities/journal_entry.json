@@ -1,0 +1,529 @@
+{
+  "entity": "journal_entry",
+  "name": "JournalEntry",
+  "category": "Accountant",
+  "description": "A journal entry — a direct posting of debits and credits to general ledger accounts.",
+  "operations": {
+    "create": {
+      "methodName": "createJournalEntry",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getJournalEntry",
+      "idRequired": true
+    },
+    "update": {
+      "methodName": "updateJournalEntry",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "delete": {
+      "methodName": "deleteJournalEntry",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findJournalEntries"
+    }
+  },
+  "searchableFields": [
+    "Id",
+    "DocNumber",
+    "TxnDate",
+    "Adjustment",
+    "MetaData.LastUpdatedTime"
+  ],
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this JournalEntry object, assigned by QuickBooks. Required for get, update, and delete."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Required for update operations to ensure optimistic concurrency control."
+    },
+    {
+      "name": "Line",
+      "type": "array",
+      "required": true,
+      "description": "The individual debit and credit lines of the journal entry. At least two lines are required, and total debits must equal total credits.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "description": "The line item identifier. Omitted on create; supplied on update to identify an existing line."
+        },
+        {
+          "name": "Description",
+          "type": "string",
+          "required": false,
+          "description": "Free-form text description of the line, up to 4000 characters."
+        },
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": true,
+          "description": "The amount of the line (debit or credit), as determined by the line's PostingType."
+        },
+        {
+          "name": "DetailType",
+          "type": "string",
+          "required": true,
+          "enum": [
+            "JournalEntryLineDetail"
+          ],
+          "description": "Discriminator indicating which line detail object is populated. For JournalEntry lines this is always JournalEntryLineDetail."
+        },
+        {
+          "name": "JournalEntryLineDetail",
+          "type": "object",
+          "required": true,
+          "description": "Posting detail for the line. Required because every JournalEntry line is a posting line.",
+          "attributes": [
+            {
+              "name": "PostingType",
+              "type": "string",
+              "required": true,
+              "enum": [
+                "Debit",
+                "Credit"
+              ],
+              "description": "Indicates whether this line is a debit or a credit posting to the referenced account."
+            },
+            {
+              "name": "AccountRef",
+              "type": "reference",
+              "required": true,
+              "description": "Reference to the general ledger account being debited or credited.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "The Id of the referenced Account."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced Account."
+                }
+              ]
+            },
+            {
+              "name": "Entity",
+              "type": "object",
+              "required": false,
+              "description": "The customer, vendor, or employee associated with this line, used for accounts that track a name (e.g. Accounts Receivable or Accounts Payable).",
+              "attributes": [
+                {
+                  "name": "Type",
+                  "type": "string",
+                  "required": false,
+                  "enum": [
+                    "Vendor",
+                    "Customer",
+                    "Employee"
+                  ],
+                  "description": "The type of entity referenced by EntityRef."
+                },
+                {
+                  "name": "EntityRef",
+                  "type": "reference",
+                  "required": false,
+                  "description": "Reference to the Customer, Vendor, or Employee.",
+                  "attributes": [
+                    {
+                      "name": "value",
+                      "type": "string",
+                      "required": true,
+                      "description": "The Id of the referenced entity."
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "required": false,
+                      "readOnly": true,
+                      "description": "Display name of the referenced entity."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "ClassRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the Class associated with this line. Available when class tracking is enabled.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "The Id of the referenced Class."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced Class."
+                }
+              ]
+            },
+            {
+              "name": "DepartmentRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the Department (location) associated with this line. Available when location tracking is enabled.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "The Id of the referenced Department."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced Department."
+                }
+              ]
+            },
+            {
+              "name": "TaxCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the TaxCode for this line. Applicable in non-US locales with automated sales tax.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "The Id of the referenced TaxCode."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced TaxCode."
+                }
+              ]
+            },
+            {
+              "name": "TaxApplicableOn",
+              "type": "string",
+              "required": false,
+              "enum": [
+                "Sales",
+                "Purchase"
+              ],
+              "description": "Indicates whether the tax applied on this line is sales tax or purchase tax. Used in non-US locales."
+            },
+            {
+              "name": "TaxAmount",
+              "type": "decimal",
+              "required": false,
+              "description": "The tax amount associated with this line, in non-US locales."
+            },
+            {
+              "name": "BillableStatus",
+              "type": "string",
+              "required": false,
+              "enum": [
+                "Billable",
+                "NotBillable",
+                "HasBeenBilled"
+              ],
+              "description": "The billable status of the line when associated with a customer Entity."
+            },
+            {
+              "name": "JournalCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the JournalCode for this line. Required for France locale companies.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "The Id of the referenced JournalCode."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Display name of the referenced JournalCode."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Adjustment",
+      "type": "boolean",
+      "required": false,
+      "description": "Indicates whether this journal entry is an adjusting entry (true) used by accountants to adjust the books. Defaults to false."
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "The date of the journal entry transaction. If not supplied, defaults to the current date."
+    },
+    {
+      "name": "DocNumber",
+      "type": "string",
+      "required": false,
+      "description": "Reference number for the transaction. If not supplied, QuickBooks may auto-assign one depending on company settings. Max 21 characters."
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "A private memo for the journal entry that is not visible to external parties. Up to 4000 characters."
+    },
+    {
+      "name": "TxnTaxDetail",
+      "type": "object",
+      "required": false,
+      "description": "Transaction-level tax details summarizing the sales/purchase tax for the entire journal entry. Used in non-US locales.",
+      "attributes": [
+        {
+          "name": "TxnTaxCodeRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the transaction-level TaxCode.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": true,
+              "description": "The Id of the referenced TaxCode."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "description": "Display name of the referenced TaxCode."
+            }
+          ]
+        },
+        {
+          "name": "TotalTax",
+          "type": "decimal",
+          "required": false,
+          "description": "Total tax calculated for the transaction, excluding any tax marked as not affecting the line amount."
+        },
+        {
+          "name": "TaxLine",
+          "type": "array",
+          "required": false,
+          "description": "Per-component tax detail lines for the transaction.",
+          "attributes": [
+            {
+              "name": "Amount",
+              "type": "decimal",
+              "required": false,
+              "description": "Tax amount for this tax line component."
+            },
+            {
+              "name": "DetailType",
+              "type": "string",
+              "required": false,
+              "enum": [
+                "TaxLineDetail"
+              ],
+              "description": "Discriminator for the tax line; always TaxLineDetail."
+            },
+            {
+              "name": "TaxLineDetail",
+              "type": "object",
+              "required": false,
+              "description": "Detail of the tax line component.",
+              "attributes": [
+                {
+                  "name": "TaxRateRef",
+                  "type": "reference",
+                  "required": false,
+                  "description": "Reference to the TaxRate applied for this component.",
+                  "attributes": [
+                    {
+                      "name": "value",
+                      "type": "string",
+                      "required": true,
+                      "description": "The Id of the referenced TaxRate."
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "required": false,
+                      "readOnly": true,
+                      "description": "Display name of the referenced TaxRate."
+                    }
+                  ]
+                },
+                {
+                  "name": "PercentBased",
+                  "type": "boolean",
+                  "required": false,
+                  "description": "True if the tax is percentage-based rather than a fixed amount."
+                },
+                {
+                  "name": "TaxPercent",
+                  "type": "decimal",
+                  "required": false,
+                  "description": "The tax rate percentage applied, when PercentBased is true."
+                },
+                {
+                  "name": "NetAmountTaxable",
+                  "type": "decimal",
+                  "required": false,
+                  "description": "The net amount on which the tax was calculated."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the currency of all amounts in this transaction. Used when multicurrency is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The three-letter ISO 4217 currency code."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "The full name of the currency."
+        }
+      ]
+    },
+    {
+      "name": "ExchangeRate",
+      "type": "decimal",
+      "required": false,
+      "description": "The exchange rate between the transaction currency and the home currency, applicable when multicurrency is enabled."
+    },
+    {
+      "name": "GlobalTaxCalculation",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "TaxExcluded",
+        "TaxInclusive",
+        "NotApplicable"
+      ],
+      "description": "Indicates how tax is applied to transaction amounts. Applicable to companies in non-US locales that support automated sales tax."
+    },
+    {
+      "name": "TotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "The total amount of the transaction (sum of the debit lines) in the transaction currency, computed by QuickBooks."
+    },
+    {
+      "name": "HomeTotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "The total amount of the transaction in the home currency, computed by QuickBooks when multicurrency is enabled."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "System-maintained descriptive metadata about the object.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was created (read-only)."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the object was last modified (read-only)."
+        }
+      ]
+    },
+    {
+      "name": "domain",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "System-defined origin of the object; always 'QBO'."
+    },
+    {
+      "name": "sparse",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "Indicates whether the response represents a sparse (partial) object. Used in sparse update workflows."
+    }
+  ],
+  "requestSample": {
+    "create": {
+      "Line": [
+        {
+          "Description": "Reclassify office supplies expense",
+          "Amount": 100,
+          "DetailType": "JournalEntryLineDetail",
+          "JournalEntryLineDetail": {
+            "PostingType": "Debit",
+            "AccountRef": {
+              "value": "63"
+            }
+          }
+        },
+        {
+          "Description": "Reclassify office supplies expense",
+          "Amount": 100,
+          "DetailType": "JournalEntryLineDetail",
+          "JournalEntryLineDetail": {
+            "PostingType": "Credit",
+            "AccountRef": {
+              "value": "64"
+            }
+          }
+        }
+      ]
+    },
+    "update": {
+      "Id": "227",
+      "SyncToken": "0",
+      "sparse": true,
+      "PrivateNote": "Adjusted classification per accountant review"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "slug": "batch",
+  "name": "Batch",
+  "category": "Utility",
+  "description": "Performs multiple create, update, delete, or query operations on QuickBooks Online entities in a single request to reduce network roundtrips and improve throughput.",
+  "operations": [
+    {
+      "name": "Sample batch request",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/batch",
+      "description": "Submits a batch of BatchItemRequest objects (each performing a create, update, delete, or query operation) in a single authenticated request. Maximum 30 payloads per request, 40 requests per minute per realmID, and up to 1000 objects returned in a response. Execution order is not guaranteed and items are processed independently.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID) for the QuickBooks Online company against which the batch operations are executed."
+        }
+      ],
+      "queryParams": [],
+      "requestBody": {
+        "required": true,
+        "description": "The request includes BatchItemRequest objects, each performing a create, update, delete, or query operation.",
+        "attributes": [
+          {
+            "name": "BatchItemRequest",
+            "type": "batchitemrequest",
+            "required": true,
+            "description": "A wrapper around all request objects for this batch operation."
+          }
+        ]
+      },
+      "note": "A batch request is authenticated once, and that single authentication applies to all BatchItemRequest objects. BatchItemRequest objects are treated independently; one object cannot depend on another within the same batch operation. Execution order of BatchItemRequest objects should not be assumed."
+    }
+  ],
+  "requestSample": {
+    "BatchItemRequest": [
+      {
+        "bId": "bid1",
+        "Vendor": {
+          "DisplayName": "Smith Family Store"
+        },
+        "operation": "create"
+      },
+      {
+        "bId": "bid2",
+        "operation": "delete",
+        "Invoice": {
+          "SyncToken": "0",
+          "Id": "129"
+        }
+      },
+      {
+        "SalesReceipt": {
+          "PrivateNote": "A private note.",
+          "SyncToken": "0",
+          "domain": "QBO",
+          "Id": "11",
+          "sparse": true
+        },
+        "bId": "bid3",
+        "operation": "update"
+      },
+      {
+        "Query": "select * from SalesReceipt where TotalAmt > '300.00'",
+        "bId": "bid4"
+      }
+    ]
+  }
+}

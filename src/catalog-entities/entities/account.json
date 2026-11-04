@@ -1,0 +1,422 @@
+{
+  "entity": "account",
+  "name": "Account",
+  "category": "Lists",
+  "description": "An account in the chart of accounts; a category tracking the company’s financial activity.",
+  "operations": {
+    "create": {
+      "methodName": "createAccount",
+      "bodyRequired": true
+    },
+    "update": {
+      "methodName": "updateAccount",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "search": {
+      "methodName": "findAccounts"
+    }
+  },
+  "searchableFields": [
+    "Name",
+    "AccountType",
+    "AccountSubType",
+    "Classification",
+    "Active",
+    "AcctNum",
+    "FullyQualifiedName",
+    "SubAccount"
+  ],
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object, assigned by QuickBooks. Required (in the body) for update operations."
+    },
+    {
+      "name": "Name",
+      "type": "string",
+      "required": true,
+      "description": "User-recognizable name for the account. Must be unique among all accounts and within its hierarchy level. Max 100 characters; cannot contain colon (:)."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object, used for optimistic concurrency control. Required (in the body) for update operations."
+    },
+    {
+      "name": "AcctNum",
+      "type": "string",
+      "required": false,
+      "description": "User-defined account number to help identify the account within the chart of accounts and to organize accounting reports. Shown only if the Account Numbers preference is enabled. Max 7 characters (US) / 20 (other locales)."
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "object",
+      "required": false,
+      "description": "Reference to the currency in which all amounts associated with this account are expressed. Editable only if multicurrency is enabled and there are no transactions against the account.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Three-letter ISO 4217 currency code (e.g., USD, EUR, GBP)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Full name of the currency."
+        }
+      ]
+    },
+    {
+      "name": "ParentRef",
+      "type": "object",
+      "required": false,
+      "description": "Reference to the parent account when this account is a subaccount (SubAccount = true). Specifies the immediate parent in the account hierarchy.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the parent Account object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name of the parent account."
+        }
+      ]
+    },
+    {
+      "name": "Description",
+      "type": "string",
+      "required": false,
+      "description": "User-entered description of the account, supplied to assist in identifying its purpose. Max 100 characters."
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "Whether the account is active. Inactive accounts may be hidden from most display purposes and may not be used in financial transactions. Defaults to true."
+    },
+    {
+      "name": "SubAccount",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "Read-only system-defined flag indicating whether the account is a subaccount of another account. True if ParentRef is set."
+    },
+    {
+      "name": "Classification",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Read-only categorization of the account, derived from AccountType. Indicates the account's high-level financial-statement grouping.",
+      "enum": [
+        "Asset",
+        "Equity",
+        "Expense",
+        "Liability",
+        "Revenue"
+      ]
+    },
+    {
+      "name": "FullyQualifiedName",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Read-only fully qualified name of the account, including the hierarchy of parent account names separated by colons (e.g., 'Utilities:Gas and Electric')."
+    },
+    {
+      "name": "TxnLocationType",
+      "type": "string",
+      "required": false,
+      "description": "The account location, used in France locales. Valid values include WithinFrance, FranceOverseas, OutsideFranceWithEU, OutsideEU."
+    },
+    {
+      "name": "AccountType",
+      "type": "string",
+      "required": false,
+      "description": "A detailed account classification that specifies the use of this account. Either AccountType or AccountSubType is required on create; if omitted, it is derived from AccountSubType. Recommended on create.",
+      "enum": [
+        "Bank",
+        "Other Current Asset",
+        "Fixed Asset",
+        "Other Asset",
+        "Accounts Receivable",
+        "Equity",
+        "Expense",
+        "Other Expense",
+        "Cost of Goods Sold",
+        "Accounts Payable",
+        "Credit Card",
+        "Long Term Liability",
+        "Other Current Liability",
+        "Income",
+        "Other Income"
+      ]
+    },
+    {
+      "name": "AccountSubType",
+      "type": "string",
+      "required": false,
+      "description": "The account subtype classification, more granular than AccountType. Must be consistent with AccountType. If AccountType is omitted, AccountType is inferred from this value. The valid set depends on AccountType and locale.",
+      "enum": [
+        "CashOnHand",
+        "Checking",
+        "MoneyMarket",
+        "RentsHeldInTrust",
+        "Savings",
+        "TrustAccounts",
+        "AllowanceForBadDebts",
+        "DevelopmentCosts",
+        "EmployeeCashAdvances",
+        "Inventory",
+        "Investment_MortgageRealEstateLoans",
+        "Investment_Other",
+        "Investment_TaxExemptSecurities",
+        "Investment_USGovernmentObligations",
+        "LoansToOfficers",
+        "LoansToOthers",
+        "LoansToStockholders",
+        "OtherCurrentAssets",
+        "PrepaidExpenses",
+        "Retainage",
+        "UndepositedFunds",
+        "AccumulatedDepletion",
+        "AccumulatedDepreciation",
+        "DepletableAssets",
+        "FixedAssetComputers",
+        "FixedAssetCopiers",
+        "FixedAssetFurniture",
+        "FixedAssetPhone",
+        "FixedAssetPhotoVideo",
+        "FixedAssetSoftware",
+        "FixedAssetOtherToolsEquipment",
+        "FurnitureAndFixtures",
+        "Land",
+        "LeaseholdImprovements",
+        "MachineryAndEquipment",
+        "Vehicles",
+        "AccumulatedAmortizationOfOtherAssets",
+        "Goodwill",
+        "Licenses",
+        "OrganizationalCosts",
+        "OtherLongTermAssets",
+        "SecurityDeposits",
+        "AccountsReceivable",
+        "OpeningBalanceEquity",
+        "PartnersEquity",
+        "RetainedEarnings",
+        "AccumulatedAdjustment",
+        "OwnersEquity",
+        "PaidInCapitalOrSurplus",
+        "PartnerContributions",
+        "PartnerDistributions",
+        "PreferredStock",
+        "CommonStock",
+        "TreasuryStock",
+        "EstimatedTaxes",
+        "HealthInsurancePremiums",
+        "PersonalIncome",
+        "PersonalExpense",
+        "AdvertisingPromotional",
+        "BadDebts",
+        "BankCharges",
+        "CharitableContributions",
+        "CommissionsAndFees",
+        "Entertainment",
+        "EntertainmentMeals",
+        "EquipmentRental",
+        "FinanceCosts",
+        "GlobalTaxExpense",
+        "Insurance",
+        "InterestPaid",
+        "LegalProfessionalFees",
+        "OfficeGeneralAdministrativeExpenses",
+        "OtherBusinessExpenses",
+        "OtherMiscellaneousServiceCost",
+        "PromotionalMeals",
+        "RentOrLeaseOfBuildings",
+        "RepairMaintenance",
+        "ShippingFreightDelivery",
+        "SuppliesMaterials",
+        "Travel",
+        "TravelMeals",
+        "Utilities",
+        "Auto",
+        "CostOfLabor",
+        "DuesSubscriptions",
+        "PayrollExpenses",
+        "TaxesPaid",
+        "UnappliedCashBillPaymentExpense",
+        "Depreciation",
+        "ExchangeGainOrLoss",
+        "OtherMiscellaneousExpense",
+        "PenaltiesSettlements",
+        "Amortization",
+        "DeferredCredits",
+        "OtherCostsOfServiceCos",
+        "ShippingFreightDeliveryCos",
+        "SuppliesMaterialsCogs",
+        "CostOfLaborCos",
+        "CashOnHandCos",
+        "AccountsPayable",
+        "OutstandingDuesOtherThanMicroSmallEnterprise",
+        "OutstandingDuesMicroSmallEnterprise",
+        "CreditCard",
+        "NotesPayable",
+        "OtherLongTermLiabilities",
+        "ShareholderNotesPayable",
+        "AccruedLiabilities",
+        "DirectDepositPayable",
+        "LineOfCredit",
+        "LoanPayable",
+        "GlobalTaxPayable",
+        "GlobalTaxSuspense",
+        "OtherCurrentLiabilities",
+        "PayrollClearing",
+        "PayrollTaxPayable",
+        "PrepaidExpensesPayable",
+        "RentsInTrustLiability",
+        "TrustAccountsLiabilities",
+        "FederalIncomeTaxPayable",
+        "InsurancePayable",
+        "SalesTaxPayable",
+        "StateLocalIncomeTaxPayable",
+        "NonProfitIncome",
+        "OtherPrimaryIncome",
+        "SalesOfProductIncome",
+        "ServiceFeeIncome",
+        "DiscountsRefundsGiven",
+        "UnappliedCashPaymentIncome",
+        "DividendIncome",
+        "InterestEarned",
+        "OtherInvestmentIncome",
+        "OtherMiscellaneousIncome",
+        "TaxExemptInterest"
+      ]
+    },
+    {
+      "name": "CurrentBalance",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Read-only system-computed current balance of the account, in the account's currency, excluding subaccounts."
+    },
+    {
+      "name": "CurrentBalanceWithSubAccounts",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Read-only system-computed current balance of the account including the balances of all its subaccounts."
+    },
+    {
+      "name": "TaxCodeRef",
+      "type": "object",
+      "required": false,
+      "description": "Reference to the default tax code for the account. Applicable in non-US locales (e.g., UK, India, Global) where automated sales tax is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced TaxCode object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name of the referenced tax code."
+        }
+      ]
+    },
+    {
+      "name": "AccountAlias",
+      "type": "string",
+      "required": false,
+      "description": "An alias for the account, used in France locales. Max 100 characters."
+    },
+    {
+      "name": "AccountPurposes",
+      "type": "array",
+      "required": false,
+      "description": "Account purpose categories, used in France locales to map the account to standardized chart-of-accounts purposes.",
+      "attributes": [
+        {
+          "name": "PurposeId",
+          "type": "string",
+          "required": false,
+          "description": "Identifier of the account purpose."
+        },
+        {
+          "name": "Type",
+          "type": "string",
+          "required": false,
+          "description": "Type of the account purpose."
+        }
+      ]
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Read-only descriptive system metadata about the entity, maintained by QuickBooks.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "date",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created, in ISO 8601 format.",
+          "format": "YYYY-MM-DDThh:mm:ssTZD"
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "date",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last modified, in ISO 8601 format.",
+          "format": "YYYY-MM-DDThh:mm:ssTZD"
+        }
+      ]
+    },
+    {
+      "name": "domain",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Read-only internal field identifying the originating QuickBooks domain. Value is always 'QBO'."
+    },
+    {
+      "name": "sparse",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "Read-only flag indicating whether the object is a sparse (partial) representation. When true on a request, only the supplied fields are updated."
+    }
+  ],
+  "requestSample": {
+    "create": {
+      "Name": "MyJobs",
+      "AccountType": "Accounts Receivable"
+    },
+    "update": {
+      "Id": "33",
+      "SyncToken": "0",
+      "sparse": true,
+      "Name": "Accounts Payable (Updated)"
+    }
+  }
+}

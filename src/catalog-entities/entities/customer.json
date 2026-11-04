@@ -1,0 +1,725 @@
+{
+  "entity": "customer",
+  "name": "Customer",
+  "category": "Sales",
+  "description": "A customer — a consumer of the services or products offered by the QuickBooks company.",
+  "operations": {
+    "create": {
+      "methodName": "createCustomer",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getCustomer",
+      "idRequired": true
+    },
+    "update": {
+      "methodName": "updateCustomer",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "delete": {
+      "methodName": "deleteCustomer",
+      "idRequired": true
+    },
+    "search": {
+      "methodName": "findCustomers"
+    }
+  },
+  "searchableFields": [
+    "Id",
+    "DisplayName",
+    "GivenName",
+    "FamilyName",
+    "CompanyName",
+    "FullyQualifiedName",
+    "Active",
+    "Balance",
+    "Job",
+    "Level",
+    "MetaData.LastUpdatedTime",
+    "MetaData.CreateTime"
+  ],
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Unique identifier for this object, assigned by QuickBooks. Required (along with SyncToken) for update, and required for read/delete."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. System-assigned and maintained for optimistic concurrency; not authored by the caller but must be echoed back (with Id) on every update operation."
+    },
+    {
+      "name": "DisplayName",
+      "type": "string",
+      "required": false,
+      "description": "The name of the customer as displayed. Must be unique across all Customer, Vendor, and Employee objects. Conditionally required: supply DisplayName, or at least one of Title/GivenName/MiddleName/FamilyName/Suffix from which it is derived. Max 500 characters."
+    },
+    {
+      "name": "Title",
+      "type": "string",
+      "required": false,
+      "description": "Title of the person. Not supported for companies. Used as part of the name; max 16 characters."
+    },
+    {
+      "name": "GivenName",
+      "type": "string",
+      "required": false,
+      "description": "Given (first) name of the person. Max 100 characters. At least one of Title, GivenName, MiddleName, FamilyName, or Suffix is required for a person if DisplayName is not supplied."
+    },
+    {
+      "name": "MiddleName",
+      "type": "string",
+      "required": false,
+      "description": "Middle name of the person. Max 100 characters."
+    },
+    {
+      "name": "FamilyName",
+      "type": "string",
+      "required": false,
+      "description": "Family (last) name of the person. Max 100 characters."
+    },
+    {
+      "name": "Suffix",
+      "type": "string",
+      "required": false,
+      "description": "Suffix of the name of the person (e.g. Jr, Sr). Max 16 characters."
+    },
+    {
+      "name": "CompanyName",
+      "type": "string",
+      "required": false,
+      "description": "The name of the company associated with the customer. Max 100 characters."
+    },
+    {
+      "name": "FullyQualifiedName",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Fully qualified name of the object; the DisplayName prefixed with the names of any parent (job) customers, colon-delimited. System generated."
+    },
+    {
+      "name": "PrintOnCheckName",
+      "type": "string",
+      "required": false,
+      "description": "Name of the customer as printed on a check. Max 110 characters."
+    },
+    {
+      "name": "Active",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this entity is currently enabled for use by QuickBooks. Defaults to true."
+    },
+    {
+      "name": "Job",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this is a Job (sub-customer) rather than a top-level customer. Default is false."
+    },
+    {
+      "name": "BillWithParent",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, this Customer object is billed with its parent (only applies to sub-customers/jobs that have a ParentRef)."
+    },
+    {
+      "name": "Level",
+      "type": "integer",
+      "required": false,
+      "readOnly": true,
+      "description": "Specifies the level of the hierarchy in which the entity is located. Zero for the top-level customer; sub-customers increment. System generated."
+    },
+    {
+      "name": "Taxable",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, transactions for this customer are taxable. Default behavior depends on company sales-tax configuration."
+    },
+    {
+      "name": "ResaleNum",
+      "type": "string",
+      "required": false,
+      "description": "Resale number or other identifier for tax-exempt purchases. Max 16 characters."
+    },
+    {
+      "name": "PreferredDeliveryMethod",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "Print",
+        "Email",
+        "None"
+      ],
+      "description": "Preferred delivery method for sending forms/transactions to this customer."
+    },
+    {
+      "name": "Notes",
+      "type": "string",
+      "required": false,
+      "description": "Free-form text notes about the customer. Max 2000 characters."
+    },
+    {
+      "name": "Balance",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Specifies the open balance amount or the amount unpaid by the customer. Calculated by QuickBooks; read-only on update. May be set only at create to specify an opening balance (paired with OpenBalanceDate)."
+    },
+    {
+      "name": "BalanceWithJobs",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Cumulative open balance amount for the Customer (or Job) and all its sub-jobs. System generated."
+    },
+    {
+      "name": "OpenBalanceDate",
+      "type": "date",
+      "required": false,
+      "format": "YYYY-MM-DD",
+      "description": "Date of the open balance, used when setting an initial opening balance at create time (paired with the Balance amount)."
+    },
+    {
+      "name": "PrimaryTaxIdentifier",
+      "type": "string",
+      "required": false,
+      "description": "Tax ID of the customer (for international/region-specific use). Available for non-US regions."
+    },
+    {
+      "name": "SecondaryTaxIdentifier",
+      "type": "string",
+      "required": false,
+      "description": "Secondary tax ID of the customer (region specific). Available for non-US regions."
+    },
+    {
+      "name": "GSTIN",
+      "type": "string",
+      "required": false,
+      "description": "GST registration number of the customer (India region)."
+    },
+    {
+      "name": "GSTRegistrationType",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "GST_REG_REG",
+        "GST_REG_COMP",
+        "GST_UNREG",
+        "CONSUMER",
+        "OVERSEAS",
+        "SEZ",
+        "DEEMED"
+      ],
+      "description": "GST registration type (India region)."
+    },
+    {
+      "name": "BusinessNumber",
+      "type": "string",
+      "required": false,
+      "description": "Business number / company registration identifier (region specific, e.g. ABN for AU, BN for CA)."
+    },
+    {
+      "name": "IsProject",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "If true, indicates this customer entity represents a Project. System managed."
+    },
+    {
+      "name": "Source",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Indicates the originating source of the customer record (e.g. QBCommerce). System set."
+    },
+    {
+      "name": "GlobalTaxCalculation",
+      "type": "string",
+      "required": false,
+      "enum": [
+        "TaxExcluded",
+        "TaxInclusive",
+        "NotApplicable"
+      ],
+      "description": "Method in which tax is applied for transactions of this customer. Applicable for non-US/CA companies with sales tax enabled."
+    },
+    {
+      "name": "TaxExemptionReasonId",
+      "type": "string",
+      "required": false,
+      "description": "The tax exemption reason identifier associated with the customer (US automated sales tax). Numeric id supplied as a string; corresponds to a documented tax-exemption reason code."
+    },
+    {
+      "name": "PrimaryPhone",
+      "type": "object",
+      "required": false,
+      "description": "Primary phone number of the customer.",
+      "attributes": [
+        {
+          "name": "FreeFormNumber",
+          "type": "string",
+          "required": false,
+          "description": "Specifies the telephone number in free-form. Max 30 characters."
+        }
+      ]
+    },
+    {
+      "name": "AlternatePhone",
+      "type": "object",
+      "required": false,
+      "description": "Alternate phone number of the customer.",
+      "attributes": [
+        {
+          "name": "FreeFormNumber",
+          "type": "string",
+          "required": false,
+          "description": "Specifies the telephone number in free-form. Max 30 characters."
+        }
+      ]
+    },
+    {
+      "name": "Mobile",
+      "type": "object",
+      "required": false,
+      "description": "Mobile phone number of the customer.",
+      "attributes": [
+        {
+          "name": "FreeFormNumber",
+          "type": "string",
+          "required": false,
+          "description": "Specifies the telephone number in free-form. Max 30 characters."
+        }
+      ]
+    },
+    {
+      "name": "Fax",
+      "type": "object",
+      "required": false,
+      "description": "Fax number of the customer.",
+      "attributes": [
+        {
+          "name": "FreeFormNumber",
+          "type": "string",
+          "required": false,
+          "description": "Specifies the telephone number in free-form. Max 30 characters."
+        }
+      ]
+    },
+    {
+      "name": "PrimaryEmailAddr",
+      "type": "object",
+      "required": false,
+      "description": "Primary email address of the customer.",
+      "attributes": [
+        {
+          "name": "Address",
+          "type": "string",
+          "required": false,
+          "format": "email",
+          "description": "An email address. Must contain '@' and '.'. Max 100 characters."
+        }
+      ]
+    },
+    {
+      "name": "WebAddr",
+      "type": "object",
+      "required": false,
+      "description": "Website address of the customer.",
+      "attributes": [
+        {
+          "name": "URI",
+          "type": "string",
+          "required": false,
+          "format": "uri",
+          "description": "Uniform Resource Identifier for the website. Max 1000 characters."
+        }
+      ]
+    },
+    {
+      "name": "BillAddr",
+      "type": "object",
+      "required": false,
+      "description": "Default billing address of the customer.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Unique identifier of the address object, assigned by QuickBooks."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line5",
+          "type": "string",
+          "required": false,
+          "description": "Fifth line of the address. Max 500 characters."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name. Max 255 characters."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region within a country (e.g. state in USA, province in Canada). Max 255 characters."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal/ZIP code. Max 30 characters."
+        },
+        {
+          "name": "Country",
+          "type": "string",
+          "required": false,
+          "description": "Country name. Max 255 characters."
+        },
+        {
+          "name": "Lat",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Latitude coordinate of geocoded address. System generated."
+        },
+        {
+          "name": "Long",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Longitude coordinate of geocoded address. System generated."
+        }
+      ]
+    },
+    {
+      "name": "ShipAddr",
+      "type": "object",
+      "required": false,
+      "description": "Default shipping address of the customer.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Unique identifier of the address object, assigned by QuickBooks."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address. Max 500 characters."
+        },
+        {
+          "name": "Line5",
+          "type": "string",
+          "required": false,
+          "description": "Fifth line of the address. Max 500 characters."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name. Max 255 characters."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region within a country (e.g. state in USA, province in Canada). Max 255 characters."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal/ZIP code. Max 30 characters."
+        },
+        {
+          "name": "Country",
+          "type": "string",
+          "required": false,
+          "description": "Country name. Max 255 characters."
+        },
+        {
+          "name": "Lat",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Latitude coordinate of geocoded address. System generated."
+        },
+        {
+          "name": "Long",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Longitude coordinate of geocoded address. System generated."
+        }
+      ]
+    },
+    {
+      "name": "ParentRef",
+      "type": "reference",
+      "required": false,
+      "description": "A reference to the parent Customer when this entity is a sub-customer (Job). Required when the customer is a job/sub-customer.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced parent Customer object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced parent Customer."
+        }
+      ]
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the currency in which all amounts associated with this customer are expressed. Settable only at create if multicurrency is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The three-letter ISO 4217 currency code (e.g. USD)."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Full name of the currency."
+        }
+      ]
+    },
+    {
+      "name": "SalesTermRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to a default sales Term (payment terms) associated with this customer.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced Term object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced Term."
+        }
+      ]
+    },
+    {
+      "name": "PaymentMethodRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to a PaymentMethod associated with this customer.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced PaymentMethod object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced PaymentMethod."
+        }
+      ]
+    },
+    {
+      "name": "DefaultTaxCodeRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the default TaxCode for transactions of this customer (automated sales tax / tax-enabled companies).",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced TaxCode object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced TaxCode."
+        }
+      ]
+    },
+    {
+      "name": "ARAccountRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Accounts Receivable account associated with this customer.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced Account object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced Account."
+        }
+      ]
+    },
+    {
+      "name": "CustomerTypeRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the CustomerType assigned to this customer.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the referenced CustomerType object."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Display name of the referenced CustomerType."
+        }
+      ]
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive metadata about the object, maintained by QuickBooks.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created, in ISO 8601 format."
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated, in ISO 8601 format."
+        }
+      ]
+    },
+    {
+      "name": "domain",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "enum": [
+        "QBO"
+      ],
+      "description": "The domain the object belongs to; constant value QBO. System generated."
+    },
+    {
+      "name": "sparse",
+      "type": "boolean",
+      "required": false,
+      "description": "When set to true on an update request, performs a sparse update — only the supplied fields are modified, all others retained. Echoed in responses."
+    }
+  ],
+  "requestSample": {
+    "create": {
+      "DisplayName": "King's Groceries",
+      "CompanyName": "King Groceries",
+      "GivenName": "James",
+      "FamilyName": "King",
+      "PrimaryEmailAddr": {
+        "Address": "jdrew@myemail.com"
+      },
+      "PrimaryPhone": {
+        "FreeFormNumber": "(555) 555-5555"
+      },
+      "BillAddr": {
+        "Line1": "123 Main Street",
+        "City": "Mountain View",
+        "CountrySubDivisionCode": "CA",
+        "PostalCode": "94042",
+        "Country": "USA"
+      }
+    },
+    "update": {
+      "Id": "67",
+      "SyncToken": "0",
+      "sparse": true,
+      "PrimaryEmailAddr": {
+        "Address": "newemail@myemail.com"
+      }
+    }
+  }
+}

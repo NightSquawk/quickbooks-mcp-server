@@ -1,0 +1,160 @@
+{
+  "slug": "recurring_transaction",
+  "name": "RecurringTransaction",
+  "category": "Utility",
+  "description": "Schedules the creation of transactions, sets up reminders, and creates reusable transaction templates in QuickBooks Online Essentials and Plus.",
+  "operations": [
+    {
+      "name": "Create a recurring transaction",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/recurringtransaction",
+      "description": "Creates a recurring transaction. A RecurringTransaction object must have at least one line that describes an item and a DepositToAccountRef. If the billing address is not provided, the customer address is used. TaxCode.CustomSalesTax cannot be used as TxnTaxCodeRef.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID) for the QuickBooks Online company."
+        }
+      ],
+      "queryParams": [],
+      "requestBody": {
+        "required": true,
+        "description": "The minimum payload for the underlying transaction type (e.g. Invoice, Bill) plus the RecurringInfo element. The transaction is wrapped in a key matching its entity Type (Bill, Purchase, CreditMemo, Deposit, Estimate, Invoice, JournalEntry, RefundReceipt, SalesReceipt, Transfer, VendorCredit or PurchaseOrder).",
+        "attributes": [
+          {
+            "name": "RecurringInfo",
+            "type": "RecurringInfo",
+            "required": true,
+            "description": "Describes the recurring schedules for transactions."
+          }
+        ]
+      },
+      "note": "The request body is keyed by the underlying transaction entity Type (e.g. Invoice). Supported types: Bill, Purchase, CreditMemo, Deposit, Estimate, Invoice, JournalEntry, RefundReceipt, SalesReceipt, Transfer, VendorCredit, PurchaseOrder."
+    },
+    {
+      "name": "Delete a recurring transaction",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/recurringtransaction",
+      "description": "Deletes the RecurringTransaction object specified in the request body. Include a minimum of RecurringTransaction.Id and SyncToken. You must unlink any linked transactions associated with the object before deleting it.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID) for the QuickBooks Online company."
+        }
+      ],
+      "queryParams": [
+        {
+          "name": "operation",
+          "type": "string",
+          "required": true,
+          "description": "Must be set to 'delete' to delete the recurring transaction."
+        }
+      ],
+      "requestBody": {
+        "required": true,
+        "description": "The transaction wrapped in a key matching its entity Type (e.g. Invoice), containing the Id and SyncToken of the object to delete.",
+        "attributes": [
+          {
+            "name": "SyncToken",
+            "type": "String",
+            "required": true,
+            "description": "Version number of the object. It is used to lock an object for use by one app at a time. Attempts to modify an object specifying an older SyncToken fails."
+          },
+          {
+            "name": "id",
+            "type": "String",
+            "required": true,
+            "description": "Unique identifier for this object."
+          }
+        ]
+      },
+      "note": "Deletion is performed via the query parameter operation=delete on the POST endpoint. The request body is keyed by the underlying transaction entity Type (e.g. Invoice)."
+    },
+    {
+      "name": "Query a recurring transaction",
+      "method": "GET",
+      "path": "/v3/company/{realmID}/query",
+      "description": "Returns the results of a query against RecurringTransaction objects using a SQL-like select statement (e.g. 'Select * From RecurringTransaction').",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID) for the QuickBooks Online company."
+        }
+      ],
+      "queryParams": [
+        {
+          "name": "query",
+          "type": "string",
+          "required": true,
+          "description": "The select statement specifying the data to return, e.g. 'Select * From RecurringTransaction'."
+        }
+      ]
+    },
+    {
+      "name": "Read a recurring transaction",
+      "method": "GET",
+      "path": "/v3/company/{realmID}/recurringtransaction/{recurringtransactionId}",
+      "description": "Retrieves the details of a RecurringTransaction object.",
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID) for the QuickBooks Online company."
+        },
+        {
+          "name": "recurringtransactionId",
+          "type": "string",
+          "required": true,
+          "description": "The unique identifier of the RecurringTransaction object to retrieve."
+        }
+      ],
+      "queryParams": []
+    }
+  ],
+  "requestSample": {
+    "Invoice": {
+      "CustomerRef": {
+        "name": "Travis Waldron",
+        "value": "26"
+      },
+      "Line": [
+        {
+          "LineNum": 1,
+          "Amount": 55,
+          "DetailType": "SalesItemLineDetail",
+          "SalesItemLineDetail": {
+            "ItemRef": {
+              "name": "Hours",
+              "value": "2"
+            },
+            "Qty": 1,
+            "UnitPrice": 55,
+            "TaxCodeRef": {
+              "value": "NON"
+            }
+          }
+        }
+      ],
+      "RecurringInfo": {
+        "Active": true,
+        "RecurType": "Automated",
+        "Name": "RecurTemplate2",
+        "ScheduleInfo": {
+          "StartDate": "2020-09-01",
+          "MaxOccurrences": 10,
+          "IntervalType": "Monthly",
+          "DaysBefore": 2,
+          "NextDate": "2020-09-01",
+          "NumInterval": 1,
+          "DayOfMonth": 1
+        }
+      }
+    }
+  }
+}

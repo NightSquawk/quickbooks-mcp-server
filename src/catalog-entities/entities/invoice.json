@@ -1,0 +1,1331 @@
+{
+  "entity": "invoice",
+  "name": "Invoice",
+  "category": "Sales",
+  "description": "An invoice — a sales form recording a sale to a customer on credit (amounts owed).",
+  "operations": {
+    "create": {
+      "methodName": "createInvoice",
+      "bodyRequired": true
+    },
+    "get": {
+      "methodName": "getInvoice",
+      "idRequired": true
+    },
+    "update": {
+      "methodName": "updateInvoice",
+      "bodyRequired": true,
+      "note": "Sparse update; body must include Id and SyncToken."
+    },
+    "search": {
+      "methodName": "findInvoices"
+    }
+  },
+  "searchableFields": [
+    "Id",
+    "DocNumber",
+    "TxnDate",
+    "DueDate",
+    "CustomerRef",
+    "Balance",
+    "TotalAmt",
+    "MetaData.LastUpdatedTime"
+  ],
+  "fields": [
+    {
+      "name": "Id",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "System-assigned unique identifier for the Invoice. Required to reference the object on get and update."
+    },
+    {
+      "name": "SyncToken",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Version number of the object. Used for optimistic concurrency; must be supplied on update and must match the latest stored value."
+    },
+    {
+      "name": "MetaData",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Descriptive metadata about the entity, maintained by the system.",
+      "attributes": [
+        {
+          "name": "CreateTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was created (read-only).",
+          "format": "YYYY-MM-DDTHH:MM:SS-HH:MM"
+        },
+        {
+          "name": "LastUpdatedTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the entity was last updated (read-only).",
+          "format": "YYYY-MM-DDTHH:MM:SS-HH:MM"
+        }
+      ]
+    },
+    {
+      "name": "CustomerRef",
+      "type": "reference",
+      "required": true,
+      "description": "Reference to the customer associated with this invoice. Required for create.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced Customer."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "DisplayName of the referenced Customer."
+        }
+      ]
+    },
+    {
+      "name": "Line",
+      "type": "array",
+      "required": true,
+      "description": "Individual line items of the transaction. At least one sales line (SalesItemLineDetail or GroupLineDetail) is required for create.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "description": "Id of the line item. Read-only on response; supply the existing Id to retain a line during a sparse update."
+        },
+        {
+          "name": "LineNum",
+          "type": "decimal",
+          "required": false,
+          "description": "Position of the line in the collection of transaction lines."
+        },
+        {
+          "name": "Description",
+          "type": "string",
+          "required": false,
+          "description": "Free-text description of the line item."
+        },
+        {
+          "name": "Amount",
+          "type": "decimal",
+          "required": false,
+          "description": "Total amount of the line item. Required for most detail types."
+        },
+        {
+          "name": "DetailType",
+          "type": "string",
+          "required": true,
+          "description": "Discriminator indicating which detail object is populated for this line.",
+          "enum": [
+            "SalesItemLineDetail",
+            "GroupLineDetail",
+            "DescriptionOnly",
+            "DiscountLineDetail",
+            "SubTotalLineDetail"
+          ]
+        },
+        {
+          "name": "SalesItemLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Populated when DetailType is SalesItemLineDetail.",
+          "attributes": [
+            {
+              "name": "ItemRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the Item sold/charged.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "Id of the referenced Item."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name of the referenced Item."
+                }
+              ]
+            },
+            {
+              "name": "ClassRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the Class for this line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "Id of the referenced Class."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name of the referenced Class."
+                }
+              ]
+            },
+            {
+              "name": "UnitPrice",
+              "type": "decimal",
+              "required": false,
+              "description": "Unit price of the item. Mutually exclusive with PriceLevelRef."
+            },
+            {
+              "name": "Qty",
+              "type": "decimal",
+              "required": false,
+              "description": "Quantity of the item sold."
+            },
+            {
+              "name": "MarkupInfo",
+              "type": "object",
+              "required": false,
+              "description": "Markup information for billable expenses charged on this line.",
+              "attributes": [
+                {
+                  "name": "PercentBased",
+                  "type": "boolean",
+                  "required": false,
+                  "description": "True if the markup is computed as a percentage."
+                },
+                {
+                  "name": "Value",
+                  "type": "decimal",
+                  "required": false,
+                  "description": "Markup value, as a percentage when PercentBased is true."
+                },
+                {
+                  "name": "MarkUpIncomeAccountRef",
+                  "type": "reference",
+                  "required": false,
+                  "description": "Income account used to track the markup.",
+                  "attributes": [
+                    {
+                      "name": "value",
+                      "type": "string",
+                      "required": false,
+                      "description": "Id of the referenced Account."
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "required": false,
+                      "readOnly": true,
+                      "description": "Name of the referenced Account."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "name": "ItemAccountRef",
+              "type": "reference",
+              "required": false,
+              "readOnly": true,
+              "description": "Reference to the income account associated with the item.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "Id of the referenced Account."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name of the referenced Account."
+                }
+              ]
+            },
+            {
+              "name": "TaxCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "Sales tax code for this line item (e.g. TAX/NON or a tax code Id).",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "Id of the referenced TaxCode."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name of the referenced TaxCode."
+                }
+              ]
+            },
+            {
+              "name": "ServiceDate",
+              "type": "date",
+              "required": false,
+              "description": "Date when the service is performed.",
+              "format": "YYYY-MM-DD"
+            },
+            {
+              "name": "TaxInclusiveAmt",
+              "type": "decimal",
+              "required": false,
+              "description": "The total amount of the line item including tax."
+            }
+          ]
+        },
+        {
+          "name": "GroupLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Populated when DetailType is GroupLineDetail.",
+          "attributes": [
+            {
+              "name": "GroupItemRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the group Item.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": true,
+                  "description": "Id of the referenced group Item."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name of the referenced group Item."
+                }
+              ]
+            },
+            {
+              "name": "Quantity",
+              "type": "decimal",
+              "required": false,
+              "description": "Quantity of the group item."
+            },
+            {
+              "name": "Line",
+              "type": "array",
+              "required": false,
+              "description": "Individual sales lines comprising the group."
+            }
+          ]
+        },
+        {
+          "name": "DescriptionLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Populated when DetailType is DescriptionOnly.",
+          "attributes": [
+            {
+              "name": "ServiceDate",
+              "type": "date",
+              "required": false,
+              "description": "Date when the service is performed.",
+              "format": "YYYY-MM-DD"
+            },
+            {
+              "name": "TaxCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the TaxCode for this description line.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "Id of the referenced TaxCode."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name of the referenced TaxCode."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "DiscountLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Populated when DetailType is DiscountLineDetail.",
+          "attributes": [
+            {
+              "name": "PercentBased",
+              "type": "boolean",
+              "required": false,
+              "description": "True if the discount is a percentage; false if a fixed amount."
+            },
+            {
+              "name": "DiscountPercent",
+              "type": "decimal",
+              "required": false,
+              "description": "Percentage by which the amount due is reduced, 0-100. Valid when PercentBased is true."
+            },
+            {
+              "name": "DiscountAccountRef",
+              "type": "reference",
+              "required": false,
+              "description": "Income account used to track the discount.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "Id of the referenced Account."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name of the referenced Account."
+                }
+              ]
+            },
+            {
+              "name": "ClassRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the Class for the discount.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "Id of the referenced Class."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name of the referenced Class."
+                }
+              ]
+            },
+            {
+              "name": "TaxCodeRef",
+              "type": "reference",
+              "required": false,
+              "description": "TaxCode applicable to the discount.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "Id of the referenced TaxCode."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name of the referenced TaxCode."
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "SubTotalLineDetail",
+          "type": "object",
+          "required": false,
+          "description": "Populated when DetailType is SubTotalLineDetail. Represents a subtotal of preceding lines.",
+          "attributes": [
+            {
+              "name": "ItemRef",
+              "type": "reference",
+              "required": false,
+              "description": "Reference to the subtotal Item.",
+              "attributes": [
+                {
+                  "name": "value",
+                  "type": "string",
+                  "required": false,
+                  "description": "Id of the referenced Item."
+                },
+                {
+                  "name": "name",
+                  "type": "string",
+                  "required": false,
+                  "readOnly": true,
+                  "description": "Name of the referenced Item."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "TxnDate",
+      "type": "date",
+      "required": false,
+      "description": "Date when the transaction occurred. Defaults to the current date if not supplied.",
+      "format": "YYYY-MM-DD"
+    },
+    {
+      "name": "DocNumber",
+      "type": "string",
+      "required": false,
+      "description": "Reference number for the transaction (invoice number). Auto-assigned if custom transaction numbers are enabled and this is omitted."
+    },
+    {
+      "name": "PrivateNote",
+      "type": "string",
+      "required": false,
+      "description": "User-entered, private memo not visible to the customer. Max 4000 characters."
+    },
+    {
+      "name": "CustomerMemo",
+      "type": "object",
+      "required": false,
+      "description": "Message to the customer that appears in the printed/emailed invoice.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "description": "The message text shown to the customer."
+        }
+      ]
+    },
+    {
+      "name": "DueDate",
+      "type": "date",
+      "required": false,
+      "description": "Date when the payment is due. Computed from SalesTermRef if not provided.",
+      "format": "YYYY-MM-DD"
+    },
+    {
+      "name": "BillAddr",
+      "type": "object",
+      "required": false,
+      "description": "Billing address for the invoice.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "System-assigned Id of the address object."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address."
+        },
+        {
+          "name": "Line5",
+          "type": "string",
+          "required": false,
+          "description": "Fifth line of the address."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region/state/province within the country."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal/ZIP code."
+        },
+        {
+          "name": "Country",
+          "type": "string",
+          "required": false,
+          "description": "Country name."
+        },
+        {
+          "name": "Lat",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Latitude coordinate of the geocoded address."
+        },
+        {
+          "name": "Long",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Longitude coordinate of the geocoded address."
+        }
+      ]
+    },
+    {
+      "name": "ShipAddr",
+      "type": "object",
+      "required": false,
+      "description": "Shipping address for the invoice.",
+      "attributes": [
+        {
+          "name": "Id",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "System-assigned Id of the address object."
+        },
+        {
+          "name": "Line1",
+          "type": "string",
+          "required": false,
+          "description": "First line of the address."
+        },
+        {
+          "name": "Line2",
+          "type": "string",
+          "required": false,
+          "description": "Second line of the address."
+        },
+        {
+          "name": "Line3",
+          "type": "string",
+          "required": false,
+          "description": "Third line of the address."
+        },
+        {
+          "name": "Line4",
+          "type": "string",
+          "required": false,
+          "description": "Fourth line of the address."
+        },
+        {
+          "name": "Line5",
+          "type": "string",
+          "required": false,
+          "description": "Fifth line of the address."
+        },
+        {
+          "name": "City",
+          "type": "string",
+          "required": false,
+          "description": "City name."
+        },
+        {
+          "name": "CountrySubDivisionCode",
+          "type": "string",
+          "required": false,
+          "description": "Region/state/province within the country."
+        },
+        {
+          "name": "PostalCode",
+          "type": "string",
+          "required": false,
+          "description": "Postal/ZIP code."
+        },
+        {
+          "name": "Country",
+          "type": "string",
+          "required": false,
+          "description": "Country name."
+        },
+        {
+          "name": "Lat",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Latitude coordinate of the geocoded address."
+        },
+        {
+          "name": "Long",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Longitude coordinate of the geocoded address."
+        }
+      ]
+    },
+    {
+      "name": "FreeFormAddress",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, the address is stored as free-form text rather than structured components."
+    },
+    {
+      "name": "ShipFromAddr",
+      "type": "object",
+      "required": false,
+      "description": "Origin address from which goods are shipped (structured like BillAddr/ShipAddr)."
+    },
+    {
+      "name": "ClassRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Class associated with the entire transaction.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced Class."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name of the referenced Class."
+        }
+      ]
+    },
+    {
+      "name": "SalesTermRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the sales term (payment terms) associated with the transaction.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced Term."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name of the referenced Term."
+        }
+      ]
+    },
+    {
+      "name": "Deposit",
+      "type": "decimal",
+      "required": false,
+      "description": "Amount already deposited/paid at the time the invoice was created; reduces the open balance."
+    },
+    {
+      "name": "ShipMethodRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the shipping method for the invoice.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced shipping method."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name of the referenced shipping method."
+        }
+      ]
+    },
+    {
+      "name": "ShipDate",
+      "type": "date",
+      "required": false,
+      "description": "Date for delivery of goods or services.",
+      "format": "YYYY-MM-DD"
+    },
+    {
+      "name": "TrackingNum",
+      "type": "string",
+      "required": false,
+      "description": "Shipping provider's tracking number for the delivery."
+    },
+    {
+      "name": "CustomField",
+      "type": "array",
+      "required": false,
+      "description": "Custom fields configured on transactions in the company.",
+      "attributes": [
+        {
+          "name": "DefinitionId",
+          "type": "string",
+          "required": false,
+          "description": "Id of the custom field definition."
+        },
+        {
+          "name": "Name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name of the custom field."
+        },
+        {
+          "name": "Type",
+          "type": "string",
+          "required": false,
+          "description": "Data type of the custom field.",
+          "enum": [
+            "StringType",
+            "BooleanType",
+            "NumberType",
+            "DateType"
+          ]
+        },
+        {
+          "name": "StringValue",
+          "type": "string",
+          "required": false,
+          "description": "Value of the custom field when Type is StringType."
+        }
+      ]
+    },
+    {
+      "name": "TxnTaxDetail",
+      "type": "object",
+      "required": false,
+      "description": "Sales tax information for the transaction as a whole.",
+      "attributes": [
+        {
+          "name": "TxnTaxCodeRef",
+          "type": "reference",
+          "required": false,
+          "description": "Reference to the transaction-level TaxCode.",
+          "attributes": [
+            {
+              "name": "value",
+              "type": "string",
+              "required": false,
+              "description": "Id of the referenced TaxCode."
+            },
+            {
+              "name": "name",
+              "type": "string",
+              "required": false,
+              "readOnly": true,
+              "description": "Name of the referenced TaxCode."
+            }
+          ]
+        },
+        {
+          "name": "TotalTax",
+          "type": "decimal",
+          "required": false,
+          "description": "Total tax calculated for the transaction, excluding tax lines manually inserted into the line list."
+        },
+        {
+          "name": "TaxLine",
+          "type": "array",
+          "required": false,
+          "description": "Tax detail lines describing how the total tax was computed.",
+          "attributes": [
+            {
+              "name": "Amount",
+              "type": "decimal",
+              "required": false,
+              "description": "Tax amount for this tax line."
+            },
+            {
+              "name": "DetailType",
+              "type": "string",
+              "required": false,
+              "description": "Discriminator for the tax line detail.",
+              "enum": [
+                "TaxLineDetail"
+              ]
+            },
+            {
+              "name": "TaxLineDetail",
+              "type": "object",
+              "required": false,
+              "description": "Detail of the tax line.",
+              "attributes": [
+                {
+                  "name": "TaxRateRef",
+                  "type": "reference",
+                  "required": false,
+                  "description": "Reference to the TaxRate applied.",
+                  "attributes": [
+                    {
+                      "name": "value",
+                      "type": "string",
+                      "required": false,
+                      "description": "Id of the referenced TaxRate."
+                    },
+                    {
+                      "name": "name",
+                      "type": "string",
+                      "required": false,
+                      "readOnly": true,
+                      "description": "Name of the referenced TaxRate."
+                    }
+                  ]
+                },
+                {
+                  "name": "PercentBased",
+                  "type": "boolean",
+                  "required": false,
+                  "description": "True if the tax is computed as a percentage."
+                },
+                {
+                  "name": "TaxPercent",
+                  "type": "decimal",
+                  "required": false,
+                  "description": "Tax rate percentage applied."
+                },
+                {
+                  "name": "NetAmountTaxable",
+                  "type": "decimal",
+                  "required": false,
+                  "description": "Net amount on which the tax is calculated."
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ApplyTaxAfterDiscount",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, sales tax is calculated after a discount is applied to the subtotal."
+    },
+    {
+      "name": "GlobalTaxCalculation",
+      "type": "string",
+      "required": false,
+      "description": "Method by which tax is applied (non-US locales). Applicable when automated sales tax is not used.",
+      "enum": [
+        "TaxExcluded",
+        "TaxInclusive",
+        "NotApplicable"
+      ]
+    },
+    {
+      "name": "PrintStatus",
+      "type": "string",
+      "required": false,
+      "description": "Printing status of the invoice.",
+      "enum": [
+        "NotSet",
+        "NeedToPrint",
+        "PrintComplete"
+      ]
+    },
+    {
+      "name": "EmailStatus",
+      "type": "string",
+      "required": false,
+      "description": "Email status of the invoice.",
+      "enum": [
+        "NotSet",
+        "NeedToSend",
+        "EmailSent"
+      ]
+    },
+    {
+      "name": "BillEmail",
+      "type": "object",
+      "required": false,
+      "description": "Primary email address to which the invoice is sent.",
+      "attributes": [
+        {
+          "name": "Address",
+          "type": "string",
+          "required": false,
+          "description": "Email address. Max 100 characters."
+        }
+      ]
+    },
+    {
+      "name": "BillEmailCc",
+      "type": "object",
+      "required": false,
+      "description": "Carbon-copy email address for the invoice (requires the cc feature).",
+      "attributes": [
+        {
+          "name": "Address",
+          "type": "string",
+          "required": false,
+          "description": "CC email address."
+        }
+      ]
+    },
+    {
+      "name": "BillEmailBcc",
+      "type": "object",
+      "required": false,
+      "description": "Blind carbon-copy email address for the invoice (requires the bcc feature).",
+      "attributes": [
+        {
+          "name": "Address",
+          "type": "string",
+          "required": false,
+          "description": "BCC email address."
+        }
+      ]
+    },
+    {
+      "name": "DeliveryInfo",
+      "type": "object",
+      "required": false,
+      "readOnly": true,
+      "description": "Email delivery information, populated by the system after the invoice is emailed.",
+      "attributes": [
+        {
+          "name": "DeliveryType",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "How the invoice was delivered (e.g. Email)."
+        },
+        {
+          "name": "DeliveryTime",
+          "type": "datetime",
+          "required": false,
+          "readOnly": true,
+          "description": "Time the invoice was delivered.",
+          "format": "YYYY-MM-DDTHH:MM:SS-HH:MM"
+        }
+      ]
+    },
+    {
+      "name": "CurrencyRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the currency of all amounts on the transaction. Required if multicurrency is enabled.",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Three-letter ISO 4217 currency code."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Full name of the currency."
+        }
+      ]
+    },
+    {
+      "name": "ExchangeRate",
+      "type": "decimal",
+      "required": false,
+      "description": "Currency exchange rate from the transaction currency to the home currency. Valid only when multicurrency is enabled."
+    },
+    {
+      "name": "ProjectRef",
+      "type": "reference",
+      "required": false,
+      "description": "Reference to the Project this invoice is associated with (Projects feature).",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": true,
+          "description": "Id of the referenced Project."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name of the referenced Project."
+        }
+      ]
+    },
+    {
+      "name": "RecurDataRef",
+      "type": "reference",
+      "required": false,
+      "readOnly": true,
+      "description": "Reference to the recurring transaction template from which this invoice was generated (read-only).",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Id of the referenced RecurringTransaction."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name of the referenced template."
+        }
+      ]
+    },
+    {
+      "name": "TaxExemptionRef",
+      "type": "reference",
+      "required": false,
+      "readOnly": true,
+      "description": "Reference to the tax exemption for automated sales tax (read-only).",
+      "attributes": [
+        {
+          "name": "value",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Id of the tax exemption."
+        },
+        {
+          "name": "name",
+          "type": "string",
+          "required": false,
+          "readOnly": true,
+          "description": "Name/reason of the tax exemption."
+        }
+      ]
+    },
+    {
+      "name": "LinkedTxn",
+      "type": "array",
+      "required": false,
+      "description": "Transactions linked to this invoice (e.g. estimates, payments, time charges).",
+      "attributes": [
+        {
+          "name": "TxnId",
+          "type": "string",
+          "required": false,
+          "description": "Id of the linked transaction."
+        },
+        {
+          "name": "TxnType",
+          "type": "string",
+          "required": false,
+          "description": "Type of the linked transaction (e.g. Estimate, Payment, StatementCharge, ReimburseCharge)."
+        },
+        {
+          "name": "TxnLineId",
+          "type": "string",
+          "required": false,
+          "description": "Line item Id of the linked transaction, when linking to a specific line."
+        }
+      ]
+    },
+    {
+      "name": "TotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Total amount of the transaction in the transaction currency, including tax. Calculated by the system."
+    },
+    {
+      "name": "HomeTotalAmt",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Total amount of the transaction in the home currency. Populated when multicurrency is enabled (read-only)."
+    },
+    {
+      "name": "Balance",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Unpaid amount still owed on the invoice, in the transaction currency (read-only)."
+    },
+    {
+      "name": "HomeBalance",
+      "type": "decimal",
+      "required": false,
+      "readOnly": true,
+      "description": "Unpaid balance of the invoice expressed in the home currency. Populated when multicurrency is enabled (read-only)."
+    },
+    {
+      "name": "AllowOnlineCreditCardPayment",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, the customer may pay this invoice online by credit card (QuickBooks Payments)."
+    },
+    {
+      "name": "AllowOnlineACHPayment",
+      "type": "boolean",
+      "required": false,
+      "description": "If true, the customer may pay this invoice online by bank transfer/ACH (QuickBooks Payments)."
+    },
+    {
+      "name": "AllowIPNPayment",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "If true, online payment via Intuit Payment Network is enabled (read-only)."
+    },
+    {
+      "name": "InvoiceLink",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Sharable link to the online invoice. Returned only when the request includes the include=invoiceLink query parameter (read-only)."
+    },
+    {
+      "name": "domain",
+      "type": "string",
+      "required": false,
+      "readOnly": true,
+      "description": "Internal field indicating the originating domain. Always 'QBO' (read-only).",
+      "enum": [
+        "QBO"
+      ]
+    },
+    {
+      "name": "sparse",
+      "type": "boolean",
+      "required": false,
+      "readOnly": true,
+      "description": "Indicates whether the response is a sparse (partial) representation of the object."
+    }
+  ],
+  "requestSample": {
+    "create": {
+      "CustomerRef": {
+        "value": "1"
+      },
+      "Line": [
+        {
+          "DetailType": "SalesItemLineDetail",
+          "Amount": 100,
+          "SalesItemLineDetail": {
+            "ItemRef": {
+              "value": "1"
+            },
+            "Qty": 2,
+            "UnitPrice": 50
+          }
+        }
+      ]
+    },
+    "update": {
+      "Id": "130",
+      "SyncToken": "0",
+      "sparse": true,
+      "DueDate": "2026-07-31"
+    }
+  },
+  "specialOperations": [
+    {
+      "name": "Void an invoice",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/invoice?operation=void",
+      "description": "Voids an existing invoice; the transaction remains active but all amounts and quantities are zeroed and the string 'Voided' is injected into Invoice.PrivateNote, prepended to existing text if present.",
+      "queryParams": [
+        {
+          "name": "operation",
+          "type": "string",
+          "required": true,
+          "description": "Must be set to 'void' to void the invoice. Request body must include a minimum of Invoice.Id and the current Invoice.SyncToken."
+        }
+      ],
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID)."
+        }
+      ],
+      "note": "POST to the base invoice endpoint with operation=void query param; body needs Id and SyncToken."
+    },
+    {
+      "name": "Get an invoice as PDF",
+      "method": "GET",
+      "path": "/v3/company/{realmID}/invoice/{invoiceId}/pdf",
+      "description": "Returns the specified invoice as an Adobe Portable Document Format (PDF) file, formatted according to the company's custom form styles.",
+      "queryParams": [],
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID)."
+        },
+        {
+          "name": "invoiceId",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the invoice to retrieve as PDF."
+        }
+      ],
+      "note": "Response Content-Type is application/pdf (binary PDF), not JSON."
+    },
+    {
+      "name": "Send an invoice",
+      "method": "POST",
+      "path": "/v3/company/{realmID}/invoice/{invoiceId}/send",
+      "description": "Emails the specified invoice to the recipient; sets Invoice.EmailStatus to EmailSent and populates Invoice.DeliveryInfo with sending information.",
+      "queryParams": [
+        {
+          "name": "sendTo",
+          "type": "string",
+          "required": false,
+          "description": "Explicit email address to send the invoice to. If specified, Invoice.BillEmail.Address is updated to this value. If omitted, the email is sent to the address supplied in Invoice.BillEmail.EmailAddress."
+        }
+      ],
+      "pathParams": [
+        {
+          "name": "realmID",
+          "type": "string",
+          "required": true,
+          "description": "The company ID (realm ID)."
+        },
+        {
+          "name": "invoiceId",
+          "type": "string",
+          "required": true,
+          "description": "The Id of the invoice to send."
+        }
+      ],
+      "note": "Two variants: implicit (uses email in Invoice.BillEmail.EmailAddress, no query param) vs explicit (sendTo=<emailAddr> query param overrides BillEmail.Address)."
+    }
+  ]
+}
