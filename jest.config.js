@@ -24,11 +24,8 @@ export default {
       statements: 74,
     },
     // The OAuth client spins up an interactive browser flow and a local HTTP
-    // callback server, which can't be fully unit-covered. Jest subtracts
-    // path-matched files from the global group, so the 100% gate above still
-    // applies to everything else. Before quickbooks-client.auth.test.ts this
-    // file had no tests at all (it was never imported, so istanbul never saw
-    // it); these floors reflect what the new behavioral tests cover.
+    // callback server. Jest subtracts path-matched files from the global group,
+    // so these stricter floors apply independently of the overall baseline.
     './src/clients/quickbooks-client.ts': {
       branches: 85,
       functions: 95,

@@ -40,14 +40,13 @@ it('reads missing files as an empty store for legacy-token migration', () => {
   expect(new TokenStore(path.join(directory, 'missing.json')).load()).toEqual({});
 });
 
-// Unprivileged Windows environments may not allow creating file symlinks.
-const symlinkTest = process.platform === 'win32' ? it.skip : it;
-symlinkTest.each([true, false])('preserves a symlink and atomically updates its target (existing=%s)', exists => {
+// Exercise real file symlinks on both CI platforms, including dangling targets.
+it.each([true, false])('preserves a symlink and atomically updates its target (existing=%s)', exists => {
   const target = path.join(directory, 'data', 'tokens.json');
   fs.mkdirSync(path.dirname(target));
   if (exists) fs.writeFileSync(target, '{"realm_id":"12345"}');
   const link = path.join(directory, 'token-link.json');
-  fs.symlinkSync('data/tokens.json', link);
+  fs.symlinkSync(path.join('data', 'tokens.json'), link, 'file');
   const store = new TokenStore(link);
   store.save({ refresh_token: 'new-token', realm_id: '12345' });
   expect(fs.lstatSync(link).isSymbolicLink()).toBe(true);
