@@ -2,11 +2,15 @@
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import { jest } from '@jest/globals';
 import { TokenStore } from '../../../src/clients/token-store';
 
 let directory: string;
 beforeEach(() => { directory = fs.mkdtempSync(path.join(os.tmpdir(), 'qbo-token-test-')); });
-afterEach(() => { fs.rmSync(directory, { recursive: true, force: true }); });
+afterEach(() => {
+  jest.restoreAllMocks();
+  fs.rmSync(directory, { recursive: true, force: true });
+});
 
 it('stores only rotating tokens, persists across instances, and creates private directories/files', () => {
   const filename = path.join(directory, 'tenant', 'tokens.json');
@@ -59,4 +63,47 @@ it('does not expose filesystem details in persistence failures', () => {
   fs.writeFileSync(file, 'placeholder');
   expect(() => new TokenStore(path.join(file, 'tokens.json')).save({ refresh_token: 'private-value' }))
     .toThrow('Could not persist the QuickBooks JSON token store. Check its path and permissions.');
+});
+
+it('preserves existing tokens and hides filesystem details when inspection is denied', () => {
+  const filename = path.join(directory, 'tokens.json');
+  const store = new TokenStore(filename);
+  store.save({ refresh_token: 'old', realm_id: '12345' });
+  // OSes differ on ENOTDIR vs ENOENT for invalid parent paths. Inject the
+  // permission error explicitly to exercise this failure contract everywhere.
+  jest.spyOn(fs, 'lstatSync').mockImplementationOnce(() => {
+    throw Object.assign(new Error('private filesystem details'), { code: 'EACCES' });
+  });
+
+  expect(() => store.save({ refresh_token: 'new' }))
+    .toThrow('Could not persist the QuickBooks JSON token store. Check its path and permissions.');
+  expect(store.load()).toEqual({ refresh_token: 'old', realm_id: '12345' });
+  expect(fs.readdirSync(directory)).toEqual(['tokens.json']);
+});
+
+it('preserves existing tokens and removes temporary token data when atomic replacement fails', () => {
+  const filename = path.join(directory, 'tokens.json');
+  const store = new TokenStore(filename);
+  store.save({ refresh_token: 'old', realm_id: '12345' });
+  jest.spyOn(fs, 'renameSync').mockImplementationOnce(() => {
+    throw Object.assign(new Error('private filesystem details'), { code: 'EACCES' });
+  });
+
+  expect(() => store.save({ refresh_token: 'new' }))
+    .toThrow('Could not persist the QuickBooks JSON token store. Check its path and permissions.');
+  expect(store.load()).toEqual({ refresh_token: 'old', realm_id: '12345' });
+  expect(fs.readdirSync(directory)).toEqual(['tokens.json']);
+});
+
+it('rejects symlink loops without replacing links or leaving token data behind', () => {
+  const first = path.join(directory, 'first.json');
+  const second = path.join(directory, 'second.json');
+  fs.symlinkSync('second.json', first, 'file');
+  fs.symlinkSync('first.json', second, 'file');
+
+  expect(() => new TokenStore(first).save({ refresh_token: 'new' }))
+    .toThrow('Could not persist the QuickBooks JSON token store. Check its path and permissions.');
+  expect(fs.lstatSync(first).isSymbolicLink()).toBe(true);
+  expect(fs.lstatSync(second).isSymbolicLink()).toBe(true);
+  expect(fs.readdirSync(directory).sort()).toEqual(['first.json', 'second.json']);
 });
