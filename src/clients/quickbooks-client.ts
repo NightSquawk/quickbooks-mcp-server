@@ -197,9 +197,9 @@ export class QuickbooksClient {
         }
         codeExchangeStarted = true;
         try {
-          // The OAuth SDK uses an older query decoder. Pass
-          // only known callback fields, encoded from WHATWG-parsed values, so
-          // malformed percent/UTF-8 sequences never reach that decoder raw.
+          // Pass only known callback fields, encoded from WHATWG-parsed values.
+          // Selecting each first value keeps state validation and token exchange
+          // consistent even when a callback contains duplicate parameters.
           const exchangeParams = new URLSearchParams();
           for (const field of ['code', 'state', 'realmId', 'error', 'error_description']) {
             const value = callback.searchParams.get(field);

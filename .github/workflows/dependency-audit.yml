@@ -18,6 +18,6 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
-      # Keep high/critical findings blocking, including the known intuit-oauth
-      # query-string/decode-uri-component advisory documented in README.
+      # Keep high/critical production findings blocking. CI also audits a fresh
+      # installation of the packed release, where root overrides cannot help.
       - run: npm audit --omit=dev --audit-level=high

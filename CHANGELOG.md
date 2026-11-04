@@ -5,7 +5,7 @@ All notable changes to the QuickBooks Online MCP Server are documented in this f
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] — NightSquawk upstream integration
+## [0.1.0] - 2026-11-04
 
 - Merge Intuit upstream through `31a1dd5`, preserving the NightSquawk package identity, publish workflow, JSON token store, catalogs, and 29 `report_*` tools.
 - Register 160 tools with expanded entities, attachments, invoice PDFs, restriction switches, and unsupported-parameter warnings.
@@ -14,8 +14,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Replace PDF output atomically to prevent writes through file links; exclude custom token-store files and aliases from attachment sources.
 - Update compatible dependencies and migrate record schemas to patched Zod 4; verify the complete tool surface through a real MCP client/server test.
 - Add Linux/Windows CI and regression coverage. Coverage gates reflect the full startup-loaded tool surface, with stricter thresholds for critical paths.
-- Known release blocker: the OAuth dependency chain still has a high-severity decoder advisory; callback normalization mitigates this entry point without suppressing the audit finding. See README.
-- No package version bump, publication, deployment, or changes to Intuit's repository.
+- Remove the vulnerable OAuth decoder dependency with a NightSquawk-maintained native parser patch, with real-SDK encoding, callback, and error regressions.
+- Bundle patched dependency manifests and runtimes in the staged release archive so secure QuickBooks dependency versions survive installation in another project.
+- Require Node.js 22+, report the package version over MCP, and validate the packed release's dependency tree, source, audit, and full tool listing on Linux and Windows.
+- Match npm license metadata to the existing Apache-2.0 LICENSE; preserve vendored Apache-2.0 and ISC notices.
+- Release under the NightSquawk package identity. Intuit's repositories remain read-only upstream sources.
 
 ## [0.0.1] - 2024-01-13
 

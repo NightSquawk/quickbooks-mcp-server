@@ -1,18 +1,23 @@
 {
   "name": "@nightsquawktech/quickbooks-mcp-server",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "QuickBooks Online MCP server for Claude, Cursor, and AI agents: entity CRUD and 29 financial reports. Fork of intuit/quickbooks-online-mcp-server.",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "main": "dist/index.js",
   "type": "module",
   "bin": "./dist/index.js",
   "files": [
     "dist",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md",
+    "vendor/*.tgz"
   ],
   "scripts": {
     "build": "tsc && shx chmod +x dist/*.js",
+    "vendor:pack": "node scripts/pack-vendor.mjs",
+    "package:release": "node scripts/package-release.mjs",
+    "verify:package": "node scripts/verify-package.mjs",
     "prepare": "npm run build",
     "watch": "tsc --watch",
     "lint:fix": "eslint --fix",
@@ -52,8 +57,8 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",
     "dotenv": "^16.4.7",
-    "intuit-oauth": "^4.2.5",
-    "node-quickbooks": "^2.0.43",
+    "intuit-oauth": "file:vendor/intuit-oauth-4.2.5-nst.1.tgz",
+    "node-quickbooks": "file:vendor/node-quickbooks-2.0.50-nst.1.tgz",
     "open": "^9.1.0",
     "zod": "^4.6.7"
   },
@@ -72,11 +77,7 @@
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.26.1"
   },
-  "overrides": {
-    "node-quickbooks": {
-      "fast-xml-parser": "^5.10.1",
-      "underscore": "^1.13.8",
-      "uuid": "11.1.1"
-    }
+  "engines": {
+    "node": ">=22"
   }
 }
