@@ -8,16 +8,15 @@
  *    stored refresh token is rejected (e.g. invalid_grant after the token
  *    was rotated by another consumer, expired past the 100-day window, or
  *    was revoked).
- * 2. The interactive flow must authorize AND exchange with the localhost
- *    callback redirect, even when QUICKBOOKS_REDIRECT_URI points elsewhere
- *    (e.g. the OAuth playground). Intuit rejects the code exchange if the
- *    redirect_uri differs from the one used in the authorize request.
+ * 2. The interactive flow must authorize AND exchange with the same configured
+ *    callback redirect. Intuit rejects the code exchange if the redirect_uri
+ *    differs from the one used in the authorize request.
  */
 import { jest } from '@jest/globals';
 
 // The module under test validates env at import time. Set deterministic
-// values before importing it. QUICKBOOKS_REDIRECT_URI deliberately points
-// away from localhost to prove the flow ignores it.
+// values before importing it. Custom callback host/port behavior is covered
+// separately below.
 process.env.QUICKBOOKS_CLIENT_ID = 'test-client-id';
 process.env.QUICKBOOKS_CLIENT_SECRET = 'test-client-secret';
 process.env.QUICKBOOKS_REFRESH_TOKEN = 'stale-refresh-token';
@@ -25,7 +24,7 @@ process.env.QUICKBOOKS_REALM_ID = '12345';
 process.env.QUICKBOOKS_ENVIRONMENT = 'sandbox';
 process.env.QBO_AUTO_REAUTH = 'true';
 delete process.env.QUICKBOOKS_TOKEN_STORE_PATH;
-process.env.QUICKBOOKS_REDIRECT_URI = 'https://developer.intuit.com/v2/OAuth2Playground/RedirectUrl';
+process.env.QUICKBOOKS_REDIRECT_URI = 'http://localhost:8000/callback';
 
 // Mock dotenv to a no-op so the module under test never loads the real .env.
 // dotenv's internal CommonJS require('fs') bypasses the ESM fs mock below, so
@@ -34,7 +33,7 @@ process.env.QUICKBOOKS_REDIRECT_URI = 'https://developer.intuit.com/v2/OAuth2Pla
 jest.unstable_mockModule('dotenv', () => ({ default: { config: jest.fn(), parse: jest.fn(() => ({})) } }));
 
 // Track every OAuthClient the module constructs so tests can tell the
-// module-level client (env redirect) apart from the flow client (localhost).
+// module-level client apart from the interactive flow client.
 type MockOAuth = {
   cfg: Record<string, unknown>;
   refreshUsingToken: jest.Mock;
@@ -164,8 +163,8 @@ describe('QuickbooksClient.authenticate', () => {
 
     await untilCallbackRegistered();
 
-    // A second OAuthClient was constructed for the flow, with the localhost
-    // redirect (NOT the playground URI from the environment).
+    // A second OAuthClient uses the same configured redirect for authorization
+    // and token exchange.
     expect(oauthInstances).toHaveLength(2);
     const flowClient = oauthInstances[1];
     expect(flowClient.cfg.redirectUri).toBe('http://localhost:8000/callback');
@@ -265,6 +264,54 @@ describe('OAuth callback and MCP transport safety', () => {
   });
 });
 
+
+describe('configured sandbox authorization', () => {
+  it.each([
+    ['http://localhost:8123/callback', 'localhost', 8123],
+    ['http://127.0.0.1:8124/callback', '127.0.0.1', 8124],
+    ['http://[::1]:8125/callback', '::1', 8125],
+    ['http://localhost/callback', 'localhost', 80],
+  ])('uses %s consistently for authorization, listening, and exchange', async (redirectUri, host, port) => {
+    const client = new QuickbooksClient({
+      clientId: 'test-client-id', clientSecret: 'test-client-secret', environment: 'sandbox',
+      redirectUri: String(redirectUri), store: new TokenStore('/unused-test-store.json'),
+    });
+    callbackHandler = undefined;
+    const flowPromise = client.startOAuthFlow();
+    await untilCallbackRegistered();
+    const flowClient = oauthInstances[oauthInstances.length - 1];
+    expect(flowClient.cfg.redirectUri).toBe(redirectUri);
+    expect(fakeServer.listen).toHaveBeenCalledWith(port, host, expect.any(Function));
+    const { state } = flowClient.authorizeUri.mock.calls[0][0] as { state: string };
+    createTokenDispatch.mockResolvedValueOnce({ token: { refresh_token: 'configured-refresh', realmId: '12345' } });
+    await callbackHandler!({ url: `/callback?code=ok&state=${state}` }, { writeHead: jest.fn(), end: jest.fn() });
+    await flowPromise;
+    expect(flowClient.createToken).toHaveBeenCalledWith(`/callback?code=ok&state=${state}`);
+  });
+
+  it.each([
+    'https://developer.intuit.com/v2/OAuth2Playground/RedirectUrl',
+    'http://remote.example.com/callback',
+    'https://localhost:8000/callback',
+    'http://localhost:8000/other',
+    'http://localhost:8000/callback?fixed=value',
+    'http://localhost:8000/callback#fragment',
+    'http://user@localhost:8000/callback',
+    'http://:password@localhost:8000/callback',
+    'http://localhost:0/callback',
+    'not-a-url',
+  ])('rejects unsupported sandbox callback %s before opening a browser or listener', async redirectUri => {
+    const client = new QuickbooksClient({
+      clientId: 'test-client-id', clientSecret: 'test-client-secret', environment: 'sandbox',
+      redirectUri, store: new TokenStore('/unused-test-store.json'),
+    });
+    callbackHandler = undefined;
+    await expect(client.startOAuthFlow()).rejects.toThrow(/registered HTTP loopback/);
+    expect(callbackHandler).toBeUndefined();
+    expect(openMock).not.toHaveBeenCalled();
+    expect(fakeServer.listen).not.toHaveBeenCalled();
+  });
+});
 
 describe('explicit production authorization', () => {
   it('uses the registered HTTPS callback for explicit authorization while auto-reauth is disabled', async () => {

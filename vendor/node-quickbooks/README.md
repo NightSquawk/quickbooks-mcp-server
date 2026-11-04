@@ -20,7 +20,7 @@ MCP server is installed by another project. Root-level npm overrides are not
 inherited by consumers. Development dependencies, test scripts, examples, and
 credential-based upstream tests are omitted from this runtime package.
 
-The only runtime patch is in `criteriaToString`: escape existing backslashes
+The query runtime patch is in `criteriaToString`: escape existing backslashes
 before escaping single quotes in string values, including every `IN` list item.
 Without this order, a backslash immediately before a quote can neutralize the
 added escape and allow the quote to end the query literal. QuickBooks uses
@@ -28,6 +28,14 @@ added escape and allow the quote to end the query literal. QuickBooks uses
 Explicit raw query strings retain the upstream API's caller-controlled behavior.
 Regression tests exercise `findCustomers` through its real request construction
 with only the HTTP adapter replaced; no live QuickBooks requests are made.
+
+`getInvoicePdf` also accepts an optional third `maxContentLength` argument.
+The positive integer byte cap reaches Axios before the request starts; its HTTP
+adapter aborts when decoded response bytes cross the cap, including chunked
+responses and compressed PDFs. The existing two-argument call remains valid.
+The MCP handler supplies its configured cap and retains a defensive final check.
+Loopback HTTP regressions use the real adapter and verify connection closure
+before EOF for oversized and compressed responses; they do not contact QBO.
 
 ## Provenance and license
 
@@ -39,8 +47,8 @@ with integrity:
 sha512-9Pd29th8gRHXoUfrBcXSmCa3rXtrXUHQLT0GQpTn/gW+4vK5hfNndFhXDPJpsr7wCvFqzG+meBtEvot1WzO+kA==
 ```
 
-`index.d.ts` is a byte-for-byte copy of that release. `index.js` differs only by
-the marked query-escaping patch above. The upstream manifest declares the ISC
+`index.d.ts` adds the optional PDF-limit argument. `index.js` differs only by
+the marked query-escaping and PDF-limit patches above. The upstream manifest declares the ISC
 license, and its runtime header credits Michael Cohen, 2014.
 The included `LICENSE` supplies the standard ISC license text with that notice.
 The original copyright and license header remains intact in `index.js`.

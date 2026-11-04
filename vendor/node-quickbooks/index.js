@@ -739,9 +739,16 @@ QuickBooks.prototype.getInvoice = function (id, callback) {
  *
  * @param  {string} Id - The Id of persistent Invoice
  * @param  {function} callback - Callback function which is called with any error and the Invoice PDF
+ * @param  {number} maxContentLength - Optional positive byte limit on the decoded response
  */
-QuickBooks.prototype.getInvoicePdf = function (id, callback) {
-  module.read(this, 'Invoice', id + '/pdf', callback)
+QuickBooks.prototype.getInvoicePdf = function (id, callback, maxContentLength) {
+  // NightSquawk patch: enforce the caller's cap while Axios receives the body,
+  // before the completed response is exposed as a Buffer to the callback.
+  if (maxContentLength !== undefined && (!Number.isSafeInteger(maxContentLength) || maxContentLength <= 0)) {
+    callback(new Error('PDF maxContentLength must be a positive safe integer'))
+    return
+  }
+  module.request(this, 'get', { url: '/invoice/' + id + '/pdf', maxContentLength: maxContentLength }, null, module.unwrap(callback, 'Invoice'))
 }
 
 /**
@@ -2378,6 +2385,9 @@ module.request = function (context, verb, options, entity, callback) {
   if (options.url.match(/pdf$/)) {
     opts.headers['accept'] = 'application/pdf'
     opts.responseType = 'arraybuffer'
+    // NightSquawk patch: Axios counts decompressed bytes and aborts when this
+    // limit is crossed, including chunked responses without Content-Length.
+    opts.maxContentLength = options.maxContentLength
   }
 
   if (entity !== null) {

@@ -857,7 +857,7 @@ export class QuickBooks {
     idOrEntity: string | Invoice,
     callback: QuickBooksCallback<EntityResponse<Invoice>>
   ): void;
-  getInvoicePdf(id: string, callback: QuickBooksCallback<any>): void;
+  getInvoicePdf(id: string, callback: QuickBooksCallback<any>, maxContentLength?: number): void;
   sendInvoicePdf(
     id: string,
     sendTo?: string,

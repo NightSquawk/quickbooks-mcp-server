@@ -10,8 +10,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Merge Intuit upstream through `31a1dd5`, preserving the NightSquawk package identity, publish workflow, JSON token store, catalogs, and 29 `report_*` tools.
 - Register 160 tools with expanded entities, attachments, invoice PDFs, restriction switches, and unsupported-parameter warnings.
 - Add OAuth state validation, duplicate-callback protection, rotation-race recovery, production reauthorization guidance, configurable JSON storage, and safe stderr diagnostics.
+- Honor the configured sandbox loopback callback host and port; reject unsupported callback URLs explicitly instead of silently substituting localhost:8000.
 - Preserve report parameters and apply upstream balance-sheet date handling.
 - Replace PDF output atomically to prevent writes through file links; exclude custom token-store files and aliases from attachment sources.
+- Enforce the configured PDF response limit during HTTP download, including chunked and compressed responses, before accumulating the complete body.
+- Make the existing `delete_invoice` tool perform its documented void operation, preserving the transaction record instead of attempting deletion first.
+- Preserve successful bill updates when the subsequent tax-preference verification fails, returning the updated bill with a sanitized warning against retrying the completed mutation.
 - Update compatible dependencies and migrate record schemas to patched Zod 4; verify the complete tool surface through a real MCP client/server test.
 - Add Linux/Windows CI and regression coverage. Coverage gates reflect the full startup-loaded tool surface, with stricter thresholds for critical paths.
 - Remove the vulnerable OAuth decoder dependency with a NightSquawk-maintained native parser patch, with real-SDK encoding, callback, and error regressions.

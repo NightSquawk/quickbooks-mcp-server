@@ -143,22 +143,31 @@ export class QuickbooksClient {
   }
 
   private runOAuthFlow(): Promise<void> {
-    const port = 8000;
-    let flowRedirectUri = `http://localhost:${port}/callback`;
-    if (this.environment === 'production') {
-      try {
-        const redirect = new URL(this.redirectUri);
-        if (redirect.protocol !== 'https:' || redirect.pathname !== '/callback') {
-          throw new Error('Invalid production redirect');
-        }
-        flowRedirectUri = redirect.toString();
-      } catch {
-        return Promise.reject(new Error(
-          'Production authorization requires QUICKBOOKS_REDIRECT_URI to be a registered HTTPS /callback URL forwarded to local port 8000.'
-        ));
+    let port = 8000;
+    let host = 'localhost';
+    let flowRedirectUri: string;
+    try {
+      const redirect = new URL(this.redirectUri);
+      if (redirect.pathname !== '/callback' || redirect.search || redirect.hash || redirect.username || redirect.password) {
+        throw new Error('Unsupported callback URL');
       }
+      if (this.environment === 'production') {
+        if (redirect.protocol !== 'https:') throw new Error('HTTPS is required');
+      } else {
+        if (redirect.protocol !== 'http:' || !['localhost', '127.0.0.1', '[::1]'].includes(redirect.hostname)) {
+          throw new Error('An HTTP loopback callback is required');
+        }
+        port = Number(redirect.port || 80);
+        if (port === 0) throw new Error('A fixed callback port is required');
+        host = redirect.hostname === '[::1]' ? '::1' : redirect.hostname;
+      }
+      flowRedirectUri = redirect.toString();
+    } catch {
+      return Promise.reject(new Error(this.environment === 'production'
+        ? 'Production authorization requires QUICKBOOKS_REDIRECT_URI to be a registered HTTPS /callback URL without credentials, query, or fragment, forwarded to local port 8000.'
+        : 'Sandbox authorization requires QUICKBOOKS_REDIRECT_URI to be a registered HTTP loopback /callback URL (localhost, 127.0.0.1, or [::1]), without credentials, query, or fragment. The configured port is used.'));
     }
-    // Sandbox uses the local callback. Explicit production authorization uses a
+    // Sandbox binds the configured loopback host/port. Explicit production uses a
     // registered HTTPS callback forwarded to this server; auto-reauth never does.
     const flowClient = new OAuthClient({
       clientId: this.clientId,
@@ -172,7 +181,7 @@ export class QuickbooksClient {
       const server = http.createServer(async (req, res) => {
         let callback: URL;
         try {
-          callback = new URL(req.url || '/', `http://localhost:${port}`);
+          callback = new URL(req.url || '/', flowRedirectUri);
         } catch {
           res.writeHead(400, { 'Content-Type': 'text/plain' });
           res.end('Invalid callback URL.');
@@ -232,10 +241,10 @@ export class QuickbooksClient {
       });
 
       server.on('error', () => {
-        reject(new Error('Could not start the QuickBooks OAuth callback server on port 8000.'));
+        reject(new Error(`Could not start the QuickBooks OAuth callback server on port ${port}.`));
       });
-      // Keep the callback local; the browser redirect uses localhost.
-      server.listen(port, 'localhost', async () => {
+      // The callback listener always binds to a loopback interface.
+      server.listen(port, host, async () => {
         try {
           const authUri = flowClient
             .authorizeUri({ scope: [OAuthClient.scopes.Accounting as string], state: expectedState })

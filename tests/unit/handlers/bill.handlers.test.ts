@@ -146,6 +146,7 @@ describe('Bill Handlers', () => {
 
       expect(result.isError).toBe(false);
       expect(result.result).toEqual(updated);
+      expect(mockQuickBooksInstance.getPreferences).not.toHaveBeenCalled();
     });
 
     it('should preserve ClassRef/TaxCodeRef when the caller omits them', async () => {
@@ -333,6 +334,8 @@ describe('Bill Handlers', () => {
       const result = await updateQuickbooksBill({ Id: '1' });
 
       expect(result.isError).toBe(true);
+      expect(result.result).toBeNull();
+      expect(mockQuickBooksInstance.updateBill).toHaveBeenCalledTimes(1);
     });
 
     it('should handle authentication errors', async () => {
@@ -417,18 +420,42 @@ describe('Bill Handlers', () => {
       expect(result.error).not.toContain('TaxCodeRef'); // suppressed under AST
     });
 
-    it('surfaces an error if reading Preferences fails', async () => {
+    it.each(['callback', 'throw'])('preserves the completed bill update when Preferences fails via %s', async failure => {
       // Preferences is only read when a TaxCodeRef was actually dropped, so drive that path.
       mockQuickBooksInstance.getBill.mockImplementation((_id: any, cb: any) => cb(null, taxOnlyBill));
       mockQuickBooksInstance.updateBill.mockImplementation((_payload: any, cb: any) => cb(null, taxStrippedBack));
-      mockQuickBooksInstance.getPreferences.mockImplementation((cb: any) =>
-        cb(new Error('Preferences read failed'), null)
-      );
+      mockQuickBooksInstance.getPreferences.mockImplementation((cb: any) => {
+        const error = new Error('Preferences read failed: private-access-token');
+        if (failure === 'throw') throw error;
+        cb(error, null);
+      });
+
+      const result = await updateQuickbooksBill({ Id: '1', PrivateNote: 'x' });
+
+      expect(result.isError).toBe(false);
+      expect(result.error).toBeNull();
+      expect(result.result).toMatchObject(taxStrippedBack);
+      expect(result.result._warning).toContain('bill update succeeded');
+      expect(result.result._warning).toContain('TaxCodeRef verification is incomplete');
+      expect(result.result._warning).toContain('Do not retry the completed update');
+      expect(JSON.stringify(result)).not.toContain('private-access-token');
+      expect(mockQuickBooksInstance.updateBill).toHaveBeenCalledTimes(1);
+    });
+
+    it('keeps confirmed class loss visible when tax verification cannot finish', async () => {
+      mockQuickBooksInstance.getBill.mockImplementation((_id: any, cb: any) => cb(null, currentBill));
+      mockQuickBooksInstance.updateBill.mockImplementation((_payload: any, cb: any) => cb(null, taxStrippedBack));
+      mockQuickBooksInstance.getPreferences.mockImplementation((cb: any) => cb(new Error('Permission denied'), null));
 
       const result = await updateQuickbooksBill({ Id: '1', PrivateNote: 'x' });
 
       expect(result.isError).toBe(true);
-      expect(result.error).toContain('Preferences read failed');
+      expect(result.result).toMatchObject(taxStrippedBack);
+      expect(result.result._warning).toContain('TaxCodeRef verification is incomplete');
+      expect(result.error).toContain('was updated');
+      expect(result.error).toContain('ClassRef');
+      expect(result.error).not.toContain('TaxCodeRef');
+      expect(mockQuickBooksInstance.updateBill).toHaveBeenCalledTimes(1);
     });
   });
 

@@ -42,7 +42,7 @@ describe('getQuickbooksInvoicePdf', () => {
 
     await getQuickbooksInvoicePdf('999');
 
-    expect(mockQuickBooksInstance.getInvoicePdf).toHaveBeenCalledWith('999', expect.any(Function));
+    expect(mockQuickBooksInstance.getInvoicePdf).toHaveBeenCalledWith('999', expect.any(Function), 50 * 1024 * 1024);
   });
 
   it('returns isError when the API callback yields an error', async () => {
@@ -88,6 +88,7 @@ describe('getQuickbooksInvoicePdf', () => {
 
     expect(result.isError).toBe(true);
     expect(result.error).toMatch(/exceeds cap of 10 bytes/);
+    expect(mockQuickBooksInstance.getInvoicePdf).toHaveBeenCalledWith('123', expect.any(Function), 10);
   });
 
   it('falls back to the default cap when QBO_PDF_MAX_BYTES is not a positive integer', async () => {
@@ -110,5 +111,12 @@ describe('getQuickbooksInvoicePdf', () => {
 
     expect(result.isError).toBe(false);
     expect(result.result).toBe(pdf);
+  });
+
+  it.each(['1.5', '10bytes', '9007199254740992', '-1'])('rejects an unsafe byte-cap configuration %s', async (value) => {
+    process.env.QBO_PDF_MAX_BYTES = value;
+    mockQuickBooksInstance.getInvoicePdf.mockImplementation((_id: any, cb: any) => cb(null, Buffer.from('x')));
+    await getQuickbooksInvoicePdf('123');
+    expect(mockQuickBooksInstance.getInvoicePdf).toHaveBeenCalledWith('123', expect.any(Function), 50 * 1024 * 1024);
   });
 });

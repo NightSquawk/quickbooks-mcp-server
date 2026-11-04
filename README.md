@@ -24,6 +24,8 @@ QUICKBOOKS_REDIRECT_URI=http://localhost:8000/callback
 
 Register the matching redirect URI in your Intuit app. Use credentials for the selected sandbox or production environment.
 
+Sandbox authorization supports HTTP loopback `/callback` URLs on `localhost`, `127.0.0.1`, or `[::1]` and listens on the configured port. The default is `http://localhost:8000/callback`; for example, `http://127.0.0.1:8123/callback` uses port 8123. Unsupported callback URLs, including OAuth Playground URLs, are rejected explicitly. Callback URLs must not contain credentials, query parameters, or fragments.
+
 ## Authentication
 
 ```bash
@@ -68,6 +70,8 @@ Entity tools cover customers, invoices, estimates, bills, vendors, employees, ac
 
 Notable additions include estimate-to-invoice links, invoice memos/service dates/payment terms, payment reference and multicurrency fields, subaccounts, and bill updates that preserve existing line-level class/tax references. Unsupported top-level parameters produce a warning instead of disappearing silently.
 
+The existing `delete_invoice` tool name is retained for compatibility; it voids the invoice and preserves the transaction record.
+
 ### Restriction switches
 
 All tools are enabled by default. Set any of these environment variables to the exact string `true` to suppress that category:
@@ -83,6 +87,8 @@ Set all three for read-only QuickBooks access. Read/search/report tools remain a
 `create_attachable` accepts base64 content, an absolute local `file_path`, or an HTTPS `file_url`. Local sources default to home/temp directories; use a semicolon-separated `QUICKBOOKS_ATTACHABLE_BASE_DIR` to select other roots. Credential files, the configured JSON token store (including symlink/hard-link aliases), dot-directories, and the server installation tree are excluded. URL sources validate destinations and redirects.
 
 `get_invoice_pdf` returns base64 by default. Disk output requires `QBO_PDF_OUTPUT_DIR` to name an existing allowed directory. Files are not overwritten unless `overwrite=true`; overwrites replace the output entry atomically without following a final-file symlink or hard link to another file.
+
+PDF downloads stop when the decoded response exceeds 50 MiB, including compressed or chunked responses. Set `QBO_PDF_MAX_BYTES` to a positive integer to change this limit. This bounds the downloaded body; buffering and base64 encoding require additional memory.
 
 ### Report tools (29 reports)
 

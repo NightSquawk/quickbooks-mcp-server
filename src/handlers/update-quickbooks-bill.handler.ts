@@ -96,7 +96,9 @@ function isAutomatedSalesTax(preferences: any): boolean {
  * error. A dropped TaxCodeRef is an error only when the company is NOT on Automated
  * Sales Tax; under AST, QBO manages tax centrally and removing line-level TaxCodeRef
  * is expected, so it is surfaced as a non-blocking warning instead. Pass bill.Id plus
- * only the fields to change.
+ * only the fields to change. If tax preferences cannot be read after the write,
+ * return the updated bill with an incomplete-verification warning rather than
+ * describing the completed mutation as a failure.
  */
 export async function updateQuickbooksBill(bill: any): Promise<ToolResponse<any>> {
   try {
@@ -126,31 +128,51 @@ export async function updateQuickbooksBill(bill: any): Promise<ToolResponse<any>
     // decide error-vs-warning — so fetch Preferences lazily, avoiding an extra API call
     // on the common case where nothing was dropped.
     let astEnabled = false;
+    let verificationWarning: string | undefined;
     if (dropped.TaxCodeRef.length > 0) {
-      const preferences = await new Promise<any>((resolve, reject) => {
-        (quickbooks as any).getPreferences((err: any, p: any) =>
-          err ? reject(err) : resolve(p)
-        );
-      });
-      astEnabled = isAutomatedSalesTax(preferences);
+      try {
+        const preferences = await new Promise<any>((resolve, reject) => {
+          (quickbooks as any).getPreferences((err: any, p: any) =>
+            err ? reject(err) : resolve(p)
+          );
+        });
+        astEnabled = isAutomatedSalesTax(preferences);
+      } catch {
+        // The write already succeeded. A failed follow-up read must not look
+        // like a failed mutation and prompt a caller to add the same lines again.
+        // Do not expose raw SDK errors, which can include request credentials.
+        verificationWarning =
+          'The bill update succeeded, but TaxCodeRef verification is incomplete because ' +
+          'company tax preferences could not be read. Inspect the returned bill and tax ' +
+          'preferences before relying on its tax coding. Do not retry the completed update ' +
+          'solely because verification failed.';
+      }
     }
 
     // ClassRef is never legitimately auto-stripped — a dropped one is always data loss.
     // A dropped TaxCodeRef is data loss only when NOT on AST.
     const errorRefs: string[] = [];
     for (const line of dropped.ClassRef) errorRefs.push(`${line}: ClassRef`);
-    if (!astEnabled) {
+    if (!astEnabled && !verificationWarning) {
       for (const line of dropped.TaxCodeRef) errorRefs.push(`${line}: TaxCodeRef`);
     }
 
     if (errorRefs.length > 0) {
       return {
-        result: updated,
+        result: verificationWarning ? { ...updated, _warning: verificationWarning } : updated,
         isError: true,
         error:
           `Bill ${bill.Id} was updated but QuickBooks dropped these tracking fields: ` +
           `${errorRefs.join(", ")}. The bill's class/tax coding may now be wrong — ` +
           `investigate before relying on it.`,
+      };
+    }
+
+    if (verificationWarning) {
+      return {
+        result: { ...updated, _warning: verificationWarning },
+        isError: false,
+        error: null,
       };
     }
 
