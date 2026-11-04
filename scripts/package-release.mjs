@@ -32,6 +32,11 @@ export function packageRelease(destination) {
     }
     manifest.bundleDependencies = patched;
     manifest.files = manifest.files.filter(file => file !== 'vendor/*.tgz');
+    // The archive already contains compiled code. npm 10 can still invoke
+    // prepare while packing despite --ignore-scripts; build tooling belongs
+    // to the checkout, not to this runtime-only staging directory.
+    manifest.scripts = { auth: manifest.scripts.auth };
+    delete manifest.devDependencies;
     writeFileSync(path.join(stage, 'package.json'), JSON.stringify(manifest, null, 2) + '\n');
     const packed = JSON.parse(npm(['pack', '--ignore-scripts', '--json', '--pack-destination', destination]));
     return Array.isArray(packed) ? packed[0] : Object.values(packed)[0];

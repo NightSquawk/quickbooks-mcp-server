@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add Linux/Windows CI and regression coverage. Coverage gates reflect the full startup-loaded tool surface, with stricter thresholds for critical paths.
 - Remove the vulnerable OAuth decoder dependency with a NightSquawk-maintained native parser patch, with real-SDK encoding, callback, and error regressions.
 - Bundle patched dependency manifests and runtimes in the staged release archive so secure QuickBooks dependency versions survive installation in another project.
+- Escape backslashes before quotes in structured QuickBooks query values, including `IN` lists, to address the CodeQL finding in the vendored client.
 - Require Node.js 22+, report the package version over MCP, and validate the packed release's dependency tree, source, audit, and full tool listing on Linux and Windows.
 - Match npm license metadata to the existing Apache-2.0 LICENSE; preserve vendored Apache-2.0 and ISC notices.
 - Release under the NightSquawk package identity. Intuit's repositories remain read-only upstream sources.

@@ -1,15 +1,15 @@
-# NightSquawk dependency metadata patch for node-quickbooks
+# NightSquawk security patches for node-quickbooks
 
-This private vendored package contains the unmodified runtime and TypeScript
-declarations from [`node-quickbooks@2.0.50`](https://www.npmjs.com/package/node-quickbooks/v/2.0.50),
+This private vendored package contains the runtime and TypeScript declarations
+from [`node-quickbooks@2.0.50`](https://www.npmjs.com/package/node-quickbooks/v/2.0.50),
 maintained upstream at <https://github.com/mcohen01/node-quickbooks>.
 The package is bundled as a local tarball dependency in the NightSquawk MCP server;
 it is not published separately and does not modify the upstream repository.
 
 ## Changes in 2.0.50-nst.1
 
-Only the package metadata and this notice are changed. The dependency manifest
-carries the security fixes that were previously root-level npm overrides:
+The dependency manifest carries the security fixes that were previously
+root-level npm overrides:
 
 - `fast-xml-parser`: `^4.3.2` → `^5.10.1`
 - `underscore`: `1.12.1` → `^1.13.8`
@@ -19,6 +19,15 @@ Putting these constraints in this dependency's manifest preserves them when the
 MCP server is installed by another project. Root-level npm overrides are not
 inherited by consumers. Development dependencies, test scripts, examples, and
 credential-based upstream tests are omitted from this runtime package.
+
+The only runtime patch is in `criteriaToString`: escape existing backslashes
+before escaping single quotes in string values, including every `IN` list item.
+Without this order, a backslash immediately before a quote can neutralize the
+added escape and allow the quote to end the query literal. QuickBooks uses
+[backslash escaping for query literals](https://medium.com/intuitdev/deep-dive-into-quickbooks-online-data-queries-b77034bdc144).
+Explicit raw query strings retain the upstream API's caller-controlled behavior.
+Regression tests exercise `findCustomers` through its real request construction
+with only the HTTP adapter replaced; no live QuickBooks requests are made.
 
 ## Provenance and license
 
@@ -30,8 +39,9 @@ with integrity:
 sha512-9Pd29th8gRHXoUfrBcXSmCa3rXtrXUHQLT0GQpTn/gW+4vK5hfNndFhXDPJpsr7wCvFqzG+meBtEvot1WzO+kA==
 ```
 
-`index.js` and `index.d.ts` are byte-for-byte copies of that release. Its manifest
-declares the ISC license, and its runtime header credits Michael Cohen, 2014.
+`index.d.ts` is a byte-for-byte copy of that release. `index.js` differs only by
+the marked query-escaping patch above. The upstream manifest declares the ISC
+license, and its runtime header credits Michael Cohen, 2014.
 The included `LICENSE` supplies the standard ISC license text with that notice.
 The original copyright and license header remains intact in `index.js`.
 

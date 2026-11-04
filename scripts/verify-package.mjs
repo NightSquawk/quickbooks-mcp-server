@@ -24,7 +24,7 @@ try {
   const consumer = path.join(scratch, 'consumer');
   mkdirSync(consumer);
   writeFileSync(path.join(consumer, 'package.json'), '{"name":"qbo-package-verification","version":"1.0.0","private":true}\n');
-  npm(['install', '--ignore-scripts', '--no-audit', '--no-fund', '--cache', path.join(scratch, 'empty-cache'), path.join(scratch, artifact.filename)], consumer);
+  npm(['install', '--no-audit', '--no-fund', '--cache', path.join(scratch, 'empty-cache'), path.join(scratch, artifact.filename)], consumer);
   npm(['ls', '--all'], consumer);
   process.stdout.write(npm(['audit', '--omit=dev', '--audit-level=high'], consumer));
   const consumerRequire = createRequire(path.join(consumer, 'package.json'));

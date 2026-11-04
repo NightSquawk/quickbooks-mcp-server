@@ -2693,7 +2693,9 @@ module.criteriaToString = function (criteria) {
     }
     sql += criterion.field + ' ' + criterion.operator + ' '
     var quote = function (x) {
-      return _.isString(x) ? "'" + x.replace(/'/g, "\\'") + "'" : x
+      // NightSquawk patch: escape existing backslashes before adding quote
+      // escapes, so an input backslash cannot expose a quote to the query parser.
+      return _.isString(x) ? "'" + x.replace(/\\/g, "\\\\").replace(/'/g, "\\'") + "'" : x
     }
     if (_.isArray(criterion.value)) {
       sql += '(' + criterion.value.map(quote).join(',') + ')'
