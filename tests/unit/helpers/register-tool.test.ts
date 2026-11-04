@@ -237,4 +237,59 @@ describe("unsupported parameter reporting", () => {
     const plain = z.string();
     expect(permissiveParamsSchema(plain)).toBe(plain);
   });
+
+  it("reports paths for unsupported fields inside optional arrays without changing the source schema", () => {
+    const original = z.object({ lines: z.array(z.object({ amount: z.number() })).min(1).optional() });
+    const registered = permissiveParamsSchema(original);
+    const input = { lines: [{ amount: 12, class_ref: "42" }] };
+    expect(original.parse(input)).toEqual({ lines: [{ amount: 12 }] });
+    const result = registered.safeParse(input);
+    expect(result.success).toBe(false);
+    if (!result.success) expect(result.error.issues).toContainEqual(expect.objectContaining({
+      code: "unrecognized_keys", path: ["lines", 0], keys: ["class_ref"],
+    }));
+    expect(registered.parse({ extra: "outer warning" })).toEqual({ extra: "outer warning" });
+    expect(registered.safeParse({ lines: [] }).success).toBe(false);
+  });
+
+  it("preserves intentional passthrough objects, record keys, and arbitrary values", () => {
+    const original = z.object({
+      bill: z.object({ Id: z.string() }).passthrough(),
+      patch: z.record(z.string(), z.any()),
+      arbitrary: z.any(),
+    });
+    const input = {
+      bill: { Id: "1", Line: [{ ClassRef: { value: "2" } }] },
+      patch: { Nested: { unknown: ["allowed"] } }, arbitrary: { unknown: { deep: true } },
+    };
+    expect(permissiveParamsSchema(original).parse(input)).toEqual(input);
+  });
+
+  it("keeps object union branches valid and rejects unknown branch fields", () => {
+    const registered = permissiveParamsSchema(z.object({
+      criteria: z.array(z.object({ field: z.string(), value: z.string(), operator: z.string().optional() })
+        .or(z.object({ key: z.string(), value: z.string() }))),
+    }));
+    for (const criterion of [{ field: "Id", value: "42", operator: "=" }, { key: "Id", value: "42" }]) {
+      expect(registered.parse({ criteria: [criterion] })).toEqual({ criteria: [criterion] });
+      expect(registered.safeParse({ criteria: [{ ...criterion, ignored: true }] }).success).toBe(false);
+    }
+  });
+
+  it("preserves defaults, refinements, transforms and descriptions without parsing twice", () => {
+    const transform = jest.fn((value: string) => value.toUpperCase());
+    const refinement = jest.fn((value: { qty: number }) => value.qty > 0);
+    const original = z.object({
+      detail: z.object({ qty: z.number().default(1), name: z.string().transform(transform) })
+        .refine(refinement, "positive quantity required").describe("Invoice line details"),
+    });
+    const registered = permissiveParamsSchema(original);
+    expect(registered.parse({ detail: { name: "line" } })).toEqual({ detail: { qty: 1, name: "LINE" } });
+    expect(transform).toHaveBeenCalledTimes(1);
+    expect(refinement).toHaveBeenCalledTimes(1);
+    expect(registered.safeParse({ detail: { qty: -1, name: "line" } }).success).toBe(false);
+    const json: any = z.toJSONSchema(registered, { io: "input" });
+    expect(json.properties.detail.description).toBe("Invoice line details");
+    expect(json.properties.detail.additionalProperties).toBe(false);
+  });
 });

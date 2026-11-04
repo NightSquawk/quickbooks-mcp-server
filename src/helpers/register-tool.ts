@@ -73,10 +73,11 @@ export function isToolDisabled(toolName: string): boolean {
  * surfaced as an invoice sent to a customer with a blank Ship Date — the caller
  * passed `ship_date`, `create_invoice` did not declare it, and nothing said so.
  *
- * Hard-failing on unknown keys would turn a harmless stray parameter into a
- * failed transaction, so instead the schema is registered permissively (unknown
- * keys survive validation and can therefore be seen), the wrapper STRIPS them
- * before the handler runs, and the response names them.
+ * At the outer params level, retain the existing warning contract: unknown keys
+ * survive validation, the wrapper strips them, and the response names them.
+ * Nested undeclared fields instead produce explicit validation errors before
+ * the handler runs, so accounting details cannot silently disappear. Deliberate
+ * passthrough objects and open records retain their declared behavior.
  */
 
 /** Top-level keys a tool's params schema declares, or null if not an object schema. */
@@ -90,10 +91,54 @@ export function knownParamKeys(schema: unknown): Set<string> | null {
   }
 }
 
-/** Keep unknown keys through validation so they can be reported rather than vanish. */
+/**
+ * Reject unknown keys in nested closed objects before they can be silently
+ * stripped. Keep explicit passthrough/catchall objects and record keys open.
+ * Cloning definitions preserves checks, defaults, metadata, and union branches;
+ * the SDK still parses once, so transformations are not applied a second time.
+ */
+function checkedNestedSchema(schema: any, cache: Map<any, any>): any {
+  if (!schema?.def || typeof schema.clone !== "function") return schema;
+  if (cache.has(schema)) return cache.get(schema);
+  const def = schema.def;
+  const nested = (child: any) => checkedNestedSchema(child, cache);
+  let changes: Record<string, unknown>;
+  switch (def.type) {
+    case "object":
+      changes = {
+        shape: Object.fromEntries(Object.entries(def.shape).map(([key, value]) => [key, nested(value)])),
+        catchall: def.catchall ? nested(def.catchall) : z.never(),
+      };
+      break;
+    case "array": changes = { element: nested(def.element) }; break;
+    case "union": changes = { options: def.options.map(nested) }; break;
+    case "record": changes = { valueType: nested(def.valueType) }; break;
+    case "tuple": changes = { items: def.items.map(nested), rest: def.rest ? nested(def.rest) : null }; break;
+    case "optional":
+    case "nonoptional":
+    case "nullable":
+    case "default":
+    case "prefault":
+    case "catch":
+    case "readonly": changes = { innerType: nested(def.innerType) }; break;
+    // Validate the input side of a transformation without altering its output.
+    case "pipe": changes = { in: nested(def.in) }; break;
+    case "lazy": changes = { getter: () => nested(def.getter()) }; break;
+    default: return schema;
+  }
+  const checked = schema.clone({ ...def, ...changes }, { parent: true });
+  cache.set(schema, checked);
+  return checked;
+}
+
+/** Keep outer unknown keys for warnings; reject undeclared nested keys explicitly. */
 export function permissiveParamsSchema<T>(schema: T): T {
   const anySchema = schema as any;
-  return typeof anySchema?.passthrough === "function" ? anySchema.passthrough() : schema;
+  if (typeof anySchema?.passthrough !== "function") return schema;
+  // The outer object's existing warning contract is retained. Nested objects
+  // must reject extras rather than execute a transaction with missing values.
+  const permissive = anySchema.clone({ ...anySchema.def, catchall: z.unknown() }, { parent: true });
+  return checkedNestedSchema(permissive, new Map());
 }
 
 /** Human-readable notice naming parameters the tool does not support. */

@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Merge Intuit upstream through `31a1dd5`, preserving the NightSquawk package identity, publish workflow, JSON token store, catalogs, and 29 `report_*` tools.
 - Register 160 tools with expanded entities, attachments, invoice PDFs, restriction switches, and unsupported-parameter warnings.
+- Reject unsupported fields in closed nested tool schemas before execution, retaining intentional open records and passthrough QuickBooks payloads.
 - Add OAuth state validation, duplicate-callback protection, rotation-race recovery, production reauthorization guidance, configurable JSON storage, and safe stderr diagnostics.
 - Honor the configured sandbox loopback callback host and port; reject unsupported callback URLs explicitly instead of silently substituting localhost:8000.
 - Preserve report parameters and apply upstream balance-sheet date handling.

@@ -58,6 +58,12 @@ describe('Zod schemas through the MCP protocol', () => {
     }
     const updateSchema = serialized.tools.find((tool: any) => tool.name === 'update_account').inputSchema;
     expect(updateSchema.properties.params.properties.patch.type).toBe('object');
+    const invoiceSchema = serialized.tools.find((tool: any) => tool.name === 'create_invoice').inputSchema;
+    const invoiceLine = invoiceSchema.properties.params.properties.line_items.items;
+    expect(invoiceLine.additionalProperties).toBe(false);
+    expect(invoiceLine.properties.tax_code_ref.description).toContain('Tax code for this line');
+    const vendorSchema = serialized.tools.find((tool: any) => tool.name === 'search_vendors').inputSchema;
+    expect(vendorSchema.properties.params.properties.criteria.description).toContain('Filters to apply');
   });
 
   it.each([
@@ -106,5 +112,47 @@ describe('Zod schemas through the MCP protocol', () => {
     });
     expect((result.content as any[])[0].text).toContain('does not support this parameter: unsupported_filter');
     expect(mockQuickBooksInstance.findAccounts).toHaveBeenCalledWith({ Id: '1' }, expect.any(Function));
+  });
+
+  it('reports an unsupported invoice line field with its path before any financial write', async () => {
+    const result = await client.callTool({
+      name: 'create_invoice',
+      arguments: { params: { customer_ref: '1', line_items: [{ item_ref: '2', qty: 1, unit_price: 25, class_ref: '3' }] } },
+    });
+    expect(result.isError).toBe(true);
+    expect(JSON.stringify(result)).toContain('class_ref');
+    expect(JSON.stringify(result)).toContain('line_items');
+    expect(mockQuickBooksInstance.createInvoice).not.toHaveBeenCalled();
+  });
+
+  it('preserves supported invoice line values and rejects invalid declared values', async () => {
+    mockQuickBooksInstance.createInvoice.mockImplementation((invoice: any, cb: any) => cb(null, invoice));
+    const params = {
+      customer_ref: '1',
+      line_items: [{ item_ref: '2', qty: 2, unit_price: 25, tax_code_ref: 'TAX', service_date: '2026-11-04' }],
+    };
+    const result = await client.callTool({ name: 'create_invoice', arguments: { params } });
+    expect(result.isError).not.toBe(true);
+    expect(mockQuickBooksInstance.createInvoice).toHaveBeenCalledWith(expect.objectContaining({
+      Line: [expect.objectContaining({ Amount: 50, SalesItemLineDetail: expect.objectContaining({
+        ItemRef: { value: '2' }, Qty: 2, UnitPrice: 25, TaxCodeRef: { value: 'TAX' }, ServiceDate: '2026-11-04',
+      }) })],
+    }), expect.any(Function));
+    mockQuickBooksInstance.createInvoice.mockClear();
+    const invalid = await client.callTool({ name: 'create_invoice', arguments: { params: {
+      ...params, line_items: [{ ...params.line_items[0], qty: 'two' }],
+    } } });
+    expect(invalid.isError).toBe(true);
+    expect(mockQuickBooksInstance.createInvoice).not.toHaveBeenCalled();
+  });
+
+  it('preserves arbitrary nested patch records through the registered MCP tool', async () => {
+    mockQuickBooksInstance.getInvoice.mockImplementation((_id: any, cb: any) => cb(null, { Id: '42', SyncToken: '1' }));
+    mockQuickBooksInstance.updateInvoice.mockImplementation((invoice: any, cb: any) => cb(null, invoice));
+    const patch = { PrivateNote: 'Updated', CustomField: [{ DefinitionId: '1', StringValue: 'custom' }] };
+    const result = await client.callTool({ name: 'update_invoice', arguments: { params: { invoice_id: '42', patch } } });
+    expect(result.isError).not.toBe(true);
+    expect(mockQuickBooksInstance.updateInvoice).toHaveBeenCalledWith(expect.objectContaining(patch), expect.any(Function));
+    expect(JSON.stringify(result)).not.toContain('WARNING');
   });
 });

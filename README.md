@@ -68,7 +68,7 @@ After configuring credentials and authorizing, point your MCP client at the buil
 
 Entity tools cover customers, invoices, estimates, bills, vendors, employees, accounts, items, journal entries, bill payments, purchases, payments, sales receipts, credit memos, refund receipts, purchase orders, vendor credits, deposits, transfers, time activities, classes, departments, terms, payment methods, tax entities, company information, preferences, budgets, and attachments. Available operations depend on the entity; tax entities and budgets are read-only.
 
-Notable additions include estimate-to-invoice links, invoice memos/service dates/payment terms, payment reference and multicurrency fields, subaccounts, and bill updates that preserve existing line-level class/tax references. Unsupported top-level parameters produce a warning instead of disappearing silently.
+Notable additions include estimate-to-invoice links, invoice memos/service dates/payment terms, payment reference and multicurrency fields, subaccounts, and bill updates that preserve existing line-level class/tax references. Unsupported top-level parameters produce a warning instead of disappearing silently. Unsupported fields inside closed nested objects, such as invoice line items, are rejected with their field path before execution. Schemas that intentionally accept arbitrary QuickBooks fields remain open.
 
 The existing `delete_invoice` tool name is retained for compatibility; it voids the invoice and preserves the transaction record.
 
