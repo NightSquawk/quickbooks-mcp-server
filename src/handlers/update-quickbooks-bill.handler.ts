@@ -50,27 +50,28 @@ function mergeBill(current: any, incoming: any): any {
   return merged;
 }
 
-// Any preserved ref that existed on a current line but is missing from the same-Id
-// line after the write, keyed by ref type so ClassRef and TaxCodeRef can be handled
-// differently (see updateQuickbooksBill). Lines the caller intentionally removed
-// (no matching Id after the write) are not flagged.
-function findDroppedRefs(current: any, updated: any): Record<string, string[]> {
+// Compare the merged desired payload with same-Id lines after the write. This
+// covers newly requested refs as well as preserved refs. Intentionally removed
+// lines are absent from the desired payload and therefore are not checked.
+function findDroppedRefs(desired: any, updated: any): Record<string, string[]> {
   const updatedById = new Map<string, any>();
   for (const line of updated.Line) updatedById.set(String(line.Id), line);
 
   const dropped: Record<string, string[]> = {};
   for (const ref of PRESERVED_REFS) dropped[ref] = [];
 
-  for (const cur of current.Line) {
-    const upd = updatedById.get(String(cur.Id));
-    if (!upd) continue; // line removed on purpose — not a regression
+  for (const line of desired.Line) {
+    // New lines receive IDs from QBO and cannot be matched by their input ID.
+    if (line.Id == null) continue;
+    const upd = updatedById.get(String(line.Id));
+    if (!upd) continue;
     for (const detailKey of DETAIL_KEYS) {
-      const curDetail = cur[detailKey];
-      if (!curDetail) continue;
+      const desiredDetail = line[detailKey];
+      if (!desiredDetail) continue;
       const updDetail = upd[detailKey] || {};
       for (const ref of PRESERVED_REFS) {
-        if (curDetail[ref] && !updDetail[ref]) {
-          dropped[ref].push(`Line ${cur.Id}`);
+        if (desiredDetail[ref] && !updDetail[ref]) {
+          dropped[ref].push(`Line ${line.Id}`);
         }
       }
     }
@@ -122,7 +123,7 @@ export async function updateQuickbooksBill(bill: any): Promise<ToolResponse<any>
       );
     });
 
-    const dropped = findDroppedRefs(current, updated);
+    const dropped = findDroppedRefs(merged, updated);
 
     // Only when a TaxCodeRef was actually dropped do we need the company's tax mode to
     // decide error-vs-warning — so fetch Preferences lazily, avoiding an extra API call

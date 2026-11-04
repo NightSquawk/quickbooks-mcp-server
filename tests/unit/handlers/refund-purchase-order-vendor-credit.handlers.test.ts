@@ -523,6 +523,7 @@ describe('Refund, PurchaseOrder, VendorCredit Handlers', () => {
 
       expect(result.isError).toBe(false);
       const detail = captured.Line[0].AccountBasedExpenseLineDetail;
+      expect(captured.Line[0]).not.toHaveProperty('Id'); // QBO assigns new line IDs
       expect(detail.AccountRef).toEqual({ value: 'acc-accrued-liabilities' });
       expect(detail.ClassRef).toEqual({ value: 'class-7' });
       expect(detail.TaxCodeRef).toEqual({ value: 'H' });
@@ -644,7 +645,10 @@ describe('Refund, PurchaseOrder, VendorCredit Handlers', () => {
           TotalAmt: 11.23,
           Balance: 11.23,
           MetaData: { CreateTime: 'x' },
-          Line: [{ Id: '1', Amount: 10, DetailType: 'AccountBasedExpenseLineDetail' }],
+          Line: [
+            { Id: '4', Amount: 10, DetailType: 'AccountBasedExpenseLineDetail' },
+            { Id: '9', Amount: 20, DetailType: 'AccountBasedExpenseLineDetail' },
+          ],
         })
       );
       let captured: any;
@@ -674,6 +678,8 @@ describe('Refund, PurchaseOrder, VendorCredit Handlers', () => {
       expect(captured.TotalAmt).toBeUndefined(); // derived — stripped
       expect(captured.MetaData).toBeUndefined(); // read-only — stripped
       expect(captured.Line).toHaveLength(2);
+      // Replacement entries are new lines, never updates to guessed IDs 1..N.
+      for (const line of captured.Line) expect(line).not.toHaveProperty('Id');
       expect(captured.Line[0].AccountBasedExpenseLineDetail.TaxCodeRef).toEqual({ value: 'H' });
       expect(captured.Line[0].AccountBasedExpenseLineDetail.ClassRef).toEqual({ value: 'class-7' });
       expect(captured.Line[1].AccountBasedExpenseLineDetail).toEqual({ AccountRef: { value: 'acc-2' } });

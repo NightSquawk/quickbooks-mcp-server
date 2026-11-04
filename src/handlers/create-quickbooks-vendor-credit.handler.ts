@@ -30,7 +30,7 @@ export interface CreateVendorCreditInput {
 // TaxCodeRef, BillableStatus, and CustomerRef. With per-line TaxCodeRef and a
 // top-level GlobalTaxCalculation, QBO auto-calculates TxnTaxDetail — we never
 // hardcode a tax code. Shared with the update handler for full-line replacement.
-export function buildVendorCreditLine(l: VendorCreditLineItemInput, idx: number) {
+export function buildVendorCreditLine(l: VendorCreditLineItemInput) {
   const detail: Record<string, unknown> = {};
   if (l.account_ref) detail.AccountRef = { value: l.account_ref };
   if (l.class_ref) detail.ClassRef = { value: l.class_ref };
@@ -38,7 +38,8 @@ export function buildVendorCreditLine(l: VendorCreditLineItemInput, idx: number)
   if (l.billable_status) detail.BillableStatus = l.billable_status;
   if (l.customer_ref) detail.CustomerRef = { value: l.customer_ref };
   return {
-    Id: `${idx + 1}`,
+    // Both creation and full-line replacement contain new lines. Let QBO
+    // assign IDs; an invented ID can target an unrelated existing line.
     Amount: l.amount,
     Description: l.description,
     DetailType: "AccountBasedExpenseLineDetail",

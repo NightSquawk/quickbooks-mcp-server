@@ -19,6 +19,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Remove ambiguous void wording from transaction tools that perform deletion.
 - Preserve successful bill updates when the subsequent tax-preference verification fails, returning the updated bill with a sanitized warning against retrying the completed mutation.
 - Forward explicitly empty note, description, and document-number fields in transaction updates instead of silently treating them as omitted.
+- Let QuickBooks assign vendor-credit line IDs during creation and full-line replacement, avoiding updates to unrelated existing lines.
+- Verify newly requested bill class/tax references against the merged payload, preserving tax-mode warnings and completed-update results when verification is incomplete.
 - Update compatible dependencies and migrate record schemas to patched Zod 4; verify the complete tool surface through a real MCP client/server test.
 - Add Linux/Windows CI and regression coverage. Coverage gates reflect the full startup-loaded tool surface, with stricter thresholds for critical paths.
 - Remove the vulnerable OAuth decoder dependency with a NightSquawk-maintained native parser patch, with real-SDK encoding, callback, and error regressions.

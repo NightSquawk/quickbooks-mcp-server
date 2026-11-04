@@ -225,6 +225,72 @@ describe('Bill Handlers', () => {
       expect(result.error).toContain('ClassRef');
     });
 
+    describe.each(['AccountBasedExpenseLineDetail', 'ItemBasedExpenseLineDetail'])('new references in %s', detailKey => {
+      const noRefs = {
+        Id: '1', SyncToken: '5', VendorRef: { value: '56' },
+        Line: [{ Id: '7', Amount: 500, DetailType: detailKey, [detailKey]: {} }],
+      };
+
+      it.each([
+        ['ClassRef', {}, true],
+        ['TaxCodeRef', {}, true],
+        ['TaxCodeRef', { PartnerTaxEnabled: true }, false],
+        ['TaxCodeRef', { PartnerTaxEnabled: false }, false],
+      ] as const)('reports a newly requested %s that QBO removes (TaxPrefs %j)', async (ref, taxPrefs, isError) => {
+        mockQuickBooksInstance.getBill.mockImplementation((_id: any, cb: any) => cb(null, noRefs));
+        const updated = { ...noRefs, SyncToken: '6' };
+        mockQuickBooksInstance.updateBill.mockImplementation((_payload: any, cb: any) => cb(null, updated));
+        mockQuickBooksInstance.getPreferences.mockImplementation((cb: any) => cb(null, { TaxPrefs: taxPrefs }));
+
+        const result = await updateQuickbooksBill({
+          Id: '1', Line: [{ Id: '7', [detailKey]: { [ref]: { value: 'requested-ref' } } }],
+        });
+
+        expect(result.isError).toBe(isError);
+        expect(result.result).toMatchObject(updated); // the write already succeeded
+        expect(mockQuickBooksInstance.updateBill).toHaveBeenCalledTimes(1);
+        expect(mockQuickBooksInstance.getPreferences).toHaveBeenCalledTimes(ref === 'TaxCodeRef' ? 1 : 0);
+        const diagnostic = isError ? result.error : result.result._warning;
+        expect(diagnostic).toContain(ref);
+        expect(diagnostic).toContain('Line 7');
+        if (!isError) expect(diagnostic).toContain('Automated Sales Tax');
+      });
+
+      it('accepts newly requested references that survive the write', async () => {
+        mockQuickBooksInstance.getBill.mockImplementation((_id: any, cb: any) => cb(null, noRefs));
+        mockQuickBooksInstance.updateBill.mockImplementation((payload: any, cb: any) => cb(null, { ...payload, SyncToken: '6' }));
+        const detail = { ClassRef: { value: 'class-2' }, TaxCodeRef: { value: 'NON' } };
+
+        const result = await updateQuickbooksBill({ Id: '1', Line: [{ Id: '7', [detailKey]: detail }] });
+
+        expect(result.isError).toBe(false);
+        expect(result.result.Line[0][detailKey]).toEqual(detail);
+        expect(result.result).not.toHaveProperty('_warning');
+        expect(mockQuickBooksInstance.getPreferences).not.toHaveBeenCalled();
+      });
+    });
+
+    it('retains a completed update when verifying a new tax reference fails', async () => {
+      const noRefs = {
+        ...currentBill,
+        Line: [{ Id: '1', AccountBasedExpenseLineDetail: { AccountRef: { value: '1' } } }],
+      };
+      mockQuickBooksInstance.getBill.mockImplementation((_id: any, cb: any) => cb(null, noRefs));
+      mockQuickBooksInstance.updateBill.mockImplementation((_payload: any, cb: any) => cb(null, { ...noRefs, SyncToken: '6' }));
+      mockQuickBooksInstance.getPreferences.mockImplementation((cb: any) => cb(new Error('private-access-token'), null));
+
+      const result = await updateQuickbooksBill({
+        Id: '1', Line: [{ Id: '1', AccountBasedExpenseLineDetail: { TaxCodeRef: { value: 'NON' } } }],
+      });
+
+      expect(result.isError).toBe(false);
+      expect(result.result.SyncToken).toBe('6');
+      expect(result.result._warning).toContain('TaxCodeRef verification is incomplete');
+      expect(result.result._warning).toContain('Do not retry the completed update');
+      expect(JSON.stringify(result)).not.toContain('private-access-token');
+      expect(mockQuickBooksInstance.updateBill).toHaveBeenCalledTimes(1);
+    });
+
     it('should add a new line (no Id) without disturbing existing classed lines', async () => {
       mockQuickBooksInstance.getBill.mockImplementation((_id: any, cb: any) => cb(null, currentBill));
       let sentPayload: any;
