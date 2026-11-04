@@ -1,39 +1,68 @@
 {
-    "name": "@qboapi/qbo-mcp-server",
-    "version": "0.0.1",
-    "description": "MCP server implementation for QuickBooks Online integration",
-    "license": "MIT",
-    "main": "dist/index.js",
-    "type": "module",
-    "bin": "./dist/index.js",
-    "files": [
-      "dist"
-    ],
-    "scripts": {
-      "build": "tsc && shx chmod +x dist/*.js",
-      "prepare": "npm run build",
-      "watch": "tsc --watch",
-      "lint:fix": "eslint --fix",
-      "lint": "eslint .",
-      "auth": "node dist/auth-server.js"
-    },
-    "dependencies": {
-      "@modelcontextprotocol/sdk": "^1.6.0",
-      "dotenv": "^16.4.7",
-      "intuit-oauth": "^4.0.0",
-      "node-quickbooks": "^2.0.43",
-      "open": "^9.1.0",
-      "zod": "^3.24.2"
-    },
-    "devDependencies": {
-      "@eslint/js": "^9.22.0",
-      "@types/node": "^22.13.10",
-      "eslint": "^9.22.0",
-      "eslint-config-prettier": "^10.1.1",
-      "globals": "^16.0.0",
-      "prettier": "3.5.3",
-      "shx": "^0.3.4",
-      "typescript": "^5.8.2",
-      "typescript-eslint": "^8.26.1"
-    }
+  "name": "@nightsquawktech/quickbooks-mcp-server",
+  "version": "0.0.1",
+  "description": "QuickBooks Online MCP server for Claude, Cursor, and AI agents: entity CRUD and 29 financial reports. Fork of intuit/quickbooks-online-mcp-server.",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "type": "module",
+  "bin": "./dist/index.js",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc && shx chmod +x dist/*.js",
+    "prepare": "npm run build",
+    "watch": "tsc --watch",
+    "lint:fix": "eslint --fix",
+    "lint": "eslint .",
+    "auth": "node dist/auth-server.js"
+  },
+  "author": "Kevin Reyes (NightSquawk Tech) <hello@nightsquawk.tech>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NightSquawk/quickbooks-mcp-server.git"
+  },
+  "homepage": "https://github.com/NightSquawk/quickbooks-mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/NightSquawk/quickbooks-mcp-server/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "mcp",
+    "mcp-server",
+    "model-context-protocol",
+    "modelcontextprotocol",
+    "claude",
+    "cursor",
+    "ai-agent",
+    "llm",
+    "quickbooks",
+    "quickbooks-online",
+    "qbo",
+    "accounting",
+    "intuit"
+  ],
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.0",
+    "dotenv": "^16.4.7",
+    "intuit-oauth": "^4.0.0",
+    "node-quickbooks": "^2.0.43",
+    "open": "^9.1.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.22.0",
+    "@types/node": "^22.13.10",
+    "eslint": "^9.22.0",
+    "eslint-config-prettier": "^10.1.1",
+    "globals": "^16.0.0",
+    "prettier": "3.5.3",
+    "shx": "^0.3.4",
+    "typescript": "^5.8.2",
+    "typescript-eslint": "^8.26.1"
   }
+}
