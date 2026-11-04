@@ -48,4 +48,4 @@ jobs:
       # Auth via OIDC trusted publishing - no npm token anywhere.
       # Requires the trusted publisher to be configured for this package on
       # npmjs.com (this repo, workflow: publish.yml).
-      - run: npm publish release/*.tgz --provenance --access public
+      - run: npm publish ./release/*.tgz --provenance --access public
